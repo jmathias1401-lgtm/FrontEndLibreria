@@ -265,8 +265,8 @@ loadempleados(): void {
        lote : 0,
        total: producto.subTotal,
        }
-       
-       const productoupdate:Producto={
+       debugger;
+       const productoupdate:any={
         idproducto:producto.idproducto,
         codigoproducto:producto.codigoproducto,
         nombre:producto.nombre,
@@ -280,12 +280,12 @@ loadempleados(): void {
         precioblister:producto.precioblister,
         preciocaja:producto.preciocaja,
         codbarra:producto.codbarra,
-        laboratorio:producto.laboratorio,
-        presentacion:producto.presentacion,
-        unidadMedida:producto.unidadMedida,
+        laboratorio:{idlaboratorio:producto.laboratorio.idlaboratorio},
+        presentacion:{ idpresentacion:producto.presentacion.idpresentacion},
+        unidadmedida:{ idunidad_medida:producto.unidadMedida.idunidadmedida},
       }
        //guarda el detalle de compra
-       
+       debugger
        this.DetalleCompraService.Save(detallecompra).subscribe({
         next: (response:any) => {
           console.log('Detalle de compra guardado:', response);
@@ -295,7 +295,7 @@ loadempleados(): void {
         }
       });
       //actualiza stock del producto
-      
+      debugger
       this.productoService.saveProducto(productoupdate).subscribe({
         next: (response:any) => {
           console.log('Stock actualizado:', response);
