@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,6 +14,7 @@ import { RegisterComponent } from '../register/register.component';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  @Input() isVisible: boolean = true;
   loginForm: FormGroup;
   showRegisterModal: boolean = false;
 
@@ -65,5 +66,11 @@ export class LoginComponent {
 
   closeRegisterModal(): void {
     this.showRegisterModal = false;
+  }
+
+  closeModal(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.isVisible = false;
+    }
   }
 }

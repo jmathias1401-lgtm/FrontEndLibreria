@@ -63,7 +63,7 @@ export class ProductosListComponent implements OnInit{
       this.prod=response.list;
       this.total=response.total;
       this.xpage=response.xpage;
-      //console.log("xpage-----"+response.page);
+      
     }
     );
   }
@@ -188,7 +188,7 @@ export class ProductosListComponent implements OnInit{
       'Vencimiento': producto.vencimiento,
       'Ubicación': producto.ubicacion,
       'Presentación': producto.presentacion?.nombrepresentacion || '',
-      'Unidad de Medida': producto.unidadMedida?.nombreunidad || '',
+      'Unidad de Medida': producto.unidadmedida?.nombreunidad || '',
       'Laboratorio': producto.laboratorio?.nombrelaboratorio || '',
       'Precio Venta': producto.precioventa,
       'Precio Blister': producto.precioblister,

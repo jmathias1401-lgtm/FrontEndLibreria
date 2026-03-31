@@ -20,7 +20,7 @@ export class AppComponent {
   constructor(private authService: AuthService) {
     this.isLoggedIn$ = this.authService.currentUser$.pipe(
       map(user => {
-        console.log('Estado de usuario en app.component:', user);
+       
         return !!user && !!user.token;
       })
     );

@@ -19,6 +19,7 @@ import { ProductoService } from '../../../services/producto.service';
 import { TicketService } from '../../../services/ticket.service';
 import { parse } from 'path';
 import { Producto } from '../../../models/producto';
+import { forkJoin, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-modal-ventas',
@@ -218,7 +219,9 @@ get datosCuenta(): string {
   }
    guardarDetalleVenta(idventa:number)
    {
-   
+     this.loading = true;
+     const saveOperations = [];
+
      for (const producto of this.prodDetalle) {
       const detalleventa:DetalleVenta={
        venta:{idventa:idventa},
@@ -230,34 +233,58 @@ get datosCuenta(): string {
        descuentounidad: 0,
        total: producto.subTotal,
        }
-      
+
       const vencimientoDate = producto.vencimiento.split("/");
 
       const ModProducto:Producto={
         idproducto:producto.idproducto,
         codigoproducto:producto.codigoproducto,
         nombre:producto.nombre,
-        vencimiento:vencimientoDate[2]+"/"+vencimientoDate[1]+"/"+vencimientoDate[0],
+        vencimiento:vencimientoDate[2]+"-"+vencimientoDate[1]+"-"+vencimientoDate[0],
         estado:producto.estado,
         composicion:producto.composicion,
         ubicacion:producto.ubicacion,
         stock:producto.stock - producto.cantidadLlevar,
         precioventa:producto.precioventa,
-        precioblister:producto.precioBlister,
-        preciocaja:producto.precioCaja,
+        precioblister:producto.precioblister,
+        preciocaja:producto.preciocaja,
         codbarra:producto.codbarra,
         laboratorio:producto.laboratorio,
         presentacion:producto.presentacion,
-        unidadMedida:producto.unidadMedida,
+        unidadmedida:producto.unidadMedida,
       }
-  
-       this.detalleventaservice.Save(detalleventa).subscribe();
-       this.productoservice.saveProducto(ModProducto).subscribe();
-      
+
+      // Create observables for each save operation
+      const detalleObs$ = this.detalleventaservice.Save(detalleventa);
+      debugger
+      const productoObs$ = this.productoservice.saveProducto(ModProducto);
+
+      // Add to array using forkJoin to wait for both to complete
+      saveOperations.push(
+        forkJoin({
+          detalle: detalleObs$,
+          producto: productoObs$
+        })
+      );
      }
-      //generar tiket de impresion
-      this.mostrarTicket = true;
-      this.loading = false;
+
+     // Execute all save operations in parallel
+     forkJoin(saveOperations).subscribe({
+       next: (results) => {
+         console.log('Detalle venta y productos guardados exitosamente:', results);
+         //generar tiket de impresion
+         this.mostrarTicket = true;
+         this.loading = false;
+       },
+       error: (error) => {
+         console.error('Error al guardar detalle de venta:', error);
+         this.loading = false;
+         // Mostrar mensaje de error pero permitir continuar
+         alert('La venta se registró pero hubo un error al guardar el detalle. Contacte al administrador.');
+         this.mostrarTicket = true;
+         this.loading = false;
+       }
+     });
    }
   ventaBoleta(){
     //sacar comprobante de la base de datos boleta=2

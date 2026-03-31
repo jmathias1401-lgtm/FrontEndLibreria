@@ -1,5 +1,5 @@
-<div class="login-overlay">
-  <div class="login-box">
+<div class="login-overlay" *ngIf="isVisible" (click)="closeModal($event)">
+  <div class="login-box" (click)="$event.stopPropagation()">
     <div class="login-logo">
       <a href="#"><b>New</b>Farma</a>
     </div>

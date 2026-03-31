@@ -55,7 +55,7 @@ export class VentaComponent implements OnInit {
       this.prod=response.list;
       this.total=response.total;
       this.xpage=response.xpage;
-      //console.log("desde ventas-----"+this.total);
+      
     }
     );
   }

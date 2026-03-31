@@ -23,7 +23,7 @@ export class RoleGuard implements CanActivate {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         userFromToken = payload;
-        console.log('RoleGuard - Claims del token:', userFromToken);
+        
       } catch (e) {
         console.error('RoleGuard - Error al decodificar el token:', e);
       }
@@ -31,7 +31,7 @@ export class RoleGuard implements CanActivate {
     
     // Get cargo ID from token claims
     const cargoId = userFromToken?.idcargo || userFromToken?.cargo?.idcargo;
-    console.log('RoleGuard - Cargo ID desde token:', cargoId);
+   
 
     // If user is VISITANTE (idcargo = 3), only allow home, cart, and client-form
     if (cargoId === 3) {

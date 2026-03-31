@@ -1,0 +1,88 @@
+<!-- Cart Sidebar Toggle Button -->
+<div class="cart-sidebar-toggle" (click)="openCart()">
+  <i class="fas fa-shopping-cart"></i>
+  <span class="cart-badge">{{ getCartItemCount() }}</span>
+</div>
+
+<!-- Sidebar Backdrop -->
+<div class="sidebar-backdrop" [class.show]="isOpen" (click)="closeCart()"></div>
+
+<!-- Cart Sidebar -->
+<div class="cart-sidebar" [class.show]="isOpen">
+  <div class="sidebar-header">
+    <h3><i class="fas fa-shopping-cart"></i> Tu Carrito</h3>
+    <button class="close-btn" (click)="closeCart()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <div class="sidebar-content">
+    <!-- Empty Cart -->
+    <div *ngIf="cartItems.length === 0" class="empty-cart">
+      <i class="fas fa-shopping-cart"></i>
+      <p>Tu carrito está vacío</p>
+      <button class="btn btn-primary" (click)="closeCart()">Continuar comprando</button>
+    </div>
+
+    <!-- Cart Items -->
+    <div *ngIf="cartItems.length > 0" class="cart-items-container">
+      <div class="cart-item" *ngFor="let item of cartItems">
+        <div class="item-image">
+          <img [src]="'/assets/img/default.png'" [alt]="item.product.nombre" />
+        </div>
+        <div class="item-details">
+          <h5 class="item-name">{{ item.product.nombre }}</h5>
+          <p class="item-presentation">{{ item.product.presentacion.nombrepresentacion || '' }}</p>
+          <div class="item-price">S/. {{ item.product.precioventa | number:'1.2-2' }}</div>
+        </div>
+        <div class="item-quantity">
+          <button class="qty-btn" (click)="decrementQuantity(item.product.idproducto)">
+            <i class="fas fa-minus"></i>
+          </button>
+          <input type="number" [value]="item.quantity" (input)="updateQuantity(item.product.idproducto, $any($event.target).value)" min="1" />
+          <button class="qty-btn" (click)="incrementQuantity(item.product.idproducto)">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div class="item-subtotal">
+          <span>S/. {{ item.subtotal | number:'1.2-2' }}</span>
+          <button class="remove-btn" (click)="removeFromCart(item.product.idproducto)">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cart Total -->
+      <div class="cart-total">
+        <div class="total-row">
+          <span>Subtotal:</span>
+          <span>S/. {{ total | number:'1.2-2' }}</span>
+        </div>
+        <div class="total-row">
+          <span>Envío:</span>
+          <span class="shipping-free">GRATIS</span>
+        </div>
+        <div class="total-row total-final">
+          <span>Total:</span>
+          <span>S/. {{ total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <!-- Checkout Options -->
+      <div class="checkout-options">
+        <button class="btn btn-whatsapp" (click)="checkoutViaWhatsApp()">
+          <i class="fab fa-whatsapp"></i>
+          <span>Continuar por WhatsApp</span>
+        </button>
+        <button class="btn btn-login" (click)="goToLogin()">
+          <i class="fas fa-user"></i>
+          <span>Iniciar Sesión</span>
+        </button>
+        <button class="btn btn-register" (click)="goToRegister()">
+          <i class="fas fa-user-plus"></i>
+          <span>Registrarme</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

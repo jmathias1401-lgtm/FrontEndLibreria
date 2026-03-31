@@ -9,7 +9,7 @@ import { response } from "express";
 })
 export class DetalleVentaService{
     constructor(private http:HttpClient){}
-    private url:string="/api/detalleventa";
+    url="/api/detalleventa";
     urlList="/api/detalleventa?page=1&xpage=10";
 
     List(){

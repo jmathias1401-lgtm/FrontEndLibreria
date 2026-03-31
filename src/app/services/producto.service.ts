@@ -30,8 +30,8 @@ export class ProductoService {
     return this.http.get<ProductList>(ListUrlProducto);
   }
 
-  getProductos(index:number){
-    return this.http.get<ProductList>(this.urlEndpoint+index+"&xpage=5");
+  getProductos(index:number, xpage:number = 5){
+    return this.http.get<ProductList>(this.urlEndpoint+index+"&xpage="+xpage);
   }
   getAllProductos(index:number,xpage:number){
     return this.http.get<ProductList>(this.urlEndpoint+index+"&xpage="+xpage);

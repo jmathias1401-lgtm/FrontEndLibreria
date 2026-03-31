@@ -73,8 +73,7 @@
           <div class="fila1">
             <label for="unidadMedida" class="form-label">Unida de Medida</label>
             <select id="unidadMedida" class="form-select" formControlName="unidadMedida">
-             
-              <option *ngFor="let uni of unidadmedida" [ngValue]="uni">
+              <option [ngValue]="uni" *ngFor="let uni of unidadmedida" >
                 {{uni.nombreunidad}}
               </option>
             </select>

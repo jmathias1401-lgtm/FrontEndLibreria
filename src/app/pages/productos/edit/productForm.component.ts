@@ -23,6 +23,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {provideNativeDateAdapter} from '@angular/material/core';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -153,52 +154,45 @@ export class productFormComponent  implements OnInit
    modificarProducto() {
     // Cargar el producto por su ID
     this.productService.getProductById(this.IdProductoEdit).subscribe(response => {
-      
-      // Cargar las unidades de medida si aún no están disponibles
-      if (!this.unidadmedida || this.unidadmedida.length === 0) {
-        this.unidadmedidaService.List().subscribe(unidades => {
-          this.unidadmedida = unidades.list;
-  
-          // Una vez que las unidades están cargadas, parchea el formulario
-          this.parcharFormulario(response);
-        });
-        
-        this.presentacionService.List().subscribe(presentaciones=>{
-          this.presentacion=presentaciones.list;
-          this.parcharFormulario(response);
-        });
-
-        this.laboratorioService.List().subscribe(laboratorio=>{
-           this.laboratorio=laboratorio.list;
-           this.parcharFormulario(response);
-          });
-
-      } else {
-        // Si ya están cargadas, directamente parchea el formulario
-        this.parcharFormulario(response);
-      }
-      
+      // Cargar todas las listas en paralelo y luego parchar el formulario
+      this.cargarListasYparcharFormulario(response);
     });
-    
+  }
+
+  cargarListasYparcharFormulario(response: any) {
+    // Usar forkJoin para esperar a que todas las listas se carguen
+    forkJoin({
+      unidades: this.unidadmedidaService.List(),
+      presentaciones: this.presentacionService.List(),
+      laboratorios: this.laboratorioService.List()
+    }).subscribe(({ unidades, presentaciones, laboratorios }) => {
+      this.unidadmedida = unidades.list || [];
+      this.presentacion = presentaciones.list || [];
+      this.laboratorio = laboratorios.list || [];
+
+      // Una vez cargadas todas las listas, parchar el formulario
+      this.parcharFormulario(response);
+    });
   }
   
   parcharFormulario(response: any) {
-
+    const producto = response.list[0];
+    
     this.form.patchValue({
-      idproducto:this.IdProductoEdit,
-      nombre: response.list[0].nombre,
-      ubicacion: response.list[0].ubicacion,
-      vencimiento:moment(response.list[0].vencimiento, 'DD-MM-YYYY').format('YYYY-MM-DD'),
-      codigoproducto: response.list[0].codigoproducto,
-      codbarra: response.list[0].codbarra,
-      laboratorio:  this.laboratorio.find(um => um.nombrelaboratorio === response.list[0].laboratorio.nombrelaboratorio),
-      unidadMedida: this.unidadmedida.find(um => um.nombreunidad === response.list[0].unidadMedida.nombreunidad),
-      presentacion: this.presentacion.find(um => um.nombrepresentacion === response.list[0].presentacion.nombrepresentacion),
-      composicion: response.list[0].composicion,
-      precioventa:response.list[0].precioventa,
-      precioblister:response.list[0].precioblister,
-      preciocaja:response.list[0].preciocaja,
-      stock:response.list[0].stock
+      idproducto: this.IdProductoEdit,
+      nombre: producto.nombre,
+      ubicacion: producto.ubicacion,
+      vencimiento: moment(producto.vencimiento, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+      codigoproducto: producto.codigoproducto,
+      codbarra: producto.codbarra,
+      laboratorio: this.laboratorio.find(lab => lab.idlaboratorio === producto.laboratorio?.idlaboratorio) || producto.laboratorio,
+      unidadMedida: this.unidadmedida.find(um => um.idunidadmedida === producto.unidadMedida?.idunidadmedida) || producto.unidadMedida,
+      presentacion: this.presentacion.find(p => p.idpresentacion === producto.presentacion?.idpresentacion) || producto.presentacion,
+      composicion: producto.composicion,
+      precioventa: producto.precioventa,
+      precioblister: producto.precioblister,
+      preciocaja: producto.preciocaja,
+      stock: producto.stock
     });
   }
 

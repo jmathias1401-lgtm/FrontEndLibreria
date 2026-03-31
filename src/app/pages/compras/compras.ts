@@ -201,7 +201,7 @@ loadempleados(): void {
   }
 
   agregarProductosACompra() {
-    
+    debugger;
     if (!this.selectedProveedor || !this.selectedComprobante || !this.selectedEmpleado || !this.serie || !this.correlativo) {
       this.toastr.warning('Debe completar todos los campos de la compra');
       return;
@@ -280,12 +280,12 @@ loadempleados(): void {
         precioblister:producto.precioblister,
         preciocaja:producto.preciocaja,
         codbarra:producto.codbarra,
-        laboratorio:{idlaboratorio:producto.laboratorio.idlaboratorio},
-        presentacion:{ idpresentacion:producto.presentacion.idpresentacion},
-        unidadmedida:{ idunidad_medida:producto.unidadMedida.idunidadmedida},
+        laboratorio:{idlaboratorio:producto.laboratorio.idlaboratorio,nombrelaboratorio:producto.laboratorio.nombrelaboratorio},
+        presentacion:{ idpresentacion:producto.presentacion.idpresentacion, nombrepresentacion:producto.presentacion.nombrepresentacion},
+        unidadmedida:{ idunidadmedida:producto.unidadmedida.idunidadmedida, nombreunidad:producto.unidadmedida.nombreunidad},
       }
        //guarda el detalle de compra
-       debugger
+       debugger;
        this.DetalleCompraService.Save(detallecompra).subscribe({
         next: (response:any) => {
           console.log('Detalle de compra guardado:', response);

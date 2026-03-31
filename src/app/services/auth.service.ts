@@ -19,7 +19,7 @@ export class AuthService {
     const userData = localStorage.getItem(this.userKey);
     
     if (token && !this.isTokenExpired()) {
-      console.log('Token encontrado y válido:', token);
+      
       const user = userData ? JSON.parse(userData) : { token };
       this.currentUserSubject.next(user);
     } else {
@@ -34,13 +34,10 @@ export class AuthService {
     const url = '/api/auth/login';
     return this.http.post<any>(url, credentials).pipe(
       tap(response => {
-        console.log('Respuesta completa del login:', response);
-        console.log('Token:', response.access_token);
-        console.log('User data:', response.user);
-        console.log('Cargo del usuario:', response.user?.cargo);
+       
         
         if (response.access_token) {
-          console.log('Guardando token:', response.access_token);
+         
           localStorage.setItem(this.tokenKey, response.access_token);
           
           // Store user data including cargo information
@@ -49,11 +46,11 @@ export class AuthService {
             ...response.user // Assuming the API returns user data with cargo
           };
           
-          console.log('Datos de usuario a guardar:', userData);
+         
           localStorage.setItem(this.userKey, JSON.stringify(userData));
           this.currentUserSubject.next(userData);
         } else {
-          console.error('No se encontró access_token en la respuesta');
+          throw new Error('Token no recibido en la respuesta');
         }
       })
     );

@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
         headers: request.headers.set('Authorization', cleanToken)
       });
     
-      console.log('Intercepted request with token:', authRequest);
+      
       return next.handle(authRequest);
     }
     

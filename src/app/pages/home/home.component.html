@@ -1,4 +1,4 @@
-<!-- Hero Section -->
+<!-- Hero Section 
 <section class="hero-section bg-primary text-white py-5 ">
   <div class="container">
     <div class="row align-items-center">
@@ -17,39 +17,141 @@
     </div>
   </div>
 </section>
+-->
+<!-- Promotional Reel Section -->
+<section class="promo-reel-section">
+  <div class="container-fluid px-0">
+    <div class="promo-reel-container">
+      <button class="reel-arrow prev-arrow" (click)="scrollReelLeft()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <div class="promo-reel" #promoReel>
+        <div class="promo-item" *ngFor="let promo of promos; let i = index">
+          <div class="promo-card" [style.background]="promo.bgColor">
+            <div class="promo-content">
+              <div class="promo-icon">
+                <i class="{{ promo.icon }}"></i>
+              </div>
+              <div class="promo-text">
+                <h5>{{ promo.title }}</h5>
+                <p>{{ promo.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- WhatsApp Card -->
+        <div class="promo-item">
+          <div class="promo-card whatsapp-card" (click)="openWhatsApp()">
+            <div class="promo-content">
+              <div class="promo-icon">
+                <i class="fab fa-whatsapp"></i>
+              </div>
+              <div class="promo-text">
+                <h5>Escríbenos</h5>
+                <p>926 424 814</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="reel-arrow next-arrow" (click)="scrollReelRight()">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Navigation Bar -->
+<nav class="navbar-section">
+  <div class="container-fluid">
+    <div class="navbar-container">
+      <!-- Logo -->
+      <div class="navbar-logo">
+        <a href="/">
+          <img src="/assets/img/LOGOR.png" alt="New Farma Logo" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+          <span class="logo-text" style="display: none;">BOTICA NEW FARMA</span>
+        </a>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="navbar-search">
+        <div class="search-container">
+          <input type="text" class="search-input" placeholder="Buscar productos..." [(ngModel)]="searchQuery" (input)="onSearch()" />
+          <button class="search-btn" (click)="onSearch()">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="navbar-address">
+        <i class="fas fa-map-marker-alt"></i>
+        <div class="address-text">
+          <span class="address-label">Ingresa tu dirección</span>
+          <input type="text" class="address-input" placeholder="Ubicación de entrega" />
+        </div>
+      </div>
+
+      <!-- My Orders -->
+      <div class="navbar-item">
+        <span class="navbar-link" (click)="openOrdersSidebar()">
+          <i class="fas fa-box"></i>
+          <span>Mis Pedidos</span>
+        </span>
+      </div>
+
+      <!-- Login -->
+      <div class="navbar-item">
+        <a href="/login" class="navbar-link">
+          <i class="fas fa-user"></i>
+          <span>Iniciar Sesión</span>
+        </a>
+      </div>
+
+      <!-- Cart -->
+      <div class="navbar-item navbar-cart">
+        <a href="/cart" class="navbar-link cart-link">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Carrito</span>
+          <span class="cart-badge">{{ getCartItemCount() }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Messenger Chatbot -->
+<div class="messenger-chatbot">
+  <a href="https://m.me/newfarmarh" target="_blank" class="messenger-btn" title="Chatea con nosotros">
+    <i class="fas fa-headset"></i>
+  </a>
+</div>
 
 <!-- Products Section -->
 <section class="products-section py-5">
   <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div class="flex-grow-1">
-        <h2 class="text-center">Productos Destacados</h2>
-      </div>
-      <!-- Link al carrito -->
-      <div class="cart-link">
-        <a href="/cart" class="btn btn-success position-relative">
-          <i class="fas fa-shopping-cart"></i> Carrito
-          <span class="badge badge-danger position-absolute" style="top: -8px; right: -8px;">
-            {{ getCartItemCount() }}
-          </span>
-        </a>
-      </div>
-    </div>
-    <div class="products-container">
-      <button class="jet-listing-grid__slider-icon prev-arrow slick-arrow slider-arrow" (click)="scrollLeft()">
-        <i class="fas fa-chevron-left"></i>
+    
+    <!-- Search indicator -->
+    <div *ngIf="isSearching" class="search-info mb-3">
+      <i class="fas fa-search"></i> Resultados de búsqueda para: "<strong>{{ searchQuery }}</strong>"
+      <button class="btn btn-sm btn-outline-secondary ms-2" (click)="clearSearch()">
+        <i class="fas fa-times"></i> Ver todos
       </button>
-      <div class="products-grid" #productsGrid>
-         <div *ngFor="let product of products; let i = index" class="product-item">
-          <div class="card h-100 product-card">
-            <div class="card-img-container">
-               <img [src]="getProductImage(product, i)" [alt]="product.nombre" class="card-img-top">
-            </div>
-             <div class="card-body text-center">
-               <h6 class="card-title">{{ product.nombre }}</h6>
-               <p class="card-text">{{ product.composicion }}</p>
+    </div>
+    <div class="products-grid">
+       <div *ngFor="let product of products; let i = index" class="product-item">
+        <div class="card h-100 product-card d-flex flex-column">
+          <div class="card-img-container">
+             <img [src]="getProductImage(product, i)" [alt]="product.nombre" class="card-img-top">
+          </div>
+           <div class="card-body text-center d-flex flex-column">
+             <h6 class="card-title">{{ product.nombre }}</h6>
+             <h6 class="card-title">{{ product.laboratorio.nombrelaboratorio }}</h6>
+             <h6 class="card-title">{{ product.presentacion.nombrepresentacion }}</h6>
+             <div class="mt-auto">
+               <label class="price-label mb-2">S/. {{ product.preciocaja| number:'1.2-2' }}</label>
                <div *ngIf="!addedProducts.has(product.idproducto)" class="d-flex justify-content-center align-items-center m-0 product-add-button-container p-0 w-100">
-                 <button class="btn btn-primary" (click)="addToCart(product)">Agregar a carrito</button>
+                 <button class="btn btn-primary w-100" (click)="addToCart(product)">Agregar a carrito</button>
                </div>
                <div *ngIf="addedProducts.has(product.idproducto)" class="input-group mb-2">
                  <button class="btn btn-outline-secondary" (click)="decrementQuantity(product.idproducto)">-</button>
@@ -57,17 +159,34 @@
                  <button class="btn btn-outline-secondary" (click)="incrementQuantity(product.idproducto)">+</button>
                </div>
              </div>
-          </div>
+           </div>
         </div>
       </div>
-      <button class="jet-listing-grid__slider-icon next-arrow slick-arrow slider-arrow" (click)="scrollRight()">
-        <i class="fas fa-chevron-right"></i>
-      </button>
     </div>
+    <!-- Pagination -->
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" href="#" (click)="previousPage($event)">
+            <i class="fas fa-chevron-left"></i> Anterior
+          </a>
+        </li>
+        <li class="page-item disabled">
+          <span class="page-link">
+            Página {{ currentPage }} de {{ totalPages }}
+          </span>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === totalPages || totalPages === 0">
+          <a class="page-link" href="#" (click)="nextPage($event)">
+            Siguiente <i class="fas fa-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </section>
 
-<!-- About Section -->
+<!-- About Section 
 <section class="about-section py-5 bg-light">
   <div class="container">
     <div class="row align-items-center">
@@ -82,7 +201,7 @@
     </div>
   </div>
 </section>
-
+-->
 <!-- Services Section -->
 <section class="services-section py-5">
   <div class="container">
@@ -118,3 +237,15 @@
     </div>
   </div>
 </section>
+
+<!-- Cart Sidebar Component -->
+<app-cart-sidebar (openLoginModal)="showLoginModal = true" (openRegisterModal)="openRegisterModal()"></app-cart-sidebar>
+
+<!-- Orders Sidebar Component -->
+<app-orders-sidebar #ordersSidebar></app-orders-sidebar>
+
+<!-- Login Modal -->
+<app-login [isVisible]="showLoginModal"></app-login>
+
+<!-- Register Modal -->
+<app-register [isVisible]="showRegisterModal" (closeRegister)="showRegisterModal = false; showLoginModal = true"></app-register>

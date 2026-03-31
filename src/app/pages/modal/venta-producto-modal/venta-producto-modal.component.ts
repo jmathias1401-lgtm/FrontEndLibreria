@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -12,13 +12,15 @@ import { CantidadComponent } from '../cantidad/cantidad.component';
   templateUrl: './venta-producto-modal.component.html',
   styleUrls: ['./venta-producto-modal.component.css']
 })
-export class VentaProductoModalComponent implements OnInit {
+export class VentaProductoModalComponent implements OnInit, AfterViewInit {
   producto: Producto;
   quantity: number = 1;
   selectedPriceType: 'precioventa' | 'precioblister' | 'preciocaja' = 'precioventa';
   unitsPerBlister: number | null = null;
   unitsPerBox: number | null = null;
   pricePerUnit: number;
+
+  @ViewChild('quantityInput') quantityInput!: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<VentaProductoModalComponent>,
@@ -30,6 +32,16 @@ export class VentaProductoModalComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  ngAfterViewInit(): void {
+    // Set focus to quantity input after view is initialized
+    setTimeout(() => {
+      if (this.quantityInput) {
+        this.quantityInput.nativeElement.focus();
+        this.quantityInput.nativeElement.select();
+      }
+    }, 100);
+  }
 
   selectPrice(type: 'precioventa' | 'precioblister' | 'preciocaja'): void {
     this.selectedPriceType = type;
@@ -77,7 +89,9 @@ export class VentaProductoModalComponent implements OnInit {
   }
 
   incrementQuantity(): void {
-    this.quantity++;
+    if (this.producto.stock && this.quantity < this.producto.stock) {
+      this.quantity++;
+    }
   }
 
   decrementQuantity(): void {

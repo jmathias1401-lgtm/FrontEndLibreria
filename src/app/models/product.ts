@@ -19,7 +19,7 @@
           idpresentacion: number;
           nombrepresentacion: string;
         };
-        unidadMedida: {
+        unidadmedida: {
           idunidadmedida: number;
           nombreunidad: string;
         };

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CargoService } from '../../services/cargo.service';
@@ -16,6 +16,7 @@ import { cargo } from '../../models/cargo';
 })
 export class RegisterComponent {
   @Input() isVisible: boolean = false;
+  @Output() closeRegister: EventEmitter<void> = new EventEmitter<void>();
   registerForm: FormGroup;
   cargos: cargo[] = [];
   isLoading: boolean = false;
@@ -98,5 +99,6 @@ export class RegisterComponent {
 
   closeModal(): void {
     this.isVisible = false;
+    this.closeRegister.emit();
   }
 }

@@ -21,7 +21,6 @@ export class SidebarComponent implements OnInit {
     
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      console.log('Usuario actual en sidebar:', user);
       
       this.checkUserRole();
       this.cdr.detectChanges(); // Force change detection
@@ -37,7 +36,7 @@ export class SidebarComponent implements OnInit {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         userFromToken = payload;
-        console.log('Claims del token:', userFromToken);
+        
       } catch (e) {
         console.error('Error al decodificar el token:', e);
       }
@@ -45,11 +44,11 @@ export class SidebarComponent implements OnInit {
     
     // Get cargo ID from token claims
     const cargoId = userFromToken?.idcargo || userFromToken?.cargo?.idcargo;
-    console.log('Cargo ID desde token:', cargoId);
+    
     
     // Get username from token
     const username = userFromToken?.nombreusuario || userFromToken?.sub || userFromToken?.user;
-    console.log('Username desde token:', username);
+   
     
     // Update component data
     this.currentUser = {
@@ -59,6 +58,6 @@ export class SidebarComponent implements OnInit {
     };
     
     this.isVisitante = cargoId === 3;
-    console.log('¿Es visitante?', this.isVisitante);
+    
   }
 }
