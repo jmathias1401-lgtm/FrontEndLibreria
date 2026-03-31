@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     { title: 'Envío Gratis', description: 'En compras mayores a S/. 150.00', icon: 'fas fa-truck', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
     { title: '20% DSCTO', description: 'En vitaminas y suplementos', icon: 'fas fa-percentage', bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
     { title: '3x2', description: 'En productos de cuidado personal', icon: 'fas fa-gift', bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-    { title: 'Delivery 24h', description: 'Entrega rápida en Lima Metropolitana', icon: 'fas fa-clock', bgColor: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
+    { title: 'Delivery 24h', description: 'Entrega rápida en Tingo Maria y alrededores', icon: 'fas fa-clock', bgColor: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
     { title: 'Precio Especial', description: 'En medicamentos genéricos', icon: 'fas fa-tags', bgColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
     { title: 'Atención 24/7', description: 'Farmacéuticos disponibles', icon: 'fas fa-user-md', bgColor: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
     { title: 'Tarjeta de Descuento', description: 'Acumula puntos en cada compra', icon: 'fas fa-id-card', bgColor: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)' },
