@@ -46,16 +46,16 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   promos: Promo[] = [
     { title: 'Envío Gratis', description: 'En compras mayores a S/. 150.00', icon: 'fas fa-truck', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-    { title: '20% DSCTO', description: 'En vitaminas y suplementos', icon: 'fas fa-percentage', bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-    { title: '3x2', description: 'En productos de cuidado personal', icon: 'fas fa-gift', bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-    { title: 'Delivery 24h', description: 'Entrega rápida en Tingo Maria y alrededores', icon: 'fas fa-clock', bgColor: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-    { title: 'Precio Especial', description: 'En medicamentos genéricos', icon: 'fas fa-tags', bgColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-    { title: 'Atención 24/7', description: 'Farmacéuticos disponibles', icon: 'fas fa-user-md', bgColor: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
+    { title: '20% DSCTO', description: 'En cuadernos y lapiceros', icon: 'fas fa-percentage', bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+    { title: '3x2', description: 'En productos de jugueteria', icon: 'fas fa-gift', bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+    { title: 'Delivery 24h', description: 'Entrega rápida en Baños y alrededores', icon: 'fas fa-clock', bgColor: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
+    { title: 'Precio Especial', description: 'En productos seleccionados', icon: 'fas fa-tags', bgColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+    { title: 'Atención 24/7', description: 'Personal disponibles', icon: 'fas fa-user-md', bgColor: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
     { title: 'Tarjeta de Descuento', description: 'Acumula puntos en cada compra', icon: 'fas fa-id-card', bgColor: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)' },
-    { title: 'Productos Naturales', description: 'Variedad en medicina natural', icon: 'fas fa-leaf', bgColor: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }
+    { title: 'Productos Ecoamigables', description: 'Variedad en productos ecológicos', icon: 'fas fa-leaf', bgColor: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }
   ];
 
-  constructor(private productoService: ProductoService, private cartService: CartService, private toastr: ToastrService) {}
+  constructor(private productoService: ProductoService, private cartService: CartService, private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.loadProducts();
@@ -105,7 +105,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.productoService.getProductos(this.currentPage, this.itemsPerPage).subscribe({
       next: (data: any) => {
-
         if (this.currentPage === 1) {
           this.products = data.list || [];
         } else {
@@ -179,7 +178,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (this.promoReel) {
         const reel = this.promoReel.nativeElement;
         const maxScrollLeft = reel.scrollWidth - reel.clientWidth;
-        
+
         if (reel.scrollLeft >= maxScrollLeft) {
           reel.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
@@ -196,21 +195,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getProductImage(product: Product, index: number): string {
-    const nombre = product.nombre
-    ? product.nombre.toUpperCase().split(/[\s\/]+/).filter(Boolean).join('-')
-    : '';
-    if (index === 0) {
-      return '/assets/img/' + nombre + '.png';
-    } else if (index === 1) {
-      return '/assets/img/GRAVDAN 50MG-5ML.png';
-    } else if (index === 2) {
-      return '/assets/img/TRAMADOL CLORHIDRATO 100MG-2ML.png';}
-    else if (index === 3) {
-      return '/assets/img/OXACILINA 1G.png';}
-    else if (index === 4) {
-      return '/assets/img/AMITRIPTILINA 25 MG.png';
+    const nombre = product.imagen_path
+
+    if (nombre && index >= 0) {
+      return '/assets/img/imagenes/' + nombre;
     }
-    return '/assets/img/default.png';
+    return '/assets/img/imagenes/default.png';
   }
 
   getQuantity(productId: number): number {

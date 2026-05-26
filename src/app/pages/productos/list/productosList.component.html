@@ -12,52 +12,45 @@
          <i class="fas fa-file-excel"></i> Exportar Excel
        </button>
        <button type="button" class="btn btn-primary"  (click)="vertodos(1)">Actualizar</button>
-       <!--<button  class="btn btn-primary"> <a href="./edit" class="nav-link">Nuevo Registro</a> </button>-->
        <button  class="btn btn-primary" routerLink="/add">Nuevo Registro</button>
      </div>
-      
-    
 </div>
 
 <table class="table table-striped table-sm responsive">
     <thead class="table-dark">
       <tr>
-        <th class="id">
-          <button class="btn btn-success btn-sm">
-            <span title="id del producto">ID</span>
-          </button>
-        </th>
+        <th class="id">ID</th>
+        <th class="img">IMAGEN</th>
         <th class="name">NOMBRE</th>
-        <th class="conposision">COMPOSISION</th>
-        <th class="ubic">VCTO.</th>
+        <th class="vcto">VCTO.</th>
         <th class="ubic">UBIC.</th>
-        <th class="ubic">PRES.</th>
-        <th class="ubic">U.M</th>
+        <th class="pres">PRES.</th>
+        <th class="pres">U.M</th>
         <th class="ubic">LAB.</th>
-        <th class="ubic">P.V.</th>
-        <th class="ubic">P.B.</th>
-        <th class="ubic">P.C.</th>
-
+        <th class="price">P.V.</th>
+        <th class="price">P.B.</th>
+        <th class="price">P.C.</th>
         <th class="stock">STOCK</th>
         <th class="center">OPCIONES</th>
       </tr>
     </thead>
     <tbody class="tbody">
           <tr *ngFor="let producto of prod | filtro:index">
-            <td>{{producto.idproducto}}</td>
-            <td>{{producto.nombre}}</td>
-            <td >{{producto.composicion}}</td>
-            <td>{{producto.vencimiento}}</td>
-            <td>{{producto.ubicacion}}</td>
-            <td>{{producto.presentacion.nombrepresentacion}}</td>
-            <td>{{producto.unidadmedida.nombreunidad}}</td>
-            <td>{{producto.laboratorio.nombrelaboratorio}}</td>
+            <td class="id">{{producto.idproducto}}</td>
+            <td class="img">
+                <img [src]="producto.imagen_path ? '/assets/img/imagenes/' + producto.imagen_path : '/assets/img/imagenes/default.png'" alt="">
+            </td>
+            <td class="name" [title]="producto.nombre">{{producto.nombre}}</td>
+           
+            <td class="vcto">{{producto.vencimiento}}</td>
+            <td class="ubic">{{producto.ubicacion}}</td>
+            <td class="pres">{{producto.presentacion.nombrepresentacion}}</td>
+            <td class="pres">{{producto.unidadmedida.nombreunidad}}</td>
+            <td class="ubic">{{producto.laboratorio.nombrelaboratorio}}</td>
 
-            <td>{{producto.precioventa}}</td>
-            <td>{{producto.precioblister}}</td>
-            <td>{{producto.preciocaja}}</td>
-
-
+            <td class="price">{{producto.precioventa}}</td>
+            <td class="price">{{producto.precioblister}}</td>
+            <td class="price">{{producto.preciocaja}}</td>
 
             <td class="stock">{{producto.stock}}</td>
              <td class="center">
@@ -70,15 +63,12 @@
                  </button>
              </td>
           </tr>
-        
-  
     </tbody>
    
     <tfoot class="paginate">
         <tr>
-            <td colspan="9" >
-                <div>
-                  
+            <td colspan="13" >
+                <div style="max-width: 100%; overflow: hidden;">
                    <app-paginate (SendIndex)="onindexClic($event)"
                     [total]=total
                     [npage]=pages
@@ -86,7 +76,6 @@
                 </div>
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                   <button class = "btn btn-primary" (click)="previoPage()"> << Prev</button>
-               
                   <button class = "btn btn-primary" (click)="nextPage()">Next >></button>
                 </div>
             </td>

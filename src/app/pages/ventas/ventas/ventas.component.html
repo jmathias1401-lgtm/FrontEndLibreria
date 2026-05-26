@@ -33,7 +33,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let producto of prod" (click)="agregarProducto(producto)" style="cursor: pointer;">
+                <tr *ngFor="let producto of prod" (click)="agregarProducto(producto)" 
+                    [style.cursor]="producto.stock > 0 ? 'pointer' : 'not-allowed'"
+                    [class.text-danger]="producto.stock === 0">
                     <td>{{producto.idproducto}}</td>
                     <td>{{producto.nombre}}</td>
                     <td >{{producto.composicion}}</td>
@@ -45,7 +47,7 @@
                     <td>{{producto.precioventa}}</td>
                     <td>{{producto.precioblister}}</td>
                     <td>{{producto.preciocaja}}</td>
-                    <td class="stock">{{producto.stock}}</td>
+                    <td class="stock" [class.font-weight-bold]="producto.stock === 0">{{producto.stock}}</td>
                 </tr>
             </tbody>
         </table>

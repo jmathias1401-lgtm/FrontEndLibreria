@@ -1,51 +1,80 @@
-.row{
+.row {
     margin: 5px;
 }
-.id{
-    text-align: left;
-    width: 20px;
+
+table {
+    table-layout: fixed;
+    width: 100%;
+    margin: 0;
 }
-.name{
-    width: 300px;
-    text-align: left;
+
+.id {
+    text-align: center;
+    width: 40px;
+    min-width: 40px;
 }
-.conposision{
-    width: 355px;
-    text-align: left;
-}
-.vcto{
-    width: 90px;
-    text-align: left;
-}
-.ubic{
-    width: 100px;
-    text-align: left;
-}
-.stock{
-    width: 100px;
+
+.img {
+    width: 60px;
+    min-width: 60px;
     text-align: center;
 }
-.tbody{
-    font-size: 13px;
-    font-weight:normal;
-}
-.center{
-    text-align: center;
-}
-.paginate{
-    text-align: center;
-}
-.modal-modal{
-    position: absolute;
+
+.img img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
     display: block;
-    flex-direction: column;
-    
-    color: var(--bs-modal-color);
-    pointer-events: auto;
-    background-color: var(--bs-modal-bg);
-    background-clip: padding-box;
-    border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
-    border-radius: var(--bs-modal-border-radius);
-    outline: 0;
-    padding-left: 200px;
+    margin: 0 auto;
+}
+
+.name {
+    width: 250px;
+    max-width: 250px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vcto {
+    width: 85px;
+    text-align: left;
+}
+
+.ubic {
+    width: 80px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pres {
+    width: 70px;
+    text-align: left;
+}
+
+.price {
+    width: 50px;
+    text-align: right;
+}
+
+.stock {
+    width: 60px;
+    text-align: center;
+}
+
+.tbody {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.center {
+    text-align: center;
+    width: 80px;
+}
+
+.paginate {
+    text-align: center;
 }

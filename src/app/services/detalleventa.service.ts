@@ -1,26 +1,27 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { DetalleVenta, DetalleVentaList } from "../models/detalleventa";
-import { response } from "express";
-
 
 @Injectable({
-    providedIn:'root'
+    providedIn: 'root'
 })
-export class DetalleVentaService{
-    constructor(private http:HttpClient){}
-    url="/api/detalleventa";
-    urlList="/api/detalleventa?page=1&xpage=10";
+export class DetalleVentaService {
+    constructor(private http: HttpClient) { }
+    url = "/api/detalleventa";
 
-    List(){
-        return this.http.get<DetalleVentaList>(this.urlList);
+    List(page: number = 1, xpage: number = 10) {
+        return this.http.get<DetalleVentaList>(`${this.url}?page=${page}&xpage=${xpage}`);
     }
-    Save(detalle:any){
-        return this.http.post<DetalleVenta>(this.url,detalle,{
+    Save(detalle: any) {
+        return this.http.post<DetalleVenta>(this.url, detalle, {
             observe: 'response'
         })
     }
-    getDetallesPorVenta(ventaId: number){
+    getDetallesPorVenta(ventaId: number) {
         return this.http.get<DetalleVentaList>(`${this.url}/${ventaId}`);
+    }
+    getVentasMes(mes: number, anio: number) {
+        // Enviamos anio en la ruta y también como query param por si acaso el backend no tiene @PathVariable
+        return this.http.get<DetalleVentaList>(`${this.url}/ventasMes/${mes}/${anio}`);
     }
 }

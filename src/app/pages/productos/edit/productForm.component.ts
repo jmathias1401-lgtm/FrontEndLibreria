@@ -4,13 +4,12 @@ import { ProductoService } from '../../../services/producto.service';
 import moment, { locale } from 'moment';
 import { DatePipe, formatDate } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { response, Router } from 'express';
-import { Console, error, log } from 'console';
 import { PresentacionService } from '../../../services/presentacion.service';
 import { CommonModule } from '@angular/common';
 import { UnidadmedidaService } from '../../../services/unidadmedida.service';
 import { LaboratorioService } from '../../../services/laboratorio.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 import { ProductosListComponent } from '../list/productosList.component';
 import { DatosService } from '../../../services/datos.service';
@@ -48,10 +47,17 @@ export class productFormComponent  implements OnInit
     constructor(
       private  aRoute:ActivatedRoute,
       private http: HttpClient,
-      private toastr:ToastrService
+      private toastr:ToastrService,
+      private location: Location,
+      private router: Router
     ){
     this.IdProductoEdit=Number(aRoute.snapshot.paramMap.get('id'));
   }
+
+  cancel() {
+    this.router.navigate(['/productos']);
+  }
+
   randomMath():number 
   {
      return Math.floor(Math.random() * 100000);
@@ -105,8 +111,34 @@ export class productFormComponent  implements OnInit
     precioblister:[0],
     preciocaja:[0],  
     codbarra:[''],  
-    
+    imagen_path: ['']
   });
+
+  imagePreview: string | null = null;
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      const nombreProducto = this.form.get('nombre')?.value || 'PRODUCTO';
+      const extension = file.name.split('.').pop();
+      
+      // Transform name: uppercase and replace spaces with hyphens
+      const nuevoNombre = nombreProducto
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, '-') + '.' + extension;
+
+      // Store the transformed filename
+      this.form.patchValue({ imagen_path: nuevoNombre });
+      
+      // Preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
  
   private productService=inject(ProductoService);
   private presentacionService=inject(PresentacionService);
@@ -192,8 +224,13 @@ export class productFormComponent  implements OnInit
       precioventa: producto.precioventa,
       precioblister: producto.precioblister,
       preciocaja: producto.preciocaja,
-      stock: producto.stock
+      stock: producto.stock,
+      imagen_path: producto.imagen_path
     });
+
+    if (producto.imagen_path) {
+      this.imagePreview = '/assets/img/imagenes/' + producto.imagen_path;
+    }
   }
 
   

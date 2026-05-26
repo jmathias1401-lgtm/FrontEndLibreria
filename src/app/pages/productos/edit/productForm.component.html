@@ -1,140 +1,130 @@
 
-
 <div class="modal-content mt-5">
     <div class="modal-header">
-
-      <h3 class="modal-title text-center fw-bold bg-primary text-white p-2 rounded d-inline-block mx-auto">{{operacion}} Producto</h3>
-      <button type="button" class="btn btn-success btn-sm">
-        <a href="./productos" class="nav-link">Cerrar</a>
-      </button>
+        <h3 class="modal-title">{{operacion}} Producto</h3>
+        <button type="button" class="btn-close btn-close-white" (click)="cancel()" aria-label="Close"></button>
     </div>
+    
     <div class="modal-body">
-      <form [formGroup]="form" (ngSubmit)="create()" id="form">
-        <div class="fila">
-          <div class="filaNombre">
-            <label for="name" class="form-label">Nombre</label>
-            <input
-              id="name"
-              class="form-control w-100"
-              formControlName="nombre"
-              type="text"
-              placeholder="ingrese nombre"
-            />
-            <span *ngIf="form.get('nombre')?.hasError('required') && form.get('nombre')?.touched"   class="alert alert-danger mt-0.5" >
-              El campo nombre es <strong>obligatorio</strong>...
-            </span>
-          </div>
-          
-          <div>
-            <label for="ubic" class="form-label">Ubicacion</label>
-            <input
-              id="ubic"
-              class="form-control"
-              formControlName="ubicacion"
-              type="text"
-              placeholder="Huanuco"
-            />
-            <span *ngIf="form.get('ubicacion')?.hasError('required') && form.get('ubicacion')?.touched"  class="alert alert-danger mt-0.5" >
-              Es <strong>obligatorio</strong>...
-            </span>
-          </div>
-          <div>
-            <label for="venci" class="form-label">Vencimiento</label>
-            <input class="form-control" id="datepicker" formControlName="vencimiento" type="date"  />
-          </div>
-          
-        </div> 
-        <div class="fila">
-          <div class="fila1">
-            <label for="codigoproducto" class="form-label">Codigo</label>
-            <input
-              id="codigoproducto"
-              class="form-control"
-              formControlName="codigoproducto"
-              type="text"
-              readonly onmousedown="return false"
-            />
-            <span *ngIf="form.get('codigoproducto')?.hasError('required') && form.get('codigoproducto')?.touched"  class="alert alert-danger mt-0.5" >
-              Es <strong>obligatorio</strong>...
-            </span>
-          </div>
-          <div class="fila1">
-            <label for="codbarra" class="form-label">Codigo de Barra</label>
-            <input id="codbarra" type="text" class="form-control" formControlName="codbarra" />
+        <form [formGroup]="form" (ngSubmit)="create()">
             
-          </div>
-          <div class="fila1">
-            <label for="regsan" class="form-label">Registro Sanitario</label>
-            <input id="regsan" type="text" class="form-control" />
-            
-          </div>
-        </div>
-        <div class="fila">
-          <div class="fila1">
-            <label for="unidadMedida" class="form-label">Unida de Medida</label>
-            <select id="unidadMedida" class="form-select" formControlName="unidadMedida">
-              <option [ngValue]="uni" *ngFor="let uni of unidadmedida" >
-                {{uni.nombreunidad}}
-              </option>
-            </select>
-          </div>
-          <div class="fila1">
-            <label for="presentacion" class="form-label">Presentacion</label>
-            <select id="presentacion" class="form-select" formControlName="presentacion">
-              <option [ngValue]="prese" *ngFor="let prese of presentacion" >
-               {{prese.nombrepresentacion}}
-              </option>
-            </select>
-            
-          </div>
-          <div class="fila1">
-            <label for="laboratorio" class="form-label">Laboratorio</label>
-            <select id="laboratorio" class="form-select" formControlName="laboratorio">
-              <option [ngValue]="labo" *ngFor="let labo of laboratorio" >
-                {{labo.nombrelaboratorio}}
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="fila">
-          <div class="fila1">
-            <label for="compo" class="form-label">Composicion</label>
-            <input id="compo" class="form-control h-80 mw-100" formControlName="composicion" type="text"/>
-          </div>
-        </div>
-        
-         <div class="filaa">
-          <div class="pventa">
-           <label for="precioventa" class="form-label">Precio Venta</label>
-            <input id="precioventa" class="form-control w-100" formControlName="precioventa" type="text"placeholder="ingrese nombre" />
-          </div>
-          <div class="pblister">
-           <label for="precioblister" class="form-label">Precio Blister</label>
-            <input id="precioblister" class="form-control w-100" formControlName="precioblister" type="text"placeholder="ingrese nombre" />
-          </div>
+            <!-- Main Info Section -->
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="name">Nombre del Producto</label>
+                    <input id="name" class="form-control" formControlName="nombre" type="text" placeholder="Ej: Plumón Indeleble...">
+                    <small class="text-danger" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
+                        El nombre es obligatorio.
+                    </small>
+                </div>
 
-          <div class="pcaja">
-           <label for="preciocaja" class="form-label">Precio Caja</label>
-            <input id="preciocaja" class="form-control w-100" formControlName="preciocaja" type="text"placeholder="ingrese nombre" />
-          </div>
-          <div class="stock">
-           <label for="stock" class="form-label">Stock</label>
-            <input id="stock" class="form-control w-100" formControlName="stock" type="text"placeholder="ingrese nombre" />
-          </div>
+                <div class="form-group">
+                    <label for="codbarra">Código de Barras</label>
+                    <input id="codbarra" type="text" class="form-control" formControlName="codbarra" placeholder="Escanee o escriba el código">
+                </div>
 
-        </div>
-        
+                <div class="form-group">
+                    <label for="codigoproducto">Código Interno</label>
+                    <input id="codigoproducto" class="form-control" formControlName="codigoproducto" type="text" readonly>
+                </div>
 
-      </form>
-      <div class="text-end pt-5 pb-5 pr-4">
-        <button type="button" class="btn btn-light">
-          <a href="./productos" class="nav-link">Cancelar</a>
-        </button>
-        <button [disabled]="form.invalid" type="submit" class="btn btn-primary ms-2" (click)="create()">
-          <a href="./productos" class="nav-link">{{operacionBoton}} Producto</a>
-        </button>
-      </div>
+                <div class="form-group">
+                    <label for="venci">Fecha de Vencimiento</label>
+                    <input id="venci" class="form-control" formControlName="vencimiento" type="date">
+                </div>
+            </div>
+
+            <!-- Single Row: Location, U.M, Pres, Lab -->
+            <div class="grid-4">
+                <div class="form-group">
+                    <label for="ubic">Ubicación</label>
+                    <input id="ubic" class="form-control" formControlName="ubicacion" type="text" placeholder="Ej: Almacén A-1">
+                </div>
+
+                <div class="form-group">
+                    <label for="unidadMedida">Unidad de Medida</label>
+                    <select id="unidadMedida" class="form-select" formControlName="unidadMedida">
+                        <option [ngValue]="null" disabled>Seleccione unidad</option>
+                        <option [ngValue]="uni" *ngFor="let uni of unidadmedida">{{uni.nombreunidad}}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="presentacion">Presentación</label>
+                    <select id="presentacion" class="form-select" formControlName="presentacion">
+                        <option [ngValue]="null" disabled>Seleccione presentación</option>
+                        <option [ngValue]="prese" *ngFor="let prese of presentacion">{{prese.nombrepresentacion}}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="laboratorio">Laboratorio</label>
+                    <select id="laboratorio" class="form-select" formControlName="laboratorio">
+                        <option [ngValue]="null" disabled>Seleccione laboratorio</option>
+                        <option [ngValue]="labo" *ngFor="let labo of laboratorio">{{labo.nombrelaboratorio}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Composition -->
+            <div class="form-group mb-4">
+                <label for="compo">Composición / Descripción</label>
+                <textarea id="compo" class="form-control" formControlName="composicion" rows="2"></textarea>
+            </div>
+
+            <!-- Image Section -->
+            <div class="form-group mb-4">
+                <label>Imagen del Producto</label>
+                <div class="image-upload-container">
+                    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="form-control mb-2">
+                    <p class="text-muted small">Formatos permitidos: JPG, PNG. Tamaño máx: 2MB</p>
+                    
+                    <div class="preview-container" *ngIf="imagePreview">
+                        <img [src]="imagePreview" class="preview-image" alt="Vista previa">
+                        <p class="mt-2 small text-primary">{{form.get('imagen_path')?.value}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing & Stock Section -->
+            <div class="stats-grid">
+                <div class="form-group">
+                    <label for="precioventa">P. Venta (Unidad)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">S/</span>
+                        <input id="precioventa" class="form-control" formControlName="precioventa" type="number" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="precioblister">P. Blister</label>
+                    <div class="input-group">
+                        <span class="input-group-text">S/</span>
+                        <input id="precioblister" class="form-control" formControlName="precioblister" type="number" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="preciocaja">P. Caja</label>
+                    <div class="input-group">
+                        <span class="input-group-text">S/</span>
+                        <input id="preciocaja" class="form-control" formControlName="preciocaja" type="number" step="0.01">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="stock">Stock Actual</label>
+                    <input id="stock" class="form-control" formControlName="stock" type="number">
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="btn-actions">
+                <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+                    Cancelar
+                </button>
+                <button [disabled]="form.invalid" type="submit" class="btn btn-primary">
+                    {{operacionBoton}} Producto
+                </button>
+            </div>
+
+        </form>
     </div>
-
-    <div class="modal-footer"></div>
-  </div>
+</div>

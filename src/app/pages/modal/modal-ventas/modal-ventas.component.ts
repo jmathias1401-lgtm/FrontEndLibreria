@@ -251,9 +251,9 @@ get datosCuenta(): string {
         codbarra:producto.codbarra,
         laboratorio:producto.laboratorio,
         presentacion:producto.presentacion,
-        unidadmedida:producto.unidadMedida,
+        unidadmedida:producto.unidadmedida,
       }
-
+debugger;
       // Create observables for each save operation
       const detalleObs$ = this.detalleventaservice.Save(detalleventa);
       debugger

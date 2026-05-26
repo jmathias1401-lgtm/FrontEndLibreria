@@ -101,6 +101,16 @@ export class VentaProductoModalComponent implements OnInit, AfterViewInit {
   }
 
   addToSale(): void {
+    if (this.producto.stock === 0) {
+      alert('No hay stock disponible para este producto.');
+      return;
+    }
+
+    if (this.quantity > (this.producto.stock || 0)) {
+      alert('La cantidad ingresada supera el stock disponible (' + this.producto.stock + ').');
+      return;
+    }
+
     this.calculatePricePerUnit(); // Ensure price is calculated before adding
     const subTotal = this.quantity * this.pricePerUnit;
 

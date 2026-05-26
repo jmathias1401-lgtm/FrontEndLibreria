@@ -1,0 +1,156 @@
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>Dashboard de Productos</h1>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content">
+  <div class="container-fluid">
+    <!-- INFO BOXES -->
+    <div class="row">
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="info-box">
+          <span class="info-box-icon bg-info elevation-1"><i class="fas fa-boxes"></i></span>
+          <div class="info-box-content text-center">
+            <span class="info-box-text">Unidades Vendidas</span>
+            <span class="info-box-number">{{ totalUnitsSold | number }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="info-box mb-3">
+          <span class="info-box-icon bg-success elevation-1"><i class="fas fa-money-bill-wave"></i></span>
+          <div class="info-box-content text-center">
+            <span class="info-box-text">Ingresos por Productos</span>
+            <span class="info-box-number">S/ {{ totalRevenue | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="info-box mb-3">
+          <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-tag"></i></span>
+          <div class="info-box-content text-center">
+            <span class="info-box-text">Ticket Promedio Art.</span>
+            <span class="info-box-number">S/ {{ avgProductPrice | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="card card-default">
+      <div class="card-header">
+        <h3 class="card-title">Filtros de Reporte</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Mes</label>
+              <select class="form-control" [(ngModel)]="selectedMonth" (change)="applyFilters()">
+                <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Año</label>
+              <select class="form-control" [(ngModel)]="selectedYear" (change)="applyFilters()">
+                <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Seleccionar Producto (Top 10)</label>
+              <select class="form-control" [(ngModel)]="selectedProductName" (change)="updateProductHistory()">
+                <option *ngFor="let p of topProducts" [value]="p.name">{{ p.name }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCT HISTORY CHART -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title">Historial de Venta Diaria: {{ selectedProductName }}</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="position: relative; height:300px; width:100%">
+              <canvas id="chartProductHistory"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- MOST SOLD -->
+      <div class="col-md-6">
+        <div class="card card-success">
+          <div class="card-header">
+            <h3 class="card-title">Top 10 Más Vendidos</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="position: relative; height:400px; width:100%">
+              <canvas id="chartMostSold"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEAST SOLD -->
+      <div class="col-md-6">
+        <div class="card card-danger">
+          <div class="card-header">
+            <h3 class="card-title">Top 10 Menos Vendidos</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="position: relative; height:400px; width:100%">
+              <canvas id="chartLeastSold"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA TABLES -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Resumen Detallado</h3>
+          </div>
+          <div class="card-body table-responsive p-0" style="height: 300px;">
+            <table class="table table-head-fixed text-nowrap">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad Vendida</th>
+                  <th>Ingresos Generados</th>
+                  <th>Ranking</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of topProducts; let i = index">
+                  <td>{{ p.name }}</td>
+                  <td>{{ p.quantity | number }}</td>
+                  <td>S/ {{ p.revenue | number:'1.2-2' }}</td>
+                  <td><span class="badge badge-success">Top {{ i + 1 }}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -4,8 +4,10 @@ text-align: left;
 .page{
     text-align: center;
     display: flex;
+    flex-wrap: wrap;
     margin: 0.05rem;
     justify-content: center;
+    gap: 2px;
 }
 .page tr{
     text-align:center;

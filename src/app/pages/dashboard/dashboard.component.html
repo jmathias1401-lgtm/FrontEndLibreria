@@ -14,7 +14,7 @@
           <div class="info-box-content text-center">
             <span class="info-box-text">Ventas Totales</span>
             <span class="info-box-number ">
-              {{ totalSales | number }}
+              S/ {{ totalSales | number:'1.2-2' }}
             </span>
           </div>
           <!-- /.info-box-content -->
@@ -24,11 +24,23 @@
       <!-- /.col -->
       <div class="col-12 col-sm-6 col-md-3">
         <div class="info-box mb-3">
+          <span class="info-box-icon bg-primary elevation-1"><i class="fas fa-calendar-day"></i></span>
+
+          <div class="info-box-content text-center">
+            <span class="info-box-text">Ventas de Hoy</span>
+            <span class="info-box-number ">S/ {{ todaySales | number:'1.2-2' }}</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
           <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-calendar-alt"></i></span>
 
           <div class="info-box-content text-center">
             <span class="info-box-text">Ventas En Este Mes</span>
-            <span class="info-box-number ">{{ currentMonthSales | number }}</span>
+            <span class="info-box-number ">S/ {{ currentMonthSales | number:'1.2-2' }}</span>
           </div>
           <!-- /.info-box-content -->
         </div>
@@ -39,21 +51,8 @@
           <span class="info-box-icon bg-success elevation-1"><i class="fas fa-chart-line"></i></span>
 
           <div class="info-box-content text-center">
-            <span class="info-box-text">Crecimiento</span>
+            <span class="info-box-text">Crecimiento (Mes)</span>
             <span class="info-box-number ">{{ growthPercentage | number:'1.1-1' }}%</span>
-          </div>
-          <!-- /.info-box-content -->
-        </div>
-        <!-- /.info-box -->
-      </div>
-      <!-- /.col -->
-      <div class="col-12 col-sm-6 col-md-3">
-        <div class="info-box mb-3">
-          <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
-
-          <div class="info-box-content text-center">
-            <span class="info-box-text ">Clientes</span>
-            <span class="info-box-number">{{ totalClients }}</span>
           </div>
           <!-- /.info-box-content -->
         </div>
@@ -62,15 +61,36 @@
       <!-- /.col -->
     </div>
     <!-- /.row -->
-<!-- Sales Chart -->
+    <!-- Sales Chart -->
     <div class="row">
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Ventas por Mes</h3>
+            <h3 class="card-title">Reporte de Ventas por {{ getModeLabel() }}</h3>
+            <div class="card-tools">
+              <div class="d-flex align-items-center">
+                <div class="input-group input-group-sm mr-2" style="width: 350px;">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Desde</span>
+                  </div>
+                  <input type="date" class="form-control" [(ngModel)]="startDate" (change)="applyFilters()">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Hasta</span>
+                  </div>
+                  <input type="date" class="form-control" [(ngModel)]="endDate" (change)="applyFilters()">
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-outline-primary btn-sm" [class.active]="currentMode === 'day'" (click)="updateReportMode('day')">Día</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" [class.active]="currentMode === 'month'" (click)="updateReportMode('month')">Mes</button>
+                  <button type="button" class="btn btn-outline-primary btn-sm" [class.active]="currentMode === 'year'" (click)="updateReportMode('year')">Año</button>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="card-body">
-            <canvas id="salesChart" width="400" height="100"></canvas>
+            <div class="chart-container" style="position: relative; height:300px; width:100%">
+              <canvas id="salesChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
@@ -79,6 +99,59 @@
     <div class="row">
       <!-- Left col -->
       <div class="col-md-8">
+        <!-- PRODUCT PERFORMANCE -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Rendimiento de Productos</h3>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <p class="text-center"><strong>Productos Más Vendidos</strong></p>
+                <div class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let p of topProducts">
+                        <td>{{ p.name }}</td>
+                        <td><span class="badge badge-success">{{ p.quantity }}</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="chart-container" style="position: relative; height:200px; width:100%">
+                  <canvas id="productChart"></canvas>
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-12">
+                <p class="text-center"><strong>Productos Menos Vendidos</strong></p>
+                <div class="d-flex flex-wrap justify-content-around">
+                  <div *ngFor="let p of bottomProducts" class="text-center p-2 border rounded m-1 bg-light" style="min-width: 120px;">
+                    <small class="d-block text-truncate" style="max-width: 100px;" [title]="p.name">{{ p.name }}</small>
+                    <span class="badge badge-danger">{{ p.quantity }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /.card -->
+
         <!-- TABLE: LATEST ORDERS -->
         <div class="card">
           <div class="card-header border-transparent">

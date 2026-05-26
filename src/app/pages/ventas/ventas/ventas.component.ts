@@ -93,6 +93,10 @@ export class VentaComponent implements OnInit {
   }
   
 agregarProducto(producto: Product): void {
+  if (producto.stock === 0) {
+    alert('No hay stock disponible para este producto.');
+    return;
+  }
   
   const dialogRef = this.dialog.open(VentaProductoModalComponent, {
     width: '600px',
@@ -107,7 +111,14 @@ agregarProducto(producto: Product): void {
       );
       if (existingProductIndex > -1) {
         const existingItem = this.prodDetalle[existingProductIndex];
-        existingItem.cantidadLlevar = (existingItem.cantidadLlevar || 0) + resultado.cantidadLlevar;
+        const nuevaCantidad = (existingItem.cantidadLlevar || 0) + resultado.cantidadLlevar;
+        
+        if (nuevaCantidad > (producto.stock || 0)) {
+          alert('La cantidad total acumulada para este producto supera el stock disponible (' + producto.stock + ').');
+          return;
+        }
+        
+        existingItem.cantidadLlevar = nuevaCantidad;
         existingItem.subTotal = (existingItem.subTotal || 0) + resultado.subTotal;
       } else {
         this.prodDetalle.push(resultado);

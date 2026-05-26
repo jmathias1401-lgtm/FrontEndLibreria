@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { NopageFoundComponent } from './nopage-found/nopage-found.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { DashboardProductosComponent } from './pages/dashboard-productos/dashboard-productos.component';
 import { ProductosListComponent } from './pages/productos/list/productosList.component';
 
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
@@ -44,6 +45,7 @@ export const routes: Routes = [
     {path:"cart", component: CartComponent, canActivate: [RoleGuard]},
     {path:"orders", component: OrdersComponent, canActivate: [RoleGuard]},
     {path: "dashboard", component: DashboardComponent, canActivate: [RoleGuard]},
+    {path: "dashboard-productos", component: DashboardProductosComponent, canActivate: [RoleGuard]},
     {path: "reports", 
         canActivate: [RoleGuard],
         children: 

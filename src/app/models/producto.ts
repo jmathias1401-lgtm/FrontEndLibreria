@@ -11,6 +11,7 @@ export class Producto{
         precioblister?: number;
         preciocaja?: number;
         codbarra?: string;
+        imagen_path?: string;
         laboratorio?: {
           idlaboratorio: number;
           nombrelaboratorio: string;
