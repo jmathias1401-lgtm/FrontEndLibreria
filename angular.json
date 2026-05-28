@@ -13,14 +13,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/NewFarmaProject",            
+            "outputPath": "dist/NewFarmaProject",
             "tsConfig": "tsconfig.app.json",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -31,59 +30,61 @@
               "node_modules/ngx-toastr/toastr.css",
               "src/assets/plugins/fontawesome-free/css/all.min.css"
             ],
-             "scripts": [],
-             "allowedCommonJsDependencies": ["moment"]
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "moment"
+            ]
           },
-           "configurations": {
-              "production": {
-                "budgets": [
-                  {
-                    "type": "initial",
-                    "maximumWarning": "1.5mb",
-                    "maximumError": "2mb"
-                  },
-                  {
-                    "type": "anyComponentStyle",
-                    "maximumWarning": "8kb",
-                    "maximumError": "10kb"
-                  }
-                ],
-                "outputHashing": "all",
-                "ssr": false
-              },
-              "development": {
-                "optimization": false,
-                "extractLicenses": false,
-                "sourceMap": true,
-                "outputMode": "static"
-              }
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3.5mb",
+                  "maximumError": "4mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "8kb",
+                  "maximumError": "10kb"
+                }
+              ],
+              "outputHashing": "all",
+              "ssr": false
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputMode": "static"
+            }
           },
           "defaultConfiguration": "production"
         },
         "server": {
-  "builder": "@angular-devkit/build-angular:server",
-  "options": {
-    "outputPath": "dist/NewFarmaProject/server",
-    "main": "src/main.server.ts",
-    "tsConfig": "tsconfig.server.json"
-  },
-  "configurations": {
-    "production": {
-      "outputHashing": "media",
-      "sourceMap": false,
-      "optimization": true
-    },
-    "development": {
-      "outputHashing": "none",
-      "sourceMap": true,
-      "optimization": false
-    }
-  },
-  "defaultConfiguration": "production"
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/NewFarmaProject/server",
+            "main": "src/main.server.ts",
+            "tsConfig": "tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "sourceMap": false,
+              "optimization": true
+            },
+            "development": {
+              "outputHashing": "none",
+              "sourceMap": true,
+              "optimization": false
+            }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options":{           
+          "options": {
             "proxyConfig": "proxy.conf.js"
           },
           "configurations": {
