@@ -162,9 +162,10 @@ calcularTotalGeneral(): void {
         data: this.prodDetalle
         });
        
-        modalVenta.afterClosed().subscribe(() => {
-          this.prodDetalle = [];
-          this.totalVenta = 0;
+        modalVenta.afterClosed().subscribe((resultado) => {
+          if (resultado === 'venta-finalizada') {
+            this.limpiarVentaYBusqueda();
+          }
         });
          
       this.mensaje = `✅ Todos los productos han sido agregados a la Venta ${1} exitosamente.`;
@@ -181,6 +182,14 @@ calcularTotalGeneral(): void {
       this.prodDetalle = [];
       this.totalVenta = 0;
     }
+  }
+
+  private limpiarVentaYBusqueda(): void {
+    this.prodDetalle = [];
+    this.totalVenta = 0;
+    this.search = '';
+    this.codBarra = '';
+    this.vertodos(1);
   }
   
 }

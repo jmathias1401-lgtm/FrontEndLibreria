@@ -42,8 +42,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="unidadMedida">Unidad de Medida</label>
-                    <select id="unidadMedida" class="form-select" formControlName="unidadMedida">
+                    <label for="unidadmedida">Unidad de Medida</label>
+                    <select id="unidadmedida" class="form-select" formControlName="unidadmedida">
                         <option [ngValue]="null" disabled>Seleccione unidad</option>
                         <option [ngValue]="uni" *ngFor="let uni of unidadmedida">{{uni.nombreunidad}}</option>
                     </select>
@@ -58,9 +58,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="laboratorio">Laboratorio</label>
+                    <label for="laboratorio">Marca</label>
                     <select id="laboratorio" class="form-select" formControlName="laboratorio">
-                        <option [ngValue]="null" disabled>Seleccione laboratorio</option>
+                        <option [ngValue]="null" disabled>Seleccione marca</option>
                         <option [ngValue]="labo" *ngFor="let labo of laboratorio">{{labo.nombrelaboratorio}}</option>
                     </select>
                 </div>
@@ -76,7 +76,7 @@
             <div class="form-group mb-4">
                 <label>Imagen del Producto</label>
                 <div class="image-upload-container">
-                    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="form-control mb-2">
+                    <input #imagenInput type="file" (change)="onFileSelected($event)" accept="image/*" class="form-control mb-2">
                     <p class="text-muted small">Formatos permitidos: JPG, PNG. Tamaño máx: 2MB</p>
                     
                     <div class="preview-container" *ngIf="imagePreview">
@@ -89,21 +89,21 @@
             <!-- Pricing & Stock Section -->
             <div class="stats-grid">
                 <div class="form-group">
-                    <label for="precioventa">P. Venta (Unidad)</label>
+                    <label for="precioventa">P.Unidad</label>
                     <div class="input-group">
                         <span class="input-group-text">S/</span>
                         <input id="precioventa" class="form-control" formControlName="precioventa" type="number" step="0.01">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="precioblister">P. Blister</label>
+                    <label for="precioblister">P. D</label>
                     <div class="input-group">
                         <span class="input-group-text">S/</span>
                         <input id="precioblister" class="form-control" formControlName="precioblister" type="number" step="0.01">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="preciocaja">P. Caja</label>
+                    <label for="preciocaja">P. %</label>  
                     <div class="input-group">
                         <span class="input-group-text">S/</span>
                         <input id="preciocaja" class="form-control" formControlName="preciocaja" type="number" step="0.01">

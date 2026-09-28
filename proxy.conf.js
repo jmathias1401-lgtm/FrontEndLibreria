@@ -1,12 +1,12 @@
 //host de railway
 //const PROXY_HOST = 'https://pure-charisma-production-5f5b.up.railway.app';
 //host local
-const PROXY_HOST = 'http://localhost:8080';
-const PROXY_CONFIG =[
+const PROXY_HOST = 'http://localhost:8020';
+const PROXY_CONFIG = [
     {
-        context:['/api'],
+        context: ['/api'],
         target: PROXY_HOST,
-        secure:false,
+        secure: false,
         changeOrigin: true,
         logLevel: 'debug',
         headers: {
@@ -17,4 +17,4 @@ const PROXY_CONFIG =[
     },
 ];
 
-module.exports =PROXY_CONFIG;
+module.exports = PROXY_CONFIG;

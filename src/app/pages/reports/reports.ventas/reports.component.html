@@ -101,9 +101,13 @@
     </div>
     <div class="card-footer">
       <div class="paginador">
-        <button (click)="previoPage()" class="btn btn-primary btn-sm">&lt;</button>
-        <app-paginate [total]="totalVentas" [npage]="pages" (SendIndex)="onPageChange($event)"></app-paginate>
-        <button (click)="nextPage()" class="btn btn-primary btn-sm">&gt;</button>
+        <app-paginate 
+          [total]="totalVentas" 
+          [currentPage]="currentPage" 
+          [pageSize]="itemsPerPage" 
+          [npage]="pages" 
+          (SendIndex)="onPageChange($event)">
+        </app-paginate>
       </div>
     </div>
   </div>

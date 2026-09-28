@@ -254,11 +254,19 @@ get datosCuenta(): string {
         unidadmedida:producto.unidadmedida,
       }
 debugger;
-      // Create observables for each save operation
-      const detalleObs$ = this.detalleventaservice.Save(detalleventa);
-      debugger
-      const productoObs$ = this.productoservice.saveProducto(ModProducto);
+       // 🛠️ CORRECCIÓN CRÍTICA: Envolver el objeto en un FormData compatible con @RequestPart
+    const formData = new FormData();
+    const productoBlob = new Blob([JSON.stringify(ModProducto)], { type: 'application/json' });
+    
+    // Adjuntamos el bloque con el nombre exacto que espera Spring Boot
+    formData.append('producto', productoBlob); 
+    // La propiedad 'imagen' no se agrega; al omitirla, viaja vacía y el backend la interpreta como null de forma segura
 
+    // Creamos los observables para cada operación de guardado
+    const detalleObs$ = this.detalleventaservice.Save(detalleventa);
+    
+    // 👇 Le pasamos el formData en lugar del objeto ModProducto directo
+    const productoObs$ = this.productoservice.saveProducto(formData); 
       // Add to array using forkJoin to wait for both to complete
       saveOperations.push(
         forkJoin({
@@ -306,7 +314,7 @@ debugger;
 
       const ticketHTML = this.ticketService.createTicketHTML(ventaParcial, this.prodDetalle, this.nombreCompleto || 'Cliente Genérico');
       this.ticketService.openPrintPreview(ticketHTML);
-      this.dialogRef.close();
+      this.dialogRef.close('venta-finalizada');
 
     } catch (error) {
       console.error('Error al imprimir ticket:', error);

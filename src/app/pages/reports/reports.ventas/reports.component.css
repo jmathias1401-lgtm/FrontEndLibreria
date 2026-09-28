@@ -1,5 +1,5 @@
 .paginador {
-    display: flex;
+    display: inline;
     justify-content: center;
     align-items: center;
 }
@@ -7,10 +7,12 @@
 .page button {
     margin: 0 2px;
 }
-.tbodys{
+
+.tbodys {
     border: solid 2px red;
 }
-.form-control{
+
+.form-control {
     border-color: rgb(255, 0, 0);
     content: 🔍;
     position: static;

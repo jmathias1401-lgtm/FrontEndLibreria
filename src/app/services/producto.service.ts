@@ -10,60 +10,70 @@ import { Producto } from '../models/producto';
 })
 
 export class ProductoService {
- 
-  //private url: string="https://newfarmabak.azurewebsites.net/api/producto?page=1&xpage=10";
-  private url: string="/api/producto?page=1&xpage=10";
 
-  private urlEndpoint: string="/api/producto?page=";
+  //private url: string="https://newfarmabak.azurewebsites.net/api/producto?page=1&xpage=10";
+  private url: string = "/api/producto?page=1&xpage=10";
+
+  private urlEndpoint: string = "/api/producto?page=";
   constructor(private http: HttpClient) { }
 
-  list(){
+  list() {
     return this.http.get(`/api/producto?page=1&xpage=10`);
   }
   //devuelve un solo producto por codigo de barra
-  get(codBarra: number){
-  return this.http.get<ProductList>(this.urlEndpoint + '1&xpage=10&codbarra=' + codBarra);
-}
+  get(codBarra: number) {
+    return this.http.get<ProductList>(this.urlEndpoint + '1&xpage=10&codbarra=' + codBarra);
+  }
   //devuelve un solo producto por Id
-  getProductById(id:number){
-    let ListUrlProducto="/api/producto/"+id;
+  getProductById(id: number) {
+    let ListUrlProducto = "/api/producto/" + id;
     return this.http.get<ProductList>(ListUrlProducto);
   }
 
-  getProductos(index:number, xpage:number = 5){
-    return this.http.get<ProductList>(this.urlEndpoint+index+"&xpage="+xpage);
+  getProductos(index: number, xpage: number = 5) {
+    return this.http.get<ProductList>(this.urlEndpoint + index + "&xpage=" + xpage);
   }
-  getAllProductos(index:number,xpage:number){
-    return this.http.get<ProductList>(this.urlEndpoint+index+"&xpage="+xpage);
+  getAllProductos(index: number, xpage: number) {
+    return this.http.get<ProductList>(this.urlEndpoint + index + "&xpage=" + xpage);
   }
-  getProductosBySearch(search:string){
-    return this.http.get<ProductList>(this.url+"&search="+search);
+  getProductosBySearch(search: string) {
+    return this.http.get<ProductList>(this.url + "&search=" + search);
   }
-  getProductosByCodBarra(codBarra:string){
-    return this.http.get<ProductList>(this.url+"&codbarra="+codBarra);
+  getProductosByCodBarra(codBarra: string) {
+    return this.http.get<ProductList>(this.url + "&codbarra=" + codBarra);
   }
- 
-  changeProducto(index:number,product:any){
-    return this.http.put(`/api/producto/${index}`,product);
+
+  changeProducto(index: number, product: any) {
+    return this.http.put(`/api/producto/${index}`, product);
   }
-  saveProducto(data:Producto){
-    let save_url="/api/producto";
-    return this.http.post<Producto>(save_url, data,{
-      observe:'response'
+  saveProducto(data: FormData) {
+    let save_url = "/api/producto";
+
+    return this.http.post<any>(save_url, data, {
+      observe: 'response'
     });
   }
-  deleteProducto(index:number){
-    console.log("---------------",index);
-    let del_url="/api/producto/"+index;
+  deleteProducto(index: number) {
+    console.log("---------------", index);
+    let del_url = "/api/producto/" + index;
     return this.http.delete<ProductList>(del_url);
   }
-  createProducto(product:any){
-   //return this.http.post('/api',product);
-   let save_url="/api/producto";
+  createProducto(product: any, imagen?: File | null) {
+    const save_url = "/api/producto";
+    const formData = new FormData();
 
-   return this.http.post<any>(save_url, product,{
-     observe:'response'
-   });
+    formData.append(
+      'producto',
+      new Blob([JSON.stringify(product)], { type: 'application/json' })
+    );
 
+    if (imagen) {
+      formData.append('imagen', imagen, product.imagen_path || imagen.name);
+    }
+
+    return this.http.post<any>(save_url, formData, {
+      observe: 'response'
+    });
   }
+
 }

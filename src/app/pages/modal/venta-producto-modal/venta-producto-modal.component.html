@@ -9,10 +9,10 @@
       Unidad: S/ {{ producto.precioventa }}
     </button>
     <button class="btn" [class.btn-primary]="selectedPriceType === 'precioblister'" [class.btn-outline-primary]="selectedPriceType !== 'precioblister'" (click)="selectPrice('precioblister')">
-      Blister: S/ {{ producto.precioblister }}
+      Docena: S/ {{ producto.precioblister }}
     </button>
     <button class="btn" [class.btn-primary]="selectedPriceType === 'preciocaja'" [class.btn-outline-primary]="selectedPriceType !== 'preciocaja'" (click)="selectPrice('preciocaja')">
-      Caja: S/ {{ producto.preciocaja }}
+      Ciento: S/ {{ producto.preciocaja }}
     </button>
   </div>
   <div class="cantidadselect">

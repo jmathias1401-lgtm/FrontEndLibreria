@@ -26,10 +26,10 @@
         <th class="ubic">UBIC.</th>
         <th class="pres">PRES.</th>
         <th class="pres">U.M</th>
-        <th class="ubic">LAB.</th>
-        <th class="price">P.V.</th>
-        <th class="price">P.B.</th>
-        <th class="price">P.C.</th>
+        <th class="ubic">MAR.</th>
+        <th class="price">P.U.</th>
+        <th class="price">P.D</th>
+        <th class="price">P.%</th>
         <th class="stock">STOCK</th>
         <th class="center">OPCIONES</th>
       </tr>
@@ -67,16 +67,14 @@
    
     <tfoot class="paginate">
         <tr>
-            <td colspan="13" >
+            <td colspan="13">
                 <div style="max-width: 100%; overflow: hidden;">
                    <app-paginate (SendIndex)="onindexClic($event)"
-                    [total]=total
-                    [npage]=pages
+                    [total]="total"
+                    [npage]="pages"
+                    [currentPage]="pagesNumber"
+                    [pageSize]="xpage > 0 ? xpage : 10"
                     />           
-                </div>
-                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                  <button class = "btn btn-primary" (click)="previoPage()"> << Prev</button>
-                  <button class = "btn btn-primary" (click)="nextPage()">Next >></button>
                 </div>
             </td>
         </tr>        

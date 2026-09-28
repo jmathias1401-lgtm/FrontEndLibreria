@@ -1,6 +1,109 @@
-<div class="page">
-    <label>{{total}} items</label>
-    <span *ngFor="let n of npage">
-        <button class="btn btn-primary btn-sm page" (click)="getNumero(n)">{{n}}</button>
-    </span>
+<div class="paginate-container">
+  <!-- Header with Info & Controls (1, 2, 3, 4) -->
+  <div class="paginate-header">
+    <div class="paginate-info">
+      <!-- 1. Indicador de resultados -->
+      <span class="paginate-results">Total <strong>{{ total }}</strong> resultados</span>
+      <!-- 2. Indicador de página -->
+      <span class="paginate-page-indicator">Pag. <strong>{{ currentPage }}/{{ totalPages }}</strong></span>
+    </div>
+
+    <div class="paginate-controls">
+      <!-- 3. Selector de items por página -->
+      <div class="paginate-select-wrapper">
+        <select 
+          class="paginate-select" 
+          [(ngModel)]="pageSize" 
+          (change)="onPageSizeChange()">
+          <option *ngFor="let opt of pageSizeOptions" [value]="opt">
+            {{ opt }} / pag.
+          </option>
+        </select>
+      </div>
+
+      <!-- 4. Atajo de página -->
+      <div class="paginate-goto">
+        <label for="gotoInput" class="paginate-goto-label">Ir a</label>
+        <input 
+          id="gotoInput"
+          type="number" 
+          class="paginate-goto-input"
+          [(ngModel)]="inputPage"
+          (keyup.enter)="goToInputPage()"
+          (blur)="goToInputPage()"
+          min="1"
+          [max]="totalPages"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Navegador del paginador -->
+  <div class="paginate-nav">
+    <button 
+      type="button" 
+      class="paginate-btn" 
+      [disabled]="currentPage === 1" 
+      (click)="goToPage(1)"
+      title="Primera página">
+      |&lt;
+    </button>
+    <button 
+      type="button" 
+      class="paginate-btn" 
+      [disabled]="currentPage === 1" 
+      (click)="goToPage(currentPage - 1)"
+      title="Página anterior">
+      &lt;
+    </button>
+
+    <button 
+      *ngIf="totalPages >= 1"
+      type="button" 
+      class="paginate-btn" 
+      [class.active]="currentPage === 1" 
+      (click)="goToPage(1)">
+      1
+    </button>
+
+    <span *ngIf="showLeftEllipsis" class="paginate-ellipsis">...</span>
+
+    <button 
+      *ngFor="let p of visiblePages" 
+      type="button" 
+      class="paginate-btn" 
+      [class.active]="currentPage === p" 
+      (click)="goToPage(p)">
+      {{ p }}
+    </button>
+
+    <span *ngIf="showRightEllipsis" class="paginate-ellipsis">...</span>
+
+    <button 
+      *ngIf="totalPages > 1"
+      type="button" 
+      class="paginate-btn" 
+      [class.active]="currentPage === totalPages" 
+      (click)="goToPage(totalPages)">
+      {{ totalPages }}
+    </button>
+
+    <button 
+      type="button" 
+      class="paginate-btn" 
+      [disabled]="currentPage === totalPages || totalPages === 0" 
+      (click)="goToPage(currentPage + 1)"
+      title="Página siguiente">
+      &gt;
+    </button>
+    <button 
+      type="button" 
+      class="paginate-btn" 
+      [disabled]="currentPage === totalPages || totalPages === 0" 
+      (click)="goToPage(totalPages)"
+      title="Última página">
+      &gt;|
+    </button>
+  </div>
 </div>
+

@@ -4,11 +4,10 @@
 }
 
 .paginador {
-  display: flex;
+  display: inline;
   justify-content: center;
   align-items: center;
   gap: 10px;
 }
-.prueba {
-  
-}
+
+.prueba {}

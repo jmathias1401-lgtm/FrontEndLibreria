@@ -20,15 +20,14 @@
                     
                     <th class="name">ID</th>
                     <th class="name">NOMBRE</th>
-                    <th class="conposision">COMPOSISION</th>
-                    <th class="ubic">VCTO.</th>
+                    
                     <th class="ubic">UBIC.</th>
                     <th class="ubic">PRES.</th>
                     <th class="ubic">U.M</th>
-                    <th class="ubic">LAB.</th>
-                    <th class="pv">P.V.</th>
-                    <th class="pb">P.B</th>
-                    <th class="pc">P.C</th>
+                    <th class="ubic">MARCA</th>
+                    <th class="pv">P.U</th>
+                    <th class="pb">P.D</th>
+                    <th class="pc">P.%</th>
                     <th class="stock">STOCK</th>
                 </tr>
             </thead>
@@ -38,8 +37,6 @@
                     [class.text-danger]="producto.stock === 0">
                     <td>{{producto.idproducto}}</td>
                     <td>{{producto.nombre}}</td>
-                    <td >{{producto.composicion}}</td>
-                    <td>{{producto.vencimiento}}</td>
                     <td>{{producto.ubicacion}}</td>
                     <td>{{producto.presentacion.nombrepresentacion}}</td>
                     <td>{{producto.unidadmedida.nombreunidad}}</td>
@@ -60,13 +57,12 @@
                 <tr>
                     <th class="id">ID</th>
                     <th class="name">NOMBRE</th>
-                  
                     <th class="ubic">VCTO.</th>
                     <th class="ubic">UBIC.</th>
                     <th class="ubic">PRES.</th>
                     <th class="ubic">U.M</th>
-                    <th class="ubic">LAB.</th>
-                    <th class="prec">P.VENTA</th>
+                    <th class="ubic">MARCA</th>
+                    <th class="prec">P.U</th>
                     <th class="stock">UNIDADES</th>
                     <th class="stock">SUB TOTAL</th>
                     <th class="center">OPCIONES</th>

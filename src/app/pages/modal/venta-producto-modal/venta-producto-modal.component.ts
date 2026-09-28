@@ -31,7 +31,7 @@ export class VentaProductoModalComponent implements OnInit, AfterViewInit {
     this.pricePerUnit = this.producto.precioventa || 0;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngAfterViewInit(): void {
     // Set focus to quantity input after view is initialized
@@ -47,7 +47,7 @@ export class VentaProductoModalComponent implements OnInit, AfterViewInit {
     this.selectedPriceType = type;
     if (type === 'precioblister') {
       const dialogRef = this.dialog.open(CantidadComponent, {
-        data: { etiqueta: 'unidades por Blister', cantidad: this.unitsPerBlister || 10 }
+        data: { etiqueta: 'unidades por Blister', cantidad: this.unitsPerBlister || 1 }
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
@@ -57,7 +57,7 @@ export class VentaProductoModalComponent implements OnInit, AfterViewInit {
       });
     } else if (type === 'preciocaja') {
       const dialogRef = this.dialog.open(CantidadComponent, {
-        data: { etiqueta: 'unidades por Caja', cantidad: this.unitsPerBox || 100 }
+        data: { etiqueta: 'unidades por Caja', cantidad: this.unitsPerBox || 1 }
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result) {

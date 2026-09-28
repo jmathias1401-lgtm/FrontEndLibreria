@@ -1,4 +1,4 @@
-import { Component,inject,Input,OnInit, Pipe,LOCALE_ID } from '@angular/core';
+import { Component, ElementRef, inject, Input, OnInit, Pipe, LOCALE_ID, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductoService } from '../../../services/producto.service';
 import moment, { locale } from 'moment';
@@ -16,10 +16,10 @@ import { DatosService } from '../../../services/datos.service';
 import { Producto } from '../../../models/producto';
 
 
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {provideNativeDateAdapter} from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { forkJoin } from 'rxjs';
@@ -28,100 +28,102 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-edit',
   standalone: true,
-  imports: [ReactiveFormsModule,CommonModule,MatDatepickerModule,MatInputModule,MatFormFieldModule],
+  imports: [ReactiveFormsModule, CommonModule, MatDatepickerModule, MatInputModule, MatFormFieldModule],
   templateUrl: './productForm.component.html',
   styleUrl: './productForm.component.css',
-  providers:[{ provide: LOCALE_ID, useValue: "en-US" },ProductoService,PresentacionService,UnidadmedidaService,LaboratorioService,provideNativeDateAdapter()]
+  providers: [{ provide: LOCALE_ID, useValue: "en-US" }, ProductoService, PresentacionService, UnidadmedidaService, LaboratorioService, provideNativeDateAdapter()]
 })
-export class productFormComponent  implements OnInit 
-  { 
-    fechaActual = formatDate(new Date(),'yyyy-MM-dd', 'en-US')
-    operacion: string="Crear";
-    operacionBoton: string="Crear";
-    randon:number=this.randomMath();
-    IdProductoEdit: number;  
-    prod: Producto[] = [];
-   // total:number=0;
-    //xpage:number = 0;
-   
-    constructor(
-      private  aRoute:ActivatedRoute,
-      private http: HttpClient,
-      private toastr:ToastrService,
-      private location: Location,
-      private router: Router
-    ){
-    this.IdProductoEdit=Number(aRoute.snapshot.paramMap.get('id'));
+export class productFormComponent implements OnInit {
+  @ViewChild('imagenInput') imagenInput?: ElementRef<HTMLInputElement>;
+
+  fechaActual = formatDate(new Date(), 'yyyy-MM-dd', 'en-US')
+  operacion: string = "Crear";
+  operacionBoton: string = "Crear";
+  randon: number = this.randomMath();
+  IdProductoEdit: number;
+  prod: Producto[] = [];
+  // total:number=0;
+  //xpage:number = 0;
+
+  constructor(
+    private aRoute: ActivatedRoute,
+    private http: HttpClient,
+    private toastr: ToastrService,
+    private location: Location,
+    private router: Router
+  ) {
+    this.IdProductoEdit = Number(aRoute.snapshot.paramMap.get('id'));
   }
 
   cancel() {
     this.router.navigate(['/productos']);
   }
 
-  randomMath():number 
-  {
-     return Math.floor(Math.random() * 100000);
+  randomMath(): number {
+    return Math.floor(Math.random() * 100000);
   }
   ngOnInit(): void {
     console.log(this.fechaActual);
-    
 
-    
-    if(this.IdProductoEdit!=0){
-      this.operacion='Editar';
-      this.operacionBoton='Modificar';
+
+
+    if (this.IdProductoEdit != 0) {
+      this.operacion = 'Editar';
+      this.operacionBoton = 'Modificar';
       this.modificarProducto();
     }
-    else{
+    else {
       this.verPresentacion();
       this.verUnidadMedida();
       this.verLaboratorio();
     }
-    
+
   }
 
-   private fb=inject(FormBuilder);
-   presentacion: any[] = [];
-   unidadmedida: any[] = [];
-   laboratorio: any[] = [];
-  
-   form=this.fb.group({
-    idproducto:[0],
-    codigoproducto:['NewFarma-'+Date.now(),Validators.required],
-    nombre:['',Validators.required],
-    vencimiento: [this.fechaActual,Validators.required],
-    estado:['Activo',Validators.required],
-    composicion:[''],
-    ubicacion:['',Validators.required],
-   
+  private fb = inject(FormBuilder);
+  presentacion: any[] = [];
+  unidadmedida: any[] = [];
+  laboratorio: any[] = [];
+
+  form = this.fb.group({
+    idproducto: [0],
+    codigoproducto: ['NewFarma-' + Date.now(), Validators.required],
+    nombre: ['', Validators.required],
+    vencimiento: [this.fechaActual, Validators.required],
+    estado: ['Activo', Validators.required],
+    composicion: [''],
+    ubicacion: ['', Validators.required],
+
     presentacion: ({
       idpresentacion: (0),
-      nombrepresentacion:('')
+      nombrepresentacion: ('')
     }),
-    unidadMedida:({
+    unidadmedida: ({
       idunidadmedida: (0),
-      nombreunidad:('')
+      nombreunidad: ('')
     }),
-    laboratorio:({
-      idlaboratorio:(0),
-      nombrelaboratorio:('')
+    laboratorio: ({
+      idlaboratorio: (0),
+      nombrelaboratorio: ('')
     }),
-    stock:[0],
-    precioventa:[0],
-    precioblister:[0],
-    preciocaja:[0],  
-    codbarra:[''],  
+    stock: [0],
+    precioventa: [0],
+    precioblister: [0],
+    preciocaja: [0],
+    codbarra: [''],
     imagen_path: ['']
   });
 
   imagePreview: string | null = null;
+  selectedImageFile: File | null = null;
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
+      this.selectedImageFile = file;
       const nombreProducto = this.form.get('nombre')?.value || 'PRODUCTO';
       const extension = file.name.split('.').pop();
-      
+
       // Transform name: uppercase and replace spaces with hyphens
       const nuevoNombre = nombreProducto
         .trim()
@@ -130,7 +132,7 @@ export class productFormComponent  implements OnInit
 
       // Store the transformed filename
       this.form.patchValue({ imagen_path: nuevoNombre });
-      
+
       // Preview
       const reader = new FileReader();
       reader.onload = () => {
@@ -139,51 +141,90 @@ export class productFormComponent  implements OnInit
       reader.readAsDataURL(file);
     }
   }
- 
-  private productService=inject(ProductoService);
-  private presentacionService=inject(PresentacionService);
-  private unidadmedidaService=inject(UnidadmedidaService);
-  private laboratorioService=inject(LaboratorioService);
-  
-  
+
+  private productService = inject(ProductoService);
+  private presentacionService = inject(PresentacionService);
+  private unidadmedidaService = inject(UnidadmedidaService);
+  private laboratorioService = inject(LaboratorioService);
+
+
   //GUARDA un producto
-  create()
-  {
-   
-    let code:string='';
-    let status:number=0
-    let message:string='';
-    const nuevoProducto= this.form.value;
-    this.productService.createProducto(nuevoProducto)
-    .subscribe(result=>{
-      code=result.body.code;
-      status=result.body.status;
-      message=result.body.message;
-      if(status==200 &&message=='SAVED SUCESSFULLY'){
-       // alert('Producto creado satisfactoriamente.')
-        this.toastr.success("Producto creado satisfactoriamente","Saved", 
-          {
-            timeOut: 10000,
-            extendedTimeOut: 1000,
-            tapToDismiss: false,
-            closeButton:true
-          })
-      }else{
-       //alert("statusSSSS:"+status+"\n message:"+message);
-        this.toastr.success("Producto Actualizado satisfactoriamente","Update",
-          {
-            timeOut: 10000,
-            extendedTimeOut: 1000,
-            tapToDismiss: false,
-            closeButton:true
-          }
-        )
-      }
-    },error=>console.log(error));
-   
+  create() {
+
+    let code: string = '';
+    let status: number = 0
+    let message: string = '';
+    const nuevoProducto = this.form.value;
+    this.productService.createProducto(nuevoProducto, this.selectedImageFile)
+      .subscribe(result => {
+        code = result.body.code;
+        status = result.body.status;
+        message = result.body.message;
+        if (status == 200 && message == 'SAVED SUCESSFULLY') {
+          // alert('Producto creado satisfactoriamente.')
+          this.toastr.success("Producto creado satisfactoriamente", "Saved",
+            {
+              timeOut: 10000,
+              extendedTimeOut: 1000,
+              tapToDismiss: false,
+              closeButton: true
+            })
+          this.limpiarFormularioRegistro();
+        } else {
+          //alert("statusSSSS:"+status+"\n message:"+message);
+          this.toastr.success("Producto Actualizado satisfactoriamente", "Update",
+            {
+              timeOut: 10000,
+              extendedTimeOut: 1000,
+              tapToDismiss: false,
+              closeButton: true
+            }
+          )
+        }
+      }, error => console.log(error));
+
   }
-   //Modificar producto
-   modificarProducto() {
+
+  private limpiarFormularioRegistro(): void {
+    this.fechaActual = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+    this.form.reset({
+      idproducto: 0,
+      codigoproducto: 'NewFarma-' + Date.now(),
+      nombre: '',
+      vencimiento: this.fechaActual,
+      estado: 'Activo',
+      composicion: '',
+      ubicacion: '',
+      presentacion: {
+        idpresentacion: 0,
+        nombrepresentacion: ''
+      },
+      unidadmedida: {
+        idunidadmedida: 0,
+        nombreunidad: ''
+      },
+      laboratorio: {
+        idlaboratorio: 0,
+        nombrelaboratorio: ''
+      },
+      stock: 0,
+      precioventa: 0,
+      precioblister: 0,
+      preciocaja: 0,
+      codbarra: '',
+      imagen_path: ''
+    });
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+    this.imagePreview = null;
+    this.selectedImageFile = null;
+
+    if (this.imagenInput) {
+      this.imagenInput.nativeElement.value = '';
+    }
+  }
+  //Modificar producto
+  modificarProducto() {
     // Cargar el producto por su ID
     this.productService.getProductById(this.IdProductoEdit).subscribe(response => {
       // Cargar todas las listas en paralelo y luego parchar el formulario
@@ -206,10 +247,10 @@ export class productFormComponent  implements OnInit
       this.parcharFormulario(response);
     });
   }
-  
+
   parcharFormulario(response: any) {
     const producto = response.list[0];
-    
+
     this.form.patchValue({
       idproducto: this.IdProductoEdit,
       nombre: producto.nombre,
@@ -218,7 +259,7 @@ export class productFormComponent  implements OnInit
       codigoproducto: producto.codigoproducto,
       codbarra: producto.codbarra,
       laboratorio: this.laboratorio.find(lab => lab.idlaboratorio === producto.laboratorio?.idlaboratorio) || producto.laboratorio,
-      unidadMedida: this.unidadmedida.find(um => um.idunidadmedida === producto.unidadMedida?.idunidadmedida) || producto.unidadMedida,
+      unidadmedida: this.unidadmedida.find(um => um.idunidadmedida === producto.unidadmedida?.idunidadmedida) || producto.unidadmedida,
       presentacion: this.presentacion.find(p => p.idpresentacion === producto.presentacion?.idpresentacion) || producto.presentacion,
       composicion: producto.composicion,
       precioventa: producto.precioventa,
@@ -233,32 +274,32 @@ export class productFormComponent  implements OnInit
     }
   }
 
-  
- 
+
+
   //trae toda la presentacion
-  verPresentacion():void{
+  verPresentacion(): void {
     this.presentacionService.List().subscribe(
-      response=>{
+      response => {
         this.presentacion = response.list;
-        
+
       }
-      );
-    }
-    //trae toda la unidad de medida
-  verUnidadMedida():void{
+    );
+  }
+  //trae toda la unidad de medida
+  verUnidadMedida(): void {
     this.unidadmedidaService.List().subscribe(
-      response=>{
+      response => {
         this.unidadmedida = response.list;
-       
+
       }
-      );
-    }
- //trae toda laboratorio
- verLaboratorio():void{
-  this.laboratorioService.List().subscribe(
-    response=>{
-      this.laboratorio = response.list;
-    }
+    );
+  }
+  //trae toda laboratorio
+  verLaboratorio(): void {
+    this.laboratorioService.List().subscribe(
+      response => {
+        this.laboratorio = response.list;
+      }
     );
   }
 }
