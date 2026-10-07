@@ -33,8 +33,8 @@ export class ComprasComponent implements OnInit {
     private proveedorService: ProveedorService,
     private toastr: ToastrService,
     private comprasService: ComprasService
-    ,private DetalleCompraService:DetalleCompraService
-  ) {}
+    , private DetalleCompraService: DetalleCompraService
+  ) { }
 
   prod: any[] = [];
   total: number = 0;
@@ -64,11 +64,11 @@ export class ComprasComponent implements OnInit {
 
   ngOnInit(): void {
     // Datos de ejemplo - en una aplicación real esto vendría de un servicio
-      this.vertodos(1);
-      this.loadproveedores();
-      this.loadempleados();
-      this.loadComprobantes();
-      this.loadComprobanteSerie();
+    this.vertodos(1);
+    this.loadproveedores();
+    this.loadempleados();
+    this.loadComprobantes();
+    this.loadComprobanteSerie();
   }
 
   vertodos(index: number): void {
@@ -81,9 +81,9 @@ export class ComprasComponent implements OnInit {
       }
     );
   }
-  loadComprobanteSerie(){
-    this.serie="A";
-    this.correlativo="0001";
+  loadComprobanteSerie() {
+    this.serie = "A";
+    this.correlativo = "0001";
     this.fechaCompra = formatDate(Date.now(), 'yyyy-MM-dd', 'en-US');
 
   }
@@ -97,8 +97,8 @@ export class ComprasComponent implements OnInit {
     if (this.search.length > 0) {
       this.productoService.getProductosBySearch(this.search).subscribe(
         response => {
-          
-          console.log("response----"+response);
+
+          console.log("response----" + response);
           this.prod = response.list;
           this.total = response.total;
           this.xpage = response.xpage;
@@ -108,7 +108,7 @@ export class ComprasComponent implements OnInit {
     else if (this.codBarra.length > 0) {
       this.productoService.getProductosByCodBarra(this.codBarra).subscribe(
         response => {
-          
+
           this.prod = response.list;
           this.total = response.total;
           this.xpage = response.xpage;
@@ -123,23 +123,23 @@ export class ComprasComponent implements OnInit {
   }
 
   loadproveedores(): void {
-    this.proveedorService.listar(1,100).subscribe(
+    this.proveedorService.listar(1, 100).subscribe(
       response => {
-        this.proveedores =Object.values( response.list);
+        this.proveedores = Object.values(response.list);
         console.log(this.proveedores);
       }
     );
-  }  
- 
-loadempleados(): void {
+  }
+
+  loadempleados(): void {
     // Simulación de empleados
     this.empleados = [
       { idempleado: 1, persona: { idpersona: 1, nombre: 'Juan', paterno: 'Pérez', materno: 'Gómez' } },
     ];
   }
-   
+
   loadComprobantes(): void {
-    
+
     // Simulación de tipos de comprobante
     this.comprobantes = [
       { idtipocomprobante: 1, nombrecomprobante: 'Factura' },
@@ -159,7 +159,7 @@ loadempleados(): void {
     });
 
     dialogRef.afterClosed().subscribe(resultado => {
-     
+
       if (resultado) {
         const existingProductIndex = this.prodDetalle.findIndex(
           item => item.idproducto === resultado.idproducto
@@ -218,16 +218,15 @@ loadempleados(): void {
         empleado: this.selectedEmpleado,
         fechacompra: this.fechaCompra,
         costocompra: this.totalCompra,
-       // productos: this.prodDetalle
+        // productos: this.prodDetalle
       };
 
       this.comprasService.saveCompra(compraData).subscribe({
         next: (response) => {
           const datosDelCuerpo: any | null = response.body;
-          
-          console.log("retorno de compras"+datosDelCuerpo);
-          if(datosDelCuerpo)
-          {
+
+          console.log("retorno de compras" + datosDelCuerpo);
+          if (datosDelCuerpo) {
             const idCompra = datosDelCuerpo.idCompra;
             this.RegistrarDetalleCompra(idCompra);
           }
@@ -252,59 +251,63 @@ loadempleados(): void {
       this.procesoEnCurso = false;
     }
   }
-  RegistrarDetalleCompra(idcompra:number)
-  {
-    
+  RegistrarDetalleCompra(idcompra: number) {
+
     for (const producto of this.prodDetalle) {
-      const detallecompra={
-       compra:{idcompra:idcompra},
-       producto : { idproducto :producto.idproducto},
-       codigodetallecompra:"DC-W"+"-"+Date.now(),
-       unidades : producto.cantidadLlevar,
-       costounidad : producto.precioventa,
-       lote : 0,
-       total: producto.subTotal,
-       }
-       debugger;
-       const productoupdate:any={
-        idproducto:producto.idproducto,
-        codigoproducto:producto.codigoproducto,
-        nombre:producto.nombre,
-        vencimiento:producto.vencimiento.toString(),
-        //vencimiento:moment(producto.vencimiento, 'DD-MM-YYYY').format('YYYY-MM-DD'),
-        estado:producto.estado,
-        composicion:producto.composicion,
-        ubicacion:producto.ubicacion,
-        stock:producto.stock + producto.cantidadLlevar,
-        precioventa:producto.precioventa,
-        precioblister:producto.precioblister,
-        preciocaja:producto.preciocaja,
-        codbarra:producto.codbarra,
-        laboratorio:{idlaboratorio:producto.laboratorio.idlaboratorio,nombrelaboratorio:producto.laboratorio.nombrelaboratorio},
-        presentacion:{ idpresentacion:producto.presentacion.idpresentacion, nombrepresentacion:producto.presentacion.nombrepresentacion},
-        unidadmedida:{ idunidadmedida:producto.unidadmedida.idunidadmedida, nombreunidad:producto.unidadmedida.nombreunidad},
+      const detallecompra = {
+        compra: { idcompra: idcompra },
+        producto: { idproducto: producto.idproducto },
+        codigodetallecompra: "DC-W" + "-" + Date.now(),
+        unidades: producto.cantidadLlevar,
+        costounidad: producto.precioventa,
+        lote: 0,
+        total: producto.subTotal,
       }
-       //guarda el detalle de compra
-       debugger;
-       this.DetalleCompraService.Save(detallecompra).subscribe({
-        next: (response:any) => {
+      debugger;
+      const productoupdate: any = {
+        idproducto: producto.idproducto,
+        codigoproducto: producto.codigoproducto,
+        nombre: producto.nombre,
+        vencimiento: producto.vencimiento.toString(),
+        //vencimiento:moment(producto.vencimiento, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+        estado: producto.estado,
+        composicion: producto.composicion,
+        ubicacion: producto.ubicacion,
+        stock: producto.stock + producto.cantidadLlevar,
+        precioventa: producto.precioventa,
+        precioblister: producto.precioblister,
+        preciocaja: producto.preciocaja,
+        codbarra: producto.codbarra,
+        laboratorio: { idlaboratorio: producto.laboratorio.idlaboratorio, nombrelaboratorio: producto.laboratorio.nombrelaboratorio },
+        presentacion: { idpresentacion: producto.presentacion.idpresentacion, nombrepresentacion: producto.presentacion.nombrepresentacion },
+        unidadmedida: { idunidadmedida: producto.unidadmedida.idunidadmedida, nombreunidad: producto.unidadmedida.nombreunidad },
+      }
+      //guarda el detalle de compra
+      debugger;
+      this.DetalleCompraService.Save(detallecompra).subscribe({
+        next: (response: any) => {
           console.log('Detalle de compra guardado:', response);
         },
-        error: (error:any) => {
+        error: (error: any) => {
           console.error('Error al guardar el detalle de compra:', error);
         }
       });
       //actualiza stock del producto
       debugger
-      this.productoService.saveProducto(productoupdate).subscribe({
-        next: (response:any) => {
+      const formData = new FormData();
+      const productoBlob = new Blob([JSON.stringify(productoupdate)], { type: 'application/json' });
+
+      formData.append('producto', productoBlob);
+
+      this.productoService.saveProducto(formData).subscribe({
+        next: (response: any) => {
           console.log('Stock actualizado:', response);
         },
-        error: (error:any) => {
+        error: (error: any) => {
           console.error('Error al actualizar el stock:', error);
         }
       });
-     }    
+    }
   }
   cancelarCompra(): void {
     if (this.prodDetalle.length === 0 || confirm('¿Estás seguro de cancelar esta compra?')) {
