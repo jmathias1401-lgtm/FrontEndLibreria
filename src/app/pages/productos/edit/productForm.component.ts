@@ -124,7 +124,7 @@ export class productFormComponent implements OnInit {
       const nombreProducto = this.form.get('nombre')?.value || 'PRODUCTO';
       const extension = file.name.split('.').pop();
 
-      // Transform name: uppercase and replace spaces with hyphens
+
       const nuevoNombre = nombreProducto
         .trim()
         .toUpperCase()
@@ -301,5 +301,15 @@ export class productFormComponent implements OnInit {
         this.laboratorio = response.list;
       }
     );
+  }
+  //funcion para convertir en mayusculas
+  mayusculas(campo: string): void {
+    const control = this.form.get(campo);
+
+    if (control?.value) {
+      control.setValue(control.value.toUpperCase(), {
+        emitEvent: false
+      });
+    }
   }
 }

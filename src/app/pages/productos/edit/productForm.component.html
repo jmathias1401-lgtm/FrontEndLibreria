@@ -12,7 +12,7 @@
             <div class="form-grid">
                 <div class="form-group full-width">
                     <label for="name">Nombre del Producto</label>
-                    <input id="name" class="form-control" formControlName="nombre" type="text" placeholder="Ej: Plumón Indeleble...">
+                    <input id="name" class="form-control" formControlName="nombre" (input)="mayusculas('nombre')" type="text" placeholder="Ej: Plumón Indeleble...">
                     <small class="text-danger" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
                         El nombre es obligatorio.
                     </small>
@@ -38,7 +38,7 @@
             <div class="grid-4">
                 <div class="form-group">
                     <label for="ubic">Ubicación</label>
-                    <input id="ubic" class="form-control" formControlName="ubicacion" type="text" placeholder="Ej: Almacén A-1">
+                    <input id="ubic" class="form-control" formControlName="ubicacion" (input)="mayusculas('ubicacion')" type="text" placeholder="Ej: Almacén A-1">
                 </div>
 
                 <div class="form-group">
@@ -96,21 +96,21 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="precioblister">P. D</label>
+                    <label for="precioblister">P. Docena</label>
                     <div class="input-group">
                         <span class="input-group-text">S/</span>
                         <input id="precioblister" class="form-control" formControlName="precioblister" type="number" step="0.01">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="preciocaja">P. %</label>  
+                    <label for="preciocaja">P. Ciento</label>  
                     <div class="input-group">
                         <span class="input-group-text">S/</span>
                         <input id="preciocaja" class="form-control" formControlName="preciocaja" type="number" step="0.01">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="stock">Stock Actual</label>
+                    <label for="stock">Stock</label>
                     <input id="stock" class="form-control" formControlName="stock" type="number">
                 </div>
             </div>
