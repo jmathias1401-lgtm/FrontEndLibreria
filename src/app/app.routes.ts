@@ -13,6 +13,7 @@ import { OrdersComponent } from './pages/orders/orders.component';
 
 import { productFormComponent } from './pages/productos/edit/productForm.component';
 import { VentaComponent } from './pages/ventas/ventas.component';
+import { PosComponent } from './pages/pos/pos.component';
 import { ModalVentasComponent } from './pages/modal/modal-ventas/modal-ventas.component';
 import { ClientFormComponent } from './pages/client-form/client-form.component';
 import { ReportsComponent } from './pages/reports/reports.ventas/reports.component';
@@ -55,6 +56,7 @@ export const routes: Routes = [
         ]
     },
     {path:"ventas", component: VentaComponent, canActivate: [RoleGuard]},
+    {path:"pos", component: PosComponent, canActivate: [RoleGuard]},
     {path:"clientes", component: ClienteListComponent, canActivate: [RoleGuard]},
     {path:"empleados", component: EmpleadosListComponent, canActivate: [RoleGuard]},
     { path: 'empleados/agregar', component: FormComponent, canActivate: [RoleGuard] },

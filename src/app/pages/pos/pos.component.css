@@ -1,0 +1,347 @@
+/* Layout Principal Split-Screen */
+.pos-container {
+  display: flex;
+  height: calc(100vh - 65px);
+  gap: 15px;
+  padding: 12px;
+  background-color: #eef2f6;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Columna Izquierda: Catálogo & Búsqueda (60%) */
+.pos-catalog-column {
+  flex: 6;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.catalog-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* Rejilla de Productos */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.product-card {
+  background: #ffffff;
+  border: 1px solid #dfe5eb;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.product-card:hover {
+  border-color: #0d6efd;
+  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.12);
+  transform: translateY(-2px);
+}
+
+.product-card.out-of-stock {
+  opacity: 0.55;
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  border-color: #dee2e6;
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.product-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1e293b;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.25;
+}
+
+.stock-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.stock-ok {
+  background-color: #e6f4ea;
+  color: #137333;
+}
+
+.stock-low {
+  background-color: #fce8e6;
+  color: #c5221f;
+}
+
+.product-meta {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.meta-tag {
+  font-size: 0.75rem;
+  background-color: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.product-prices {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 6px;
+}
+
+.price-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.price-main small {
+  font-size: 0.68rem;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.price-main strong {
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.btn-price-alt {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-price-alt:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.btn-price-alt small {
+  font-size: 0.65rem;
+  color: #64748b;
+}
+
+.btn-price-alt span {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+/* Barra inferior de atajos */
+.pos-hotkeys-footer {
+  display: flex;
+  gap: 15px;
+  padding: 6px 10px;
+  background: #ffffff;
+  border-radius: 6px;
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: #64748b;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.hotkey kbd {
+  background-color: #334155;
+  color: #ffffff;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  margin-right: 4px;
+}
+
+/* ================= Columna Derecha: Ticket & Cobro (40%) ================= */
+.pos-ticket-column {
+  flex: 4;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.ticket-items-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  background-color: #ffffff;
+}
+
+.empty-ticket-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+}
+
+.ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ticket-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  gap: 8px;
+}
+
+.ticket-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #1e293b;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-sub-meta {
+  font-size: 0.78rem;
+}
+
+.ticket-qty-control {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.btn-qty {
+  width: 26px;
+  height: 26px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-qty:hover {
+  background: #e2e8f0;
+}
+
+.input-qty {
+  width: 38px;
+  height: 26px;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.ticket-row-total {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 75px;
+  justify-content: flex-end;
+}
+
+.btn-remove-item {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 0.9rem;
+}
+
+.btn-remove-item:hover {
+  color: #b91c1c;
+}
+
+/* Panel de Cobro Inferior */
+.ticket-checkout-panel {
+  border-radius: 0 0 8px 8px;
+}
+
+.quick-amounts-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.quick-amounts-bar button {
+  flex: 1;
+  padding: 2px 4px;
+  font-size: 0.75rem;
+}
+
+.grand-total-box {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.grand-total-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.grand-total-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #4ade80;
+}
+
+.btn-checkout {
+  height: 50px;
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
