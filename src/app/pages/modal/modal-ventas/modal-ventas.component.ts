@@ -268,7 +268,7 @@ export class ModalVentasComponent implements OnInit {
         formattedVencimiento = vencimientoStr;
       }
 
-      const ModProducto: Producto = {
+      const ModProducto: any = {
         idproducto: producto.idproducto,
         codigoproducto: producto.codigoproducto,
         nombre: producto.nombre,
@@ -281,6 +281,10 @@ export class ModalVentasComponent implements OnInit {
         precioblister: producto.precioblister,
         preciocaja: producto.preciocaja,
         codbarra: producto.codbarra,
+        imagen_path: producto.imagen_path || '',
+        idlaboratorio: producto.laboratorio?.idlaboratorio || producto.idlaboratorio,
+        idpresentacion: producto.presentacion?.idpresentacion || producto.idpresentacion,
+        idunidadmedida: producto.unidadmedida?.idunidadmedida || producto.idunidadmedida,
         laboratorio: producto.laboratorio,
         presentacion: producto.presentacion,
         unidadmedida: producto.unidadmedida,
