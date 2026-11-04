@@ -170,3 +170,4 @@ export class VentaComponent implements OnInit {
     this.vertodos(1);
   }
 }
+
