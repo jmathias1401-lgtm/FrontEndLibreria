@@ -363,14 +363,23 @@ export class PosComponent implements OnInit, OnDestroy {
         const correlativoStr = String(count + 1).padStart(6, '0');
         const serieStr = 'TK01';
 
+        const total = Number(this.totalVenta.toFixed(2));
+        const subtotal = Number((total / 1.18).toFixed(2));
+        const igv = Number((total - subtotal).toFixed(2));
+
         const ventaPayload: any = {
           serie: serieStr,
           correlativo: correlativoStr,
-          fechaventa: new Date().toISOString().split('T')[0],
-          costoventa: Number(this.totalVenta.toFixed(2)),
+          fechaventa: new Date(),
+          fechaVenta: new Date(),
+          subtotal: subtotal,
+          igv: igv,
+          costoventa: total,
+          costoVenta: total,
           cliente: { idcliente: this.clienteId },
           empleado: { idempleado: 1 },
-          tipocomprobante: { idtipocomprobante: 3 } // Ticket
+          tipoComprobante: { idtipocomprobante: 3 },
+          tipocomprobante: { idtipocomprobante: 3 }
         };
 
         // 2. Guardar cabecera de la venta
@@ -411,12 +420,17 @@ export class PosComponent implements OnInit, OnDestroy {
       const prodOriginal = item.productoOriginal;
 
       // Objeto Detalle de Venta
-      const detalleVenta = {
+      const detalleVenta: any = {
         venta: { idventa: idVenta },
         producto: { idproducto: item.idproducto },
         codigodetalleventa: `DV-POS-${Date.now()}-${item.idproducto}`,
+        codigoDetalleVenta: `DV-POS-${Date.now()}-${item.idproducto}`,
         unidades: item.cantidad,
         costounidad: item.precioUnitario,
+        costoUnidad: item.precioUnitario,
+        subtotal: item.subtotal,
+        descuentounidad: 0,
+        descuentoUnidad: 0,
         total: item.subtotal
       };
       operaciones.push(this.detalleVentaService.Save(detalleVenta));
@@ -431,12 +445,21 @@ export class PosComponent implements OnInit, OnDestroy {
       });
 
       // Actualizar Stock
+      const vencimientoStr = prodOriginal.vencimiento ? String(prodOriginal.vencimiento) : '';
+      let formattedVencimiento = '2030-01-01';
+      if (vencimientoStr.includes('/')) {
+        const parts = vencimientoStr.split('/');
+        formattedVencimiento = parts[2] + '-' + parts[1] + '-' + parts[0];
+      } else if (vencimientoStr.includes('-')) {
+        formattedVencimiento = vencimientoStr;
+      }
+
       const nuevoStock = Math.max(0, (prodOriginal.stock || 0) - item.cantidad);
       const productoupdate: any = {
         idproducto: prodOriginal.idproducto,
         codigoproducto: prodOriginal.codigoproducto,
         nombre: prodOriginal.nombre,
-        vencimiento: prodOriginal.vencimiento || '2030-01-01',
+        vencimiento: formattedVencimiento,
         estado: prodOriginal.estado,
         composicion: prodOriginal.composicion,
         ubicacion: prodOriginal.ubicacion,
