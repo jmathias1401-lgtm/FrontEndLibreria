@@ -143,10 +143,9 @@ export class VentaComponent implements OnInit {
       modalVenta.afterClosed().subscribe((resultado) => {
         if (resultado === 'venta-finalizada') {
           this.limpiarVentaYBusqueda();
+          this.mensaje = '✅ Venta completada y comprobante impreso exitosamente.';
         }
       });
-       
-      this.mensaje = `✅ Todos los productos han sido agregados a la Venta 1 exitosamente.`;
     } catch (err: any) {
       this.error = true;
       this.mensaje = `❌ Error: ${err.message}`;

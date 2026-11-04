@@ -1,192 +1,177 @@
-<div class="modalventas">
+<div class="modalventas position-relative">
 
-  @if (!mostrarTicket) {
-    <h1>FINALIZAR VENTA</h1>
-    <div class="cliente">
-      <label for="cliente">Cliente:</label>
-      <div class="input-group">
-        <input class="mr-2 flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-               type="text" id="cliente" name="cliente" placeholder="Ingrese DNI del cliente"
-               [(ngModel)]="dni">
+  <h1>FINALIZAR VENTA</h1>
 
-        <button (click)="BuscarPersona()" class="btn btn-success text-white p-2 rounded-full shadow-md transition duration-300 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        </button>
-      </div>
-      <label class="text-center">{{ nombreCompleto }} </label>
-    </div>
-    <div class="subtotal gap-1">
-      <div>
-        <label for="subtotal">Subtotal:</label>
-        <input type="text" id="subtotal" [value]="subtotal" readonly class="w-100 text-center w-full p-2 border border-gray-0 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none">
-      </div>
-      <div>
-        <label for="igv">Igv:</label>
-        <input type="text" id="igv" [value]="igv" readonly class="w-100 text-center w-full p-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none">
-      </div>
-      <div>
-        <label for="total">Total:</label>
-        <input type="text" id="total" [value]="totalVenta" readonly class="w-100 text-center w-full p-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none">
-      </div>
-    </div>
-
-    <div class="formulario gap-1">
-      <!-- Método de Pago -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Método de Pago</label>
-        <select 
-          id="metodoPago" 
-          class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-          (change)="cambiarMetodoPago($event)"
-          [(ngModel)]="metodoPago"
-        >
-          <option value="efectivo">Efectivo</option>
-          <option value="yape">Yape</option>
-          <option value="transferencia">Transferencia</option>
-        </select>
-      </div>
-
-      <!-- Campo Monto Recibido - Diferentes estados -->
-      <div>
-        <label for="montoRecibido" class="block text-sm font-medium text-gray-300 mb-1">
-          Monto Recibido
-        </label>
-
-        <!-- Input normal para efectivo -->
-        @if (mostrarInputNormal) {
-          <div>
-            <input
-              name="montoRecibido"
-              type="number"
-              id="montoRecibido"
-              placeholder="S/. 0.00"
-              class="text-center w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              [(ngModel)]="cambio"
-            >
-          </div>
-        }
-
-        <!-- QR para Yape -->
-        @if (mostrarQR) {
-          <div class="text-center">
-            <div class="border-dashed border-green-400 rounded-lg bg-green-50">
-              <p class="text-sm text-green-700 mb-2"></p>
-              <div class="bg-white inline-block rounded">
-                <img 
-                  src="assets/qr-yape2.png" 
-                  alt="QR Yape" 
-                  class="w-52 h-52 mx-auto"
-                  onerror="this.style.display='none'"
-                >
-              </div>
-              <p class="text-s fa4-bold text-gray-600 mt-2">999-888777</p>
-            </div>
-          </div>
-        }
-
-        <!-- Cuenta para transferencia -->
-        @if (mostrarCuenta) {
-          <div class="text-center">
-            <div class="border-2 border-dashed border-blue-400 rounded-lg bg-blue-50">
-              <div class="bg-white rounded text-center">
-                <p class="text-sm font-bold text-blue-700 mb-0 leading-none">Transferencia a:</p>
-                <p class="text-sm font-semibold leading-3">Banco: BCP</p>
-                <p class="text-sm leading-3 mb-0"> {{datosCuenta}} </p>
-               
-                <p class="text-sm leading-3 mb-0">Titular: JOSE-VALENTIN S.A.C.</p>
-                <p class="text-sm leading-3 mb-0">CCI: 00212300456789012345</p>
-              </div>
-              <p class="text-xs text-gray-600 mt-2 leading-3">Una vez realizada, ingresa el monto enviado</p>
-              <input
-                type="number"
-                placeholder="Monto transferido S/. 0.00"
-                class="text-center w-full p-2 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                [(ngModel)]="cambio"
-              >
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Campo Cambio -->
-      <div>
-        <label for="cambio" class="block text-sm font-medium text-gray-700 mb-1">
-          Cambio
-        </label>
-        <input
-          type="text"
-          id="cambio"
-          placeholder="S/. 0.00"
-          readonly
-          class="text-center w-full p-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none"
-          [value]="'S/. ' + vueltoCalculado.toFixed(2)"
-        >
-      </div>
-    </div>
-
-    <div class="button gap-2">
-      <button (click)="ventaTiket()" [disabled]="!habilitarBotones" class="btn btn-primary text-white font-bold py-3 px-8 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-        TIKET
-      </button>
-      <button (click)="ventaBoleta()" [disabled]="!habilitarBotones" class="btn btn-primary text-white font-bold py-3 px-8 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-        BOLETA
-      </button>
-      <button (click)="ventaFactura()" disabled class="btn btn-primary text-white font-bold py-3 px-8 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-        FACTURA
-      </button>
-      <button (click)="dialogRef.close('cancelado')" id="botonCancelar" class="btn btn-danger text-white font-bold py-3 px-8 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-        CANCELAR
+  <!-- Sección de Cliente con botón rápido de Público General -->
+  <div class="cliente p-2">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <label for="cliente" class="mb-0 fw-bold">Cliente:</label>
+      <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2" (click)="usarClienteGenerico()" title="Usar Público General">
+        <i class="fas fa-user-check"></i> Público General
       </button>
     </div>
-  } @else {
-    <h1>TICKET DE VENTA</h1>
-    <div class="ticket-display">
-      <div class="cliente">
-        <strong>Cliente:</strong> {{ nombreCompleto || 'Cliente Genérico' }}
-      </div>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-            <th>Importe</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of prodDetalle; track item.idproducto || item.nombre) {
-            <tr>
-              <td>{{ item.nombre }}</td>
-              <td>{{ item.cantidadLlevar }}</td>
-              <td>S/ {{ item.precioventa | number:'1.2-2' }}</td>
-              <td>S/ {{ item.subTotal | number:'1.2-2' }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-      <div class="resumen">
-        <p><strong>Subtotal:</strong> S/ {{ subtotal | number:'1.2-2' }}</p>
-        <p><strong>IGV (18%):</strong> S/ {{ igv | number:'1.2-2' }}</p>
-        <p><strong>Total:</strong> S/ {{ totalVenta | number:'1.2-2' }}</p>
-      </div>
-      <div class="lema text-center">
-        Cuidamos tu economía y el medio ambiente.
-      </div>
-      @if (mostrarQR) {
-        <div class="qr text-center">
-          <img src="assets/qr-yape.png" alt="QR Yape" width="100" height="100">
+    <div class="input-group">
+      <input 
+        class="form-control text-center"
+        type="text" 
+        id="cliente" 
+        name="cliente" 
+        placeholder="DNI del cliente (opcional para ticket)"
+        [(ngModel)]="dni"
+        (keyup.enter)="BuscarPersona()"
+        [disabled]="loading"
+      >
+      <button 
+        (click)="BuscarPersona()" 
+        type="button" 
+        class="btn btn-success"
+        [disabled]="loading"
+        title="Buscar DNI en RENIEC / Base de Datos"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </button>
+    </div>
+    <div class="text-center font-bold text-primary mt-1 small">
+      <strong>{{ nombreCompleto }}</strong>
+    </div>
+  </div>
+
+  <!-- Subtotal, IGV y Total -->
+  <div class="subtotal gap-2 my-2">
+    <div class="flex-fill">
+      <label for="subtotal">Subtotal:</label>
+      <input type="text" id="subtotal" [value]="'S/ ' + subtotal.toFixed(2)" readonly class="w-100 text-center form-control bg-light">
+    </div>
+    <div class="flex-fill">
+      <label for="igv">IGV (18%):</label>
+      <input type="text" id="igv" [value]="'S/ ' + igv.toFixed(2)" readonly class="w-100 text-center form-control bg-light">
+    </div>
+    <div class="flex-fill">
+      <label for="total">Total:</label>
+      <input type="text" id="total" [value]="'S/ ' + totalVenta.toFixed(2)" readonly class="w-100 text-center form-control bg-light font-weight-bold text-success">
+    </div>
+  </div>
+
+  <!-- Método de Pago y Vuelto -->
+  <div class="formulario gap-1">
+    <!-- Método de Pago -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Método de Pago</label>
+      <select 
+        id="metodoPago" 
+        class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+        (change)="cambiarMetodoPago($event)"
+        [(ngModel)]="metodoPago"
+        [disabled]="loading"
+      >
+        <option value="efectivo">Efectivo</option>
+        <option value="yape">Yape</option>
+        <option value="transferencia">Transferencia</option>
+      </select>
+    </div>
+
+    <!-- Campo Monto Recibido -->
+    <div>
+      <label for="montoRecibido" class="block text-sm font-medium text-gray-300 mb-1">
+        Monto Recibido
+      </label>
+
+      @if (mostrarInputNormal) {
+        <div>
+          <input
+            name="montoRecibido"
+            type="number"
+            id="montoRecibido"
+            placeholder="S/. 0.00"
+            class="text-center w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            [(ngModel)]="cambio"
+            [disabled]="loading"
+          >
         </div>
       }
-      <div class="button gap-2 d-print-none">
-        <button (click)="imprimirTicket()" class="btn btn-primary text-white font-bold py-3 px-8 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-          Imprimir Ticket
-        </button>
-        <button (click)="dialogRef.close('venta-finalizada')" class="btn btn-danger text-white font-bold py-3 px-8 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105">
-          Cerrar
-        </button>
-      </div>
+
+      @if (mostrarQR) {
+        <div class="text-center">
+          <div class="border-dashed border-green-400 rounded-lg bg-green-50">
+            <img 
+              src="assets/qr-yape2.png" 
+              alt="QR Yape" 
+              class="w-40 h-40 mx-auto"
+              onerror="this.style.display='none'"
+            >
+            <p class="text-xs font-bold text-gray-600 mt-1">999-888777</p>
+          </div>
+        </div>
+      }
+
+      @if (mostrarCuenta) {
+        <div class="text-center">
+          <div class="border-2 border-dashed border-blue-400 rounded-lg bg-blue-50 p-2">
+            <p class="text-sm font-bold text-blue-700 mb-0">Transferencia BCP</p>
+            <p class="text-xs mb-0">{{ datosCuenta }}</p>
+            <p class="text-xs mb-0">JOSE-VALENTIN S.A.C.</p>
+            <input
+              type="number"
+              placeholder="Monto transferido S/. 0.00"
+              class="text-center w-full p-2 border border-gray-300 rounded-lg mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              [(ngModel)]="cambio"
+              [disabled]="loading"
+            >
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Campo Cambio / Vuelto -->
+    <div>
+      <label for="cambio" class="block text-sm font-medium text-gray-700 mb-1">
+        Cambio / Vuelto
+      </label>
+      <input
+        type="text"
+        id="cambio"
+        placeholder="S/. 0.00"
+        readonly
+        class="text-center w-full p-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed focus:outline-none font-bold"
+        [value]="'S/. ' + vueltoCalculado.toFixed(2)"
+      >
+    </div>
+  </div>
+
+  <!-- Indicador visual mientras guarda e imprime -->
+  @if (loading) {
+    <div class="alert alert-info text-center my-3 py-2">
+      <i class="fas fa-spinner fa-spin mr-2"></i> {{ loadingMessage }}
     </div>
   }
+
+  <!-- Botones de Acción Directa en 1 solo clic -->
+  <div class="button gap-2">
+    <button 
+      (click)="ventaTiket()" 
+      [disabled]="loading || !habilitarBotones" 
+      class="btn btn-primary text-white font-bold py-3 px-6 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+      title="Registra la venta e imprime el ticket directamente"
+    >
+      <i class="fas fa-receipt mr-1"></i> TIKET
+    </button>
+    <button 
+      (click)="ventaBoleta()" 
+      [disabled]="loading || !habilitarBotones" 
+      class="btn btn-success text-white font-bold py-3 px-6 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+      title="Registra la venta e imprime la boleta directamente"
+    >
+      <i class="fas fa-file-invoice mr-1"></i> BOLETA
+    </button>
+    <button 
+      (click)="dialogRef.close('cancelado')" 
+      id="botonCancelar" 
+      [disabled]="loading"
+      class="btn btn-danger text-white font-bold py-3 px-6 rounded-md shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+    >
+      <i class="fas fa-times mr-1"></i> CANCELAR
+    </button>
+  </div>
 
   <div id="ticket" style="display: none;"></div>
 </div>
