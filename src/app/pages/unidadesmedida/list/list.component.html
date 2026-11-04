@@ -1,67 +1,64 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Lista de Unidades de Medida</h3>
-          <div class="card-tools">
-            <a routerLink="/unidadmedida/form" class="btn btn-primary btn-sm">
-              <i class="fas fa-plus"></i> Agregar Unidad de Medida
-            </a>
-          </div>
-        </div>
-        <div class="card-body table-responsive p-0">
-          <table class="table table-hover text-nowrap">
-            <thead>
+<div class="container-fluid px-4 py-3">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0"><i class="fas fa-balance-scale mr-2"></i> Gestión de Unidades de Medida</h5>
+        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ total }}</span>
+      </div>
+      <a routerLink="/unidadmedida/form" class="btn btn-warning btn-sm font-weight-bold text-dark">
+        <i class="fas fa-plus mr-1"></i> Agregar Unidad
+      </a>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered align-middle">
+          <thead class="thead-light text-center">
+            <tr>
+              <th style="width: 80px;">ID</th>
+              <th>NOMBRE DE LA UNIDAD</th>
+              <th style="width: 150px;">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (unidadmedida of unidadesmedida; track unidadmedida.idunidadmedida) {
               <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th class="text-end">Acciones</th>
+                <td class="text-center font-weight-bold">{{ unidadmedida.idunidadmedida }}</td>
+                <td class="font-weight-bold text-primary">{{ unidadmedida.nombreunidad }}</td>
+                <td class="text-center">
+                  <a [routerLink]="['/unidadmedida/form', unidadmedida.idunidadmedida]" class="btn btn-outline-primary btn-sm me-1" title="Editar unidad">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <button (click)="deleteUnidadMedida(unidadmedida.idunidadmedida)" class="btn btn-outline-danger btn-sm" title="Eliminar unidad">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @for (unidadmedida of unidadesmedida; track unidadmedida.idunidadmedida) {
-                <tr>
-                  <td>{{ unidadmedida.idunidadmedida }}</td>
-                  <td>{{ unidadmedida.nombreunidad }}</td>
-                  <td class="text-end">
-                    <a [routerLink]="['/unidadmedida/form', unidadmedida.idunidadmedida]" class="btn btn-warning btn-sm">
-                      <i class="fas fa-edit"></i> Editar
-                    </a>
-                    <button (click)="deleteUnidadMedida(unidadmedida.idunidadmedida)" class="btn btn-danger btn-sm ml-2">
-                      <i class="fas fa-trash"></i> Eliminar
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="3" class="text-center text-muted py-3">No hay unidades de medida registradas</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-sm-12 col-md-5">
-              <div class="dataTables_info">
-                Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > total ? total : page * xpage }} de {{ total }} registros
-              </div>
-            </div>
-            <div class="col-sm-12 col-md-7">
-              <div class="dataTables_paginate paging_simple_numbers">
-                <ul class="pagination">
-                  <li class="paginate_button page-item previous" [class.disabled]="page === 1">
-                    <a (click)="previousPage()" class="page-link">Anterior</a>
-                  </li>
-                  <li class="paginate_button page-item next" [class.disabled]="page * xpage >= total">
-                    <a (click)="nextPage()" class="page-link">Siguiente</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+            } @empty {
+              <tr>
+                <td colspan="3" class="text-center text-muted py-4">
+                  <i class="fas fa-balance-scale fa-2x mb-2 d-block"></i> No hay unidades de medida registradas.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2">
+      <div class="text-muted small">
+        Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > total ? total : page * xpage }} de {{ total }} registros
+      </div>
+      <div>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="page === 1">
+            <button (click)="previousPage()" class="page-link"><i class="fas fa-chevron-left mr-1"></i> Anterior</button>
+          </li>
+          <li class="page-item" [class.disabled]="page * xpage >= total">
+            <button (click)="nextPage()" class="page-link">Siguiente <i class="fas fa-chevron-right ml-1"></i></button>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

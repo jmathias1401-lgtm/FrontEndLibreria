@@ -1,135 +1,130 @@
-<div class="container-fluid">
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title fw-bold">Reporte de Ventas</h3>
-      <div class="card-tools d-flex align-items-center" style="position: relative;">
-        <!-- Inputs absolutamente centrados -->
-        <div class="d-flex gap-2" style="position: relative; left: 50%; transform: translateX(-70%);">
-          <label class="">Serie:</label>
-          <input type="search" placeholder="Buscar..." class="form-control form-control-sm" style="width: 150px;" [(ngModel)]="filterSerie" (input)="applyFilters()">
-          <label class="">Correlativo:</label>
-          <input type="search" placeholder="Buscar..." class="form-control form-control-sm" style="width: 150px;" [(ngModel)]="filterCorrelativo" (input)="applyFilters()">
-          <label class="">Search:</label>
-          <input type="search" placeholder="Buscar..." class="form-control form-control-sm" style="width: 150px;" [(ngModel)]="filterSearch" (input)="applyFilters()">
-        </div>
-        
-        <!-- Botón a la derecha -->
-        <button class="btn btn-success btn-sm ms-auto">
-          <i class="fas fa-file-excel"></i> Exportar
+<div class="container-fluid px-4 py-3">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0"><i class="fas fa-chart-line mr-2"></i> Reporte de Ventas Realizadas</h5>
+        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ totalVentas }}</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <input type="search" placeholder="Buscar por serie..." class="form-control form-control-sm" style="width: 140px;" [(ngModel)]="filterSerie" (input)="applyFilters()">
+        <input type="search" placeholder="Correlativo..." class="form-control form-control-sm" style="width: 140px;" [(ngModel)]="filterCorrelativo" (input)="applyFilters()">
+        <input type="search" placeholder="Texto libre..." class="form-control form-control-sm" style="width: 140px;" [(ngModel)]="filterSearch" (input)="applyFilters()">
+        <button class="btn btn-success btn-sm font-weight-bold ml-2">
+          <i class="fas fa-file-excel mr-1"></i> Exportar
         </button>
       </div>
     </div>
+    
     <div class="card-body">
-      <table class="table table-bordered table-striped border-black">
-        <thead>
-          <tr>
-            <th (dblclick)="toggleFilter('id')">
-              ID Venta
-              <i class="fas fa-search ml-4"></i>
-              @if (showFilterId) {
-                <input [(ngModel)]="filterId" (input)="applyFilters()" placeholder="Buscar ID..." class="form-control form-control-sm mt-1">
-              }
-            </th>
-            <th>
-              Serie
-              @if (showFilterSerie) {
-                <input [(ngModel)]="filterSerie" (input)="applyFilters()" placeholder="Buscar Serie..." class="form-control form-control-sm mt-1">
-              }
-            </th>
-            <th>
-              Correlativo
-              @if (showFilterCorrelativo) {
-                <input [(ngModel)]="filterCorrelativo" (input)="applyFilters()" placeholder="Buscar Correlativo..." class="form-control form-control-sm mt-1">
-              }
-            </th>
-            <th (dblclick)="toggleFilter('fecha')">
-              Fecha
-              <i class="fas fa-search ml-4"></i>
-              @if (showFilterFecha) {
-                <input [(ngModel)]="filterFecha" (input)="applyFilters()" placeholder="Buscar Fecha..." class="form-control form-control-sm mt-1">
-              }
-            </th>
-            <th (dblclick)="toggleFilter('total')">
-              Total
-              <i class="fas fa-search ml-4"></i>
-              @if (showFilterTotal) {
-                <input [(ngModel)]="filterTotal" (input)="applyFilters()" placeholder="Buscar Total..." class="form-control form-control-sm mt-1">
-              }
-            </th>
-            <th (dblclick)="toggleFilter('cliente')">
-              Cliente
-              <i class="fas fa-search ml-4"></i>
-              @if (showFilterCliente) {
-                <input [(ngModel)]="filterCliente" (input)="applyFilters()" placeholder="Buscar Cliente..." class="form-control form-control-sm mt-1">
-              }
-            </th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (venta of filteredVentas; track venta.idventa) {
-            <tr (click)="toggleDetalles(venta.idventa!)" style="cursor: pointer;">
-              <td>{{ venta.idventa }}</td>
-              <td>{{ venta.serie }}</td>
-              <td>{{ venta.correlativo }}</td>
-              <td>{{ venta.fechaventa | date: 'dd/MM/yyyy' }}</td>
-              <td>S/ {{ venta.costoventa?.toFixed(2) }}</td>
-              <td>{{ venta.cliente.persona.nombre }} {{ venta.cliente.persona.paterno }}</td>
-              <td>
-                <button class="btn btn-primary btn-sm" (click)="reimprimirTicket(venta); $event.stopPropagation();">
-                  Reimprimir
-                </button>
-              </td>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered align-middle">
+          <thead class="thead-light text-center">
+            <tr>
+              <th (dblclick)="toggleFilter('id')" style="cursor: pointer;" title="Doble clic para filtrar">
+                ID Venta <i class="fas fa-search text-muted ml-1"></i>
+                @if (showFilterId) {
+                  <input [(ngModel)]="filterId" (input)="applyFilters()" placeholder="Filtrar ID..." class="form-control form-control-sm mt-1">
+                }
+              </th>
+              <th>
+                Serie
+                @if (showFilterSerie) {
+                  <input [(ngModel)]="filterSerie" (input)="applyFilters()" placeholder="Filtrar Serie..." class="form-control form-control-sm mt-1">
+                }
+              </th>
+              <th>
+                Correlativo
+                @if (showFilterCorrelativo) {
+                  <input [(ngModel)]="filterCorrelativo" (input)="applyFilters()" placeholder="Filtrar Número..." class="form-control form-control-sm mt-1">
+                }
+              </th>
+              <th (dblclick)="toggleFilter('fecha')" style="cursor: pointer;" title="Doble clic para filtrar">
+                Fecha <i class="fas fa-search text-muted ml-1"></i>
+                @if (showFilterFecha) {
+                  <input [(ngModel)]="filterFecha" (input)="applyFilters()" placeholder="Filtrar Fecha..." class="form-control form-control-sm mt-1">
+                }
+              </th>
+              <th>Cliente</th>
+              <th class="text-right">Total</th>
+              <th style="width: 180px;">Acciones</th>
             </tr>
-            @if (selectedVentaId === venta.idventa) {
-              <tr class="tbodys">
-                <td colspan="7">
-                  @if (detallesVenta[venta.idventa!]) {
-                    <div>
-                      <h5>Detalles de la Venta</h5>
-                      <table class="table table-sm table-striped">
-                        <thead>
-                          <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Subtotal</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          @for (detalle of detallesVenta[venta.idventa!]; track detalle.iddetalleventa || $index) {
-                            <tr>
-                              <td>{{ detalle.producto.nombre }}</td>
-                              <td>{{ detalle.unidades }}</td>
-                              <td>S/ {{ detalle.costounidad.toFixed(2) }}</td>
-                              <td>S/ {{ detalle.total.toFixed(2) }}</td>
-                            </tr>
-                          }
-                        </tbody>
-                      </table>
-                    </div>
-                  }
+          </thead>
+          <tbody>
+            @for (venta of filteredVentas; track venta.idventa || $index) {
+              <tr>
+                <td class="text-center font-weight-bold">{{ venta.idventa }}</td>
+                <td class="text-center">{{ venta.serie }}</td>
+                <td class="text-center">{{ venta.correlativo }}</td>
+                <td class="text-center">{{ venta.fechaventa }}</td>
+                <td class="font-weight-bold">{{ venta.cliente?.persona?.nombre || 'Público General' }} {{ venta.cliente?.persona?.paterno || '' }}</td>
+                <td class="text-right font-weight-bold text-success">{{ venta.costoventa | currency:'PEN':'S/ ' }}</td>
+                <td class="text-center">
+                  <button (click)="toggleDetalles(venta.idventa)" class="btn btn-outline-primary btn-sm me-1">
+                    <i class="fas" [ngClass]="selectedVentaId === venta.idventa ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                    {{ selectedVentaId === venta.idventa ? ' Ocultar' : ' Ver' }}
+                  </button>
+                  <button (click)="reimprimirTicket(venta)" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-print mr-1"></i> Ticket
+                  </button>
+                </td>
+              </tr>
+              @if (selectedVentaId === venta.idventa) {
+                <tr class="table-light">
+                  <td colspan="7" class="p-3">
+                    @if (detallesVenta[venta.idventa!]) {
+                      <div class="card shadow-sm border mb-0">
+                        <div class="card-header bg-light py-2">
+                          <h6 class="mb-0 font-weight-bold text-primary">
+                            <i class="fas fa-list-alt mr-2"></i> Detalle de Items Vendidos (Venta #{{ venta.idventa }})
+                          </h6>
+                        </div>
+                        <div class="card-body p-0">
+                          <table class="table table-sm table-striped mb-0">
+                            <thead class="text-center">
+                              <tr>
+                                <th class="text-left">Producto</th>
+                                <th style="width: 100px;">Cantidad</th>
+                                <th class="text-right" style="width: 140px;">Precio Unit.</th>
+                                <th class="text-right" style="width: 140px;">Subtotal</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (detalle of detallesVenta[venta.idventa!]; track detalle.iddetalleventa || $index) {
+                                <tr>
+                                  <td class="font-weight-bold">{{ detalle.producto.nombre }}</td>
+                                  <td class="text-center">{{ detalle.unidades }}</td>
+                                  <td class="text-right text-success">{{ detalle.costounidad | currency:'PEN':'S/ ' }}</td>
+                                  <td class="text-right font-weight-bold">{{ detalle.total | currency:'PEN':'S/ ' }}</td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    }
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                  <i class="fas fa-inbox fa-2x mb-2 d-block"></i> No se encontraron ventas registradas.
                 </td>
               </tr>
             }
-          } @empty {
-            <tr>
-              <td colspan="7" class="text-center text-muted py-3">No hay ventas registradas</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-    <div class="card-footer">
-      <div class="paginador">
-        <app-paginate 
-          [total]="totalVentas" 
-          [currentPage]="currentPage" 
-          [pageSize]="itemsPerPage" 
-          [npage]="pages" 
-          (SendIndex)="onPageChange($event)">
-        </app-paginate>
+          </tbody>
+        </table>
       </div>
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-center py-2">
+      <app-paginate 
+        [total]="totalVentas" 
+        [currentPage]="currentPage" 
+        [pageSize]="itemsPerPage" 
+        [npage]="pages" 
+        (SendIndex)="onPageChange($event)">
+      </app-paginate>
     </div>
   </div>
 </div>

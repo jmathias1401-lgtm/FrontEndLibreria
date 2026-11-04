@@ -1,87 +1,139 @@
-<div class="row">
-    <label class="col">Cod. Barra
-        <input class="form-control" type="text" [(ngModel)]="codBarra" (keydown)="buscar()"/>
-    </label>
-    <label class="col">Nombre
-        <input class="form-control" type="text" [(ngModel)]="search" (keydown)="buscar()"/>
-    </label>
+<div class="container-fluid px-4 py-3">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0"><i class="fas fa-boxes mr-2"></i> Gestión de Productos</h5>
+        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ total }}</span>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-success btn-sm font-weight-bold" (click)="exportToExcel()">
+          <i class="fas fa-file-excel mr-1"></i> Exportar Excel
+        </button>
+        <button type="button" class="btn btn-light btn-sm font-weight-bold" (click)="vertodos(1)">
+          <i class="fas fa-sync-alt mr-1"></i> Actualizar
+        </button>
+        <button class="btn btn-warning btn-sm font-weight-bold text-dark" routerLink="/add">
+          <i class="fas fa-plus mr-1"></i> Nuevo Producto
+        </button>
+      </div>
+    </div>
     
-     <div class="d-grid gap-2 d-md-flex justify-content-md-end mr-10">
-       <button type="button" class="btn btn-success" (click)="exportToExcel()">
-         <i class="fas fa-file-excel"></i> Exportar Excel
-       </button>
-       <button type="button" class="btn btn-primary" (click)="vertodos(1)">Actualizar</button>
-       <button class="btn btn-primary" routerLink="/add">Nuevo Registro</button>
-     </div>
+    <div class="card-body">
+      <!-- Buscador -->
+      <div class="row mb-3 align-items-end">
+        <div class="col-md-4 mb-2">
+          <label class="form-label font-weight-bold">Código de Barra</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+            </div>
+            <input 
+              class="form-control" 
+              type="text" 
+              placeholder="Buscar por código..." 
+              [(ngModel)]="codBarra" 
+              (keyup.enter)="buscar()"
+            />
+          </div>
+        </div>
+        <div class="col-md-5 mb-2">
+          <label class="form-label font-weight-bold">Nombre del Producto</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input 
+              class="form-control" 
+              type="text" 
+              placeholder="Buscar por nombre..." 
+              [(ngModel)]="search" 
+              (keyup.enter)="buscar()"
+            />
+          </div>
+        </div>
+        <div class="col-md-3 mb-2 d-flex gap-2">
+          <button class="btn btn-primary flex-fill font-weight-bold" (click)="buscar()">
+            <i class="fas fa-search mr-1"></i> Buscar
+          </button>
+          <button class="btn btn-outline-secondary" (click)="search=''; codBarra=''; vertodos(1)" title="Limpiar filtros">
+            <i class="fas fa-undo"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de Productos -->
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered align-middle">
+          <thead class="thead-light text-center">
+            <tr>
+              <th style="width: 50px;">ID</th>
+              <th style="width: 60px;">IMG</th>
+              <th>NOMBRE</th>
+              <th>VCTO.</th>
+              <th>UBIC.</th>
+              <th>PRESENTACIÓN</th>
+              <th>U. MEDIDA</th>
+              <th>LABORATORIO</th>
+              <th>P. VENTA</th>
+              <th>P. BLISTER</th>
+              <th>P. CAJA</th>
+              <th class="table-info font-weight-bold">STOCK</th>
+              <th style="width: 100px;">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (producto of prod | filtro:index; track producto.idproducto) {
+              <tr>
+                <td class="text-center font-weight-bold">{{ producto.idproducto }}</td>
+                <td class="text-center p-1">
+                  <img 
+                    [src]="producto.imagen_path ? '/assets/img/imagenes/' + producto.imagen_path : '/assets/img/imagenes/default.png'" 
+                    alt="prod" 
+                    style="width: 38px; height: 38px; object-fit: contain; border-radius: 4px; border: 1px solid #eee;"
+                  />
+                </td>
+                <td><span class="text-primary font-weight-bold">{{ producto.nombre }}</span></td>
+                <td class="text-center">{{ producto.vencimiento || '-' }}</td>
+                <td class="text-center">{{ producto.ubicacion || '-' }}</td>
+                <td>{{ producto.presentacion.nombrepresentacion }}</td>
+                <td>{{ producto.unidadmedida.nombreunidad }}</td>
+                <td>{{ producto.laboratorio.nombrelaboratorio }}</td>
+                <td class="text-right font-weight-bold text-success">{{ producto.precioventa | currency:'PEN':'S/ ' }}</td>
+                <td class="text-right">{{ producto.precioblister ? (producto.precioblister | currency:'PEN':'S/ ') : '-' }}</td>
+                <td class="text-right">{{ producto.preciocaja ? (producto.preciocaja | currency:'PEN':'S/ ') : '-' }}</td>
+                <td class="text-center font-weight-bold" [ngClass]="{'text-danger': producto.stock <= 5, 'text-success': producto.stock > 5}">
+                  {{ producto.stock }}
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-outline-primary btn-sm me-1" routerLink="/edit/{{ producto.idproducto }}" title="Editar producto">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" (click)="eliminarProducto(producto.idproducto)" title="Eliminar producto">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="13" class="text-center py-4 text-muted">
+                  <i class="fas fa-boxes fa-2x mb-2 d-block"></i> No se encontraron productos registrados.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="d-flex justify-content-center mt-3">
+        <app-paginate 
+          (SendIndex)="onindexClic($event)"
+          [total]="total"
+          [npage]="pages"
+          [currentPage]="pagesNumber"
+          [pageSize]="xpage > 0 ? xpage : 10">
+        </app-paginate>
+      </div>
+    </div>
+  </div>
 </div>
-
-<table class="table table-striped table-sm responsive">
-    <thead class="table-dark">
-      <tr>
-        <th class="id">ID</th>
-        <th class="img">IMAGEN</th>
-        <th class="name">NOMBRE</th>
-        <th class="vcto">VCTO.</th>
-        <th class="ubic">UBIC.</th>
-        <th class="pres">PRES.</th>
-        <th class="pres">U.M</th>
-        <th class="ubic">MAR.</th>
-        <th class="price">P.U.</th>
-        <th class="price">P.D</th>
-        <th class="price">P.%</th>
-        <th class="stock">STOCK</th>
-        <th class="center">OPCIONES</th>
-      </tr>
-    </thead>
-    <tbody class="tbody">
-      @for (producto of prod | filtro:index; track producto.idproducto) {
-        <tr>
-          <td class="id">{{producto.idproducto}}</td>
-          <td class="img">
-              <img [src]="producto.imagen_path ? '/assets/img/imagenes/' + producto.imagen_path : '/assets/img/imagenes/default.png'" alt="">
-          </td>
-          <td class="name" [title]="producto.nombre">{{producto.nombre}}</td>
-         
-          <td class="vcto">{{producto.vencimiento}}</td>
-          <td class="ubic">{{producto.ubicacion}}</td>
-          <td class="pres">{{producto.presentacion.nombrepresentacion}}</td>
-          <td class="pres">{{producto.unidadmedida.nombreunidad}}</td>
-          <td class="ubic">{{producto.laboratorio.nombrelaboratorio}}</td>
-
-          <td class="price">{{producto.precioventa}}</td>
-          <td class="price">{{producto.precioblister}}</td>
-          <td class="price">{{producto.preciocaja}}</td>
-
-          <td class="stock">{{producto.stock}}</td>
-           <td class="center">
-               <button class="btn btn-success btn-sm me-1" routerLink="/edit/{{producto.idproducto}}">
-                <i class="nav-icon fas fa-edit"></i>
-               </button>
-               
-               <button class="btn btn-danger btn-sm" (click)="eliminarProducto(producto.idproducto)">
-                   <i class="nav-icon fas fa-trash"></i>
-               </button>
-           </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="13" class="text-center py-4 text-muted">No se encontraron productos registrados.</td>
-        </tr>
-      }
-    </tbody>
-   
-    <tfoot class="paginate">
-        <tr>
-            <td colspan="13">
-                <div style="max-width: 100%; overflow: hidden;">
-                   <app-paginate (SendIndex)="onindexClic($event)"
-                    [total]="total"
-                    [npage]="pages"
-                    [currentPage]="pagesNumber"
-                    [pageSize]="xpage > 0 ? xpage : 10"
-                    />           
-                </div>
-            </td>
-        </tr>        
-    </tfoot>
-</table>

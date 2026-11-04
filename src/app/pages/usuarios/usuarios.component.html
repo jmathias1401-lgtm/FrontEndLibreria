@@ -1,71 +1,70 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Lista de Usuarios</h3>
-          <div class="card-tools">
-            <button class="btn btn-primary" (click)="addUsuario()">
-              <i class="fas fa-plus"></i> Nuevo Usuario
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <table class="table table-bordered table-hover">
-            <thead>
+<div class="container-fluid px-4 py-3">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0"><i class="fas fa-user-shield mr-2"></i> Gestión de Usuarios del Sistema</h5>
+        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ totalItems }}</span>
+      </div>
+      <button class="btn btn-warning btn-sm font-weight-bold text-dark" (click)="addUsuario()">
+        <i class="fas fa-plus mr-1"></i> Nuevo Usuario
+      </button>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered align-middle">
+          <thead class="thead-light text-center">
+            <tr>
+              <th style="width: 60px;">ID</th>
+              <th>NOMBRE DE USUARIO</th>
+              <th>CARGO / ROL</th>
+              <th>FECHA DE CREACIÓN</th>
+              <th style="width: 100px;">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (usr of usuarios; track usr.idusuario) {
               <tr>
-                <th>ID</th>
-                <th>Nombre de Usuario</th>
-                <th>Cargo</th>
-                <th>Fecha de Creación</th>
-                <th class="text-end">Acciones</th>
+                <td class="text-center font-weight-bold">{{ usr.idusuario }}</td>
+                <td class="font-weight-bold text-primary">{{ usr.nombreusuario }}</td>
+                <td class="text-center">
+                  <span class="badge badge-info">{{ usr.cargo?.nombrecargo || 'Sin cargo' }}</span>
+                </td>
+                <td class="text-center">{{ usr.fechacreacion | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td class="text-center">
+                  <button class="btn btn-outline-primary btn-sm me-1" (click)="editUsuario(usr.idusuario)" title="Editar usuario">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" (click)="deleteUsuario(usr.idusuario)" title="Eliminar usuario">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @for (usr of usuarios; track usr.idusuario) {
-                <tr>
-                  <td>{{ usr.idusuario }}</td>
-                  <td>{{ usr.nombreusuario }}</td>
-                  <td>{{ usr.cargo?.nombrecargo }}</td>
-                  <td>{{ usr.fechacreacion | date:'short' }}</td>
-                  <td class="text-end">
-                    <button class="btn btn-sm btn-info" (click)="editUsuario(usr.idusuario)">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger ms-1" (click)="deleteUsuario(usr.idusuario)">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="5" class="text-center text-muted py-3">No hay usuarios registrados</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-sm-12 col-md-5">
-              <div class="dataTables_info" role="status" aria-live="polite">
-                Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > totalItems ? totalItems : page * xpage }} de {{ totalItems }} registros
-              </div>
-            </div>
-            <div class="col-sm-12 col-md-7">
-              <div class="dataTables_paginate paging_simple_numbers">
-                <ul class="pagination">
-                  <li class="paginate_button page-item previous" [class.disabled]="page === 1">
-                    <button (click)="previousPage()" class="page-link">Anterior</button>
-                  </li>
-                  <li class="paginate_button page-item next" [class.disabled]="page * xpage >= totalItems">
-                    <button (click)="nextPage()" class="page-link">Siguiente</button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                  <i class="fas fa-users-slash fa-2x mb-2 d-block"></i> No hay usuarios registrados.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2">
+      <div class="text-muted small">
+        Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > totalItems ? totalItems : page * xpage }} de {{ totalItems }} registros
+      </div>
+      <div>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="page === 1">
+            <button (click)="previousPage()" class="page-link"><i class="fas fa-chevron-left mr-1"></i> Anterior</button>
+          </li>
+          <li class="page-item" [class.disabled]="page * xpage >= totalItems">
+            <button (click)="nextPage()" class="page-link">Siguiente <i class="fas fa-chevron-right ml-1"></i></button>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -73,26 +72,28 @@
 
 <!-- Modal -->
 <div class="modal" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
-        <button type="button" class="close" (click)="closeModal()">
-          <span>&times;</span>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary text-white py-2">
+        <h5 class="modal-title mb-0">
+          <i class="fas fa-user-edit mr-2"></i> {{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}
+        </h5>
+        <button type="button" class="close text-white" (click)="closeModal()" aria-label="Close" style="background: none; border: none; font-size: 1.5rem;">
+          <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body p-4">
         <form [formGroup]="usuarioForm">
-          <div class="form-group">
-            <label for="nombreusuario">Nombre de Usuario</label>
-            <input type="text" class="form-control" id="nombreusuario" formControlName="nombreusuario" required>
+          <div class="form-group mb-3">
+            <label for="nombreusuario" class="form-label font-weight-bold">Nombre de Usuario <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="nombreusuario" formControlName="nombreusuario" placeholder="Ej: admin" required>
           </div>
-          <div class="form-group">
-            <label for="clave">Clave</label>
-            <input type="password" class="form-control" id="clave" formControlName="clave" required>
+          <div class="form-group mb-3">
+            <label for="clave" class="form-label font-weight-bold">Contraseña <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" id="clave" formControlName="clave" placeholder="••••••••" required>
           </div>
-          <div class="form-group">
-            <label for="cargo">Cargo</label>
+          <div class="form-group mb-3">
+            <label for="cargo" class="form-label font-weight-bold">Cargo / Rol <span class="text-danger">*</span></label>
             <select class="form-control" id="cargo" formControlName="cargo" required>
               <option value="">Seleccione un cargo</option>
               @for (c of cargos; track c.idcargo) {
@@ -102,13 +103,15 @@
           </div>
         </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
-        <button type="button" class="btn btn-primary" (click)="saveUsuario()" [disabled]="!usuarioForm.valid">Guardar</button>
+      <div class="modal-footer bg-light py-2">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="closeModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary btn-sm px-3" (click)="saveUsuario()" [disabled]="!usuarioForm.valid">
+          <i class="fas fa-save mr-1"></i> Guardar
+        </button>
       </div>
     </div>
   </div>
 </div>
 @if (showModal) {
-  <div class="modal-backdrop show"></div>
+  <div class="modal-backdrop fade show"></div>
 }

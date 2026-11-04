@@ -1,80 +1,18 @@
-.row {
-    margin: 5px;
+.container-fluid {
+  font-family: inherit;
 }
 
-table {
-    table-layout: fixed;
-    width: 100%;
-    margin: 0;
+.table th {
+  font-size: 0.82rem;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
 }
 
-.id {
-    text-align: center;
-    width: 40px;
-    min-width: 40px;
+.table td {
+  font-size: 0.88rem;
+  vertical-align: middle;
 }
 
-.img {
-    width: 60px;
-    min-width: 60px;
-    text-align: center;
-}
-
-.img img {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto;
-}
-
-.name {
-    width: 250px;
-    max-width: 250px;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.vcto {
-    width: 85px;
-    text-align: left;
-}
-
-.ubic {
-    width: 80px;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.pres {
-    width: 70px;
-    text-align: left;
-}
-
-.price {
-    width: 50px;
-    text-align: right;
-}
-
-.stock {
-    width: 60px;
-    text-align: center;
-}
-
-.tbody {
-    font-size: 12px;
-    font-weight: normal;
-}
-
-.center {
-    text-align: center;
-    width: 80px;
-}
-
-.paginate {
-    text-align: center;
+.gap-2 {
+  gap: 0.5rem;
 }

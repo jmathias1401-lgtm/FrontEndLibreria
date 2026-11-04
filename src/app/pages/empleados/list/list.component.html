@@ -1,75 +1,78 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Lista de Empleados</h3>
-          <div class="card-tools">
-            <button class="btn btn-primary" routerLink="/empleados/agregar">
-              <i class="fas fa-plus"></i> Nuevo Empleado
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <table class="table table-bordered table-hover">
-            <thead>
+<div class="container-fluid px-4 py-3">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0"><i class="fas fa-user-tie mr-2"></i> Gestión de Empleados</h5>
+        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ total }}</span>
+      </div>
+      <button class="btn btn-warning btn-sm font-weight-bold text-dark" routerLink="/empleados/agregar">
+        <i class="fas fa-plus mr-1"></i> Nuevo Empleado
+      </button>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered align-middle">
+          <thead class="thead-light text-center">
+            <tr>
+              <th style="width: 60px;">ID</th>
+              <th>NOMBRES</th>
+              <th>APELLIDOS</th>
+              <th>DNI</th>
+              <th>USUARIO</th>
+              <th>ESTADO</th>
+              <th style="width: 100px;">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (empleado of empleados; track empleado.idempleado) {
               <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellidos</th>
-                <th>DNI</th>
-                <th>Usuario</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <td class="text-center font-weight-bold">{{ empleado.idempleado }}</td>
+                <td class="font-weight-bold text-primary">{{ empleado.persona?.nombre }}</td>
+                <td>{{ empleado.persona?.paterno }} {{ empleado.persona?.materno }}</td>
+                <td class="text-center font-weight-bold">{{ empleado.persona?.dni || '-' }}</td>
+                <td class="text-center">
+                  <span class="badge badge-info">{{ empleado.usuario?.nombreusuario || '-' }}</span>
+                </td>
+                <td class="text-center">
+                  <span class="badge" [ngClass]="empleado.estado?.estado === 'Activo' || empleado.estado?.idestado === 1 ? 'badge-success' : 'badge-danger'">
+                    {{ empleado.estado?.estado || 'Activo' }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-outline-primary btn-sm me-1" routerLink="/empleados/editar/{{ empleado.idempleado }}" title="Editar empleado">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" (click)="deleteEmpleado(empleado.idempleado)" title="Eliminar empleado">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @for (empleado of empleados; track empleado.idempleado) {
-                <tr>
-                  <td>{{ empleado.idempleado }}</td>
-                  <td>{{ empleado.persona?.nombre }}</td>
-                  <td>{{ empleado.persona?.paterno }} {{ empleado.persona?.materno }}</td>
-                  <td>{{ empleado.persona?.dni }}</td>
-                  <td>{{ empleado.usuario?.nombreusuario }}</td>
-                  <td>{{ empleado.estado?.estado }}</td>
-                  <td>
-                    <button class="btn btn-sm btn-info me-1" routerLink="/empleados/editar/{{ empleado.idempleado }}">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteEmpleado(empleado.idempleado)">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="7" class="text-center py-4 text-muted">No hay empleados registrados</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-sm-12 col-md-5">
-              <div class="dataTables_info" role="status" aria-live="polite">
-                Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > total ? total : page * xpage }} de {{ total }} registros
-              </div>
-            </div>
-            <div class="col-sm-12 col-md-7">
-              <div class="dataTables_paginate paging_simple_numbers">
-                <ul class="pagination">
-                  <li class="paginate_button page-item previous" [class.disabled]="page === 1">
-                    <button (click)="previousPage()" class="page-link">Anterior</button>
-                  </li>
-                  <li class="paginate_button page-item next" [class.disabled]="page * xpage >= total">
-                    <button (click)="nextPage()" class="page-link">Siguiente</button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+            } @empty {
+              <tr>
+                <td colspan="7" class="text-center py-4 text-muted">
+                  <i class="fas fa-users-slash fa-2x mb-2 d-block"></i> No hay empleados registrados.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2">
+      <div class="text-muted small">
+        Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > total ? total : page * xpage }} de {{ total }} registros
+      </div>
+      <div>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="page === 1">
+            <button (click)="previousPage()" class="page-link"><i class="fas fa-chevron-left mr-1"></i> Anterior</button>
+          </li>
+          <li class="page-item" [class.disabled]="page * xpage >= total">
+            <button (click)="nextPage()" class="page-link">Siguiente <i class="fas fa-chevron-right ml-1"></i></button>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

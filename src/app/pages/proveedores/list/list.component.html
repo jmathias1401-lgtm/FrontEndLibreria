@@ -1,77 +1,76 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Lista de Proveedores</h3>
-          <div class="card-tools">
-            <button class="btn btn-primary" (click)="addProveedor()">
-              <i class="fas fa-plus"></i> Nuevo Proveedor
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <table class="table table-bordered table-hover">
-            <thead>
+<div class="container-fluid px-4 py-3">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0"><i class="fas fa-truck mr-2"></i> Gestión de Proveedores</h5>
+        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ totalItems }}</span>
+      </div>
+      <button class="btn btn-warning btn-sm font-weight-bold text-dark" (click)="addProveedor()">
+        <i class="fas fa-plus mr-1"></i> Nuevo Proveedor
+      </button>
+    </div>
+
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered align-middle">
+          <thead class="thead-light text-center">
+            <tr>
+              <th style="width: 60px;">ID</th>
+              <th>NOMBRE / RAZÓN SOCIAL</th>
+              <th>CONTACTO</th>
+              <th>DNI</th>
+              <th>RUC</th>
+              <th>TELÉFONO</th>
+              <th>TIPO</th>
+              <th style="width: 100px;">ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (proveedor of proveedores; track proveedor.idproveedor) {
               <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Apellidos</th>
-                <th>DNI</th>
-                <th>RUC</th>
-                <th>Telefono</th>
-                <th>Tipo Persona</th>
-                <th>Acciones</th>
+                <td class="text-center font-weight-bold">{{ proveedor.idproveedor }}</td>
+                <td class="font-weight-bold text-primary">{{ proveedor.persona?.nombre }}</td>
+                <td>{{ proveedor.persona?.paterno }} {{ proveedor.persona?.materno }}</td>
+                <td class="text-center">{{ proveedor.persona?.dni || '-' }}</td>
+                <td class="text-center font-weight-bold">{{ proveedor.persona?.ruc || '-' }}</td>
+                <td class="text-center">{{ proveedor.persona?.telefono || '-' }}</td>
+                <td class="text-center">
+                  <span class="badge badge-info">{{ proveedor.persona?.tipoPersona?.nombre || 'Proveedor' }}</span>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-outline-primary btn-sm me-1" (click)="editProveedor(proveedor.idproveedor)" title="Editar proveedor">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm" (click)="deleteProveedor(proveedor.idproveedor)" title="Eliminar proveedor">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              @for (proveedor of proveedores; track proveedor.idproveedor) {
-                <tr>
-                  <td>{{ proveedor.idproveedor }}</td>
-                  <td>{{ proveedor.persona?.nombre }}</td>
-                  <td>{{ proveedor.persona?.paterno }} {{ proveedor.persona?.materno }}</td>
-                  <td>{{ proveedor.persona?.dni }}</td>
-                  <td>{{ proveedor.persona?.ruc }}</td>
-                  <td>{{ proveedor.persona?.telefono }}</td>
-                  <td>{{ proveedor.persona?.tipoPersona?.nombre }}</td>
-                  <td>
-                    <button class="btn btn-sm btn-info me-1" (click)="editProveedor(proveedor.idproveedor)">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" (click)="deleteProveedor(proveedor.idproveedor)">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="8" class="text-center py-4 text-muted">No hay proveedores registrados</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer">
-          <div class="row">
-            <div class="col-sm-12 col-md-5">
-              <div class="dataTables_info">
-                Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > totalItems ? totalItems : page * xpage }} de {{ totalItems }} registros
-              </div>
-            </div>
-            <div class="col-sm-12 col-md-7">
-              <div class="dataTables_paginate paging_simple_numbers">
-                <ul class="pagination">
-                  <li class="paginate_button page-item previous" [class.disabled]="page === 1">
-                    <button (click)="previousPage()" class="page-link">Anterior</button>
-                  </li>
-                  <li class="paginate_button page-item next" [class.disabled]="page * xpage >= totalItems">
-                    <button (click)="nextPage()" class="page-link">Siguiente</button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+            } @empty {
+              <tr>
+                <td colspan="8" class="text-center py-4 text-muted">
+                  <i class="fas fa-truck-loading fa-2x mb-2 d-block"></i> No hay proveedores registrados.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2">
+      <div class="text-muted small">
+        Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > totalItems ? totalItems : page * xpage }} de {{ totalItems }} registros
+      </div>
+      <div>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [class.disabled]="page === 1">
+            <button (click)="previousPage()" class="page-link"><i class="fas fa-chevron-left mr-1"></i> Anterior</button>
+          </li>
+          <li class="page-item" [class.disabled]="page * xpage >= totalItems">
+            <button (click)="nextPage()" class="page-link">Siguiente <i class="fas fa-chevron-right ml-1"></i></button>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
