@@ -22,20 +22,26 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let usr of usuarios">
-                <td>{{ usr.idusuario }}</td>
-                <td>{{ usr.nombreusuario }}</td>
-                <td>{{ usr.cargo?.nombrecargo }}</td>
-                <td>{{ usr.fechacreacion | date:'short' }}</td>
-                <td class="text-end">
-                  <button class="btn btn-sm btn-info" (click)="editUsuario(usr.idusuario)">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteUsuario(usr.idusuario)">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
+              @for (usr of usuarios; track usr.idusuario) {
+                <tr>
+                  <td>{{ usr.idusuario }}</td>
+                  <td>{{ usr.nombreusuario }}</td>
+                  <td>{{ usr.cargo?.nombrecargo }}</td>
+                  <td>{{ usr.fechacreacion | date:'short' }}</td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-info" (click)="editUsuario(usr.idusuario)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger ms-1" (click)="deleteUsuario(usr.idusuario)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-3">No hay usuarios registrados</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
@@ -89,7 +95,9 @@
             <label for="cargo">Cargo</label>
             <select class="form-control" id="cargo" formControlName="cargo" required>
               <option value="">Seleccione un cargo</option>
-              <option *ngFor="let c of cargos" [value]="c.idcargo">{{ c.nombrecargo }}</option>
+              @for (c of cargos; track c.idcargo) {
+                <option [value]="c.idcargo">{{ c.nombrecargo }}</option>
+              }
             </select>
           </div>
         </form>
@@ -101,4 +109,6 @@
     </div>
   </div>
 </div>
-<div class="modal-backdrop show" *ngIf="showModal"></div>
+@if (showModal) {
+  <div class="modal-backdrop show"></div>
+}

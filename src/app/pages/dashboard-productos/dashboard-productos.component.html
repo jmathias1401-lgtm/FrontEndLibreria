@@ -52,7 +52,9 @@
             <div class="form-group">
               <label>Mes</label>
               <select class="form-control" [(ngModel)]="selectedMonth" (change)="applyFilters()">
-                <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+                @for (m of months; track m.value) {
+                  <option [value]="m.value">{{ m.name }}</option>
+                }
               </select>
             </div>
           </div>
@@ -60,7 +62,9 @@
             <div class="form-group">
               <label>Año</label>
               <select class="form-control" [(ngModel)]="selectedYear" (change)="applyFilters()">
-                <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+                @for (y of years; track y) {
+                  <option [value]="y">{{ y }}</option>
+                }
               </select>
             </div>
           </div>
@@ -68,7 +72,9 @@
             <div class="form-group">
               <label>Seleccionar Producto (Top 10)</label>
               <select class="form-control" [(ngModel)]="selectedProductName" (change)="updateProductHistory()">
-                <option *ngFor="let p of topProducts" [value]="p.name">{{ p.name }}</option>
+                @for (p of topProducts; track p.name) {
+                  <option [value]="p.name">{{ p.name }}</option>
+                }
               </select>
             </div>
           </div>
@@ -97,7 +103,7 @@
       <div class="col-md-6">
         <div class="card card-success">
           <div class="card-header">
-            <h3 class="card-title">Top 10 Más Vendidos</h3>
+            <h3 class="card-title">Top 10 MÃ¡s Vendidos</h3>
           </div>
           <div class="card-body">
             <div class="chart-container" style="position: relative; height:400px; width:100%">
@@ -140,12 +146,14 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let p of topProducts; let i = index">
+                @for (p of topProducts; track p.name) {
+                <tr>
                   <td>{{ p.name }}</td>
                   <td>{{ p.quantity | number }}</td>
                   <td>S/ {{ p.revenue | number:'1.2-2' }}</td>
-                  <td><span class="badge badge-success">Top {{ i + 1 }}</span></td>
+                  <td><span class="badge badge-success">Top {{ $index + 1 }}</span></td>
                 </tr>
+                }
               </tbody>
             </table>
           </div>

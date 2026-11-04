@@ -1,62 +1,68 @@
 <div class="container-fluid">
-   <div class="row">
-     <div class="col-12">
-       <div class="card">
-         <div class="card-header">
-           <h2 class="card-title text-center">Lista de Presentaciones</h2>
-           <div class="card-tools">
-             <a routerLink="/presentacion/form" class="btn btn-primary btn-sm">
-               <i class="fas fa-plus "></i> Agregar Presentación
-             </a>
-           </div>
-         </div>
-         <div class="card-body table-responsive p-0">
-           <table class="table table-hover text-nowrap">
-             <thead>
-               <tr>
-                 <th>ID</th>
-                 <th>Nombre</th>
-                 <th class="text-end">Acciones</th>
-               </tr>
-             </thead>
-             <tbody>
-               <tr *ngFor="let presentacion of presentaciones">
-                 <td>{{ presentacion.idpresentacion }}</td>
-                 <td>{{ presentacion.nombrepresentacion }}</td>
-                 <td class="text-end">
-                   <a [routerLink]="['/presentacion/form', presentacion.idpresentacion]" class="btn btn-warning btn-sm">
-                     <i class="fas fa-edit"></i> Editar
-                   </a>
-                   <button (click)="deletePresentacion(presentacion.idpresentacion)" class="btn btn-danger btn-sm ml-2">
-                     <i class="fas fa-trash"></i> Eliminar
-                   </button>
-                 </td>
-               </tr>
-             </tbody>
-           </table>
-         </div>
-         <div class="card-footer">
-           <div class="row">
-             <div class="col-sm-12 col-md-5">
-               <div class="dataTables_info">
-                 Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > total ? total : page * xpage }} de {{ total }} registros
-               </div>
-             </div>
-             <div class="col-sm-12 col-md-7">
-               <div class="dataTables_paginate paging_simple_numbers">
-                 <ul class="pagination">
-                   <li class="paginate_button page-item previous" [class.disabled]="page === 1">
-                     <a (click)="previousPage()" class="page-link">Anterior</a>
-                   </li>
-                   <li class="paginate_button page-item next" [class.disabled]="page * xpage >= total">
-                     <a (click)="nextPage()" class="page-link">Siguiente</a>
-                   </li>
-                 </ul>
-               </div>
-             </div>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
- </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title text-center">Lista de Presentaciones</h2>
+          <div class="card-tools">
+            <a routerLink="/presentacion/form" class="btn btn-primary btn-sm">
+              <i class="fas fa-plus"></i> Agregar Presentación
+            </a>
+          </div>
+        </div>
+        <div class="card-body table-responsive p-0">
+          <table class="table table-hover text-nowrap">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (presentacion of presentaciones; track presentacion.idpresentacion) {
+                <tr>
+                  <td>{{ presentacion.idpresentacion }}</td>
+                  <td>{{ presentacion.nombrepresentacion }}</td>
+                  <td class="text-end">
+                    <a [routerLink]="['/presentacion/form', presentacion.idpresentacion]" class="btn btn-warning btn-sm">
+                      <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <button (click)="deletePresentacion(presentacion.idpresentacion)" class="btn btn-danger btn-sm ml-2">
+                      <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="text-center text-muted py-3">No hay presentaciones registradas</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-sm-12 col-md-5">
+              <div class="dataTables_info">
+                Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > total ? total : page * xpage }} de {{ total }} registros
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+              <div class="dataTables_paginate paging_simple_numbers">
+                <ul class="pagination">
+                  <li class="paginate_button page-item previous" [class.disabled]="page === 1">
+                    <a (click)="previousPage()" class="page-link">Anterior</a>
+                  </li>
+                  <li class="paginate_button page-item next" [class.disabled]="page * xpage >= total">
+                    <a (click)="nextPage()" class="page-link">Siguiente</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

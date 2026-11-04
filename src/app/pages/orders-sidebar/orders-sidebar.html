@@ -13,55 +13,61 @@
   </div>
 
   <div class="sidebar-content">
-    <!-- Empty Orders -->
-    <div *ngIf="!loading && orders.length === 0" class="empty-orders">
-      <i class="fas fa-box-open"></i>
-      <p>No tienes pedidos registrados</p>
-      <button class="btn btn-primary" (click)="closeOrders()">Continuar comprando</button>
-    </div>
-
-    <!-- Loading -->
-    <div *ngIf="loading" class="loading-orders">
-      <i class="fas fa-spinner fa-spin"></i>
-      <p>Cargando pedidos...</p>
-    </div>
-
-    <!-- Orders List -->
-    <div *ngIf="!loading && orders.length > 0" class="orders-list">
-      <div class="order-item" *ngFor="let order of orders">
-        <div class="order-header">
-          <div class="order-info">
-            <h5 class="order-number">
-              <i class="fas fa-file-invoice"></i>
-              {{ order.serie }}-{{ order.correlativo }}
-            </h5>
-            <p class="order-date">
-              <i class="fas fa-calendar-alt"></i> {{ formatDate(order.fechaventa) }}
-            </p>
-          </div>
-          <div class="order-status">
-            <span class="status-badge status-completed">Completado</span>
-          </div>
-        </div>
-        <div class="order-details">
-          <div class="detail-row">
-            <span><i class="fas fa-tag"></i> Tipo:</span>
-            <span>{{ order.tipoComprobante?.nombrecomprobante || 'Boleta' }}</span>
-          </div>
-          <div class="detail-row">
-            <span><i class="fas fa-user"></i> Cliente:</span>
-            <span>{{ order.cliente?.persona?.nombre || 'N/A' }}</span>
-          </div>
-          <div class="detail-row">
-            <span><i class="fas fa-percent"></i> IGV:</span>
-            <span>{{ order.igv || 0 }}%</span>
-          </div>
-        </div>
-        <div class="order-total">
-          <span>Total:</span>
-          <span class="total-amount">{{ formatCurrency(order.subtotal || 0) }}</span>
-        </div>
+    @if (loading) {
+      <!-- Loading -->
+      <div class="loading-orders">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Cargando pedidos...</p>
       </div>
-    </div>
+    } @else {
+      @if (orders.length === 0) {
+        <!-- Empty Orders -->
+        <div class="empty-orders">
+          <i class="fas fa-box-open"></i>
+          <p>No tienes pedidos registrados</p>
+          <button class="btn btn-primary" (click)="closeOrders()">Continuar comprando</button>
+        </div>
+      } @else {
+        <!-- Orders List -->
+        <div class="orders-list">
+          @for (order of orders; track (order.idventa || order.serie + '-' + order.correlativo)) {
+            <div class="order-item">
+              <div class="order-header">
+                <div class="order-info">
+                  <h5 class="order-number">
+                    <i class="fas fa-file-invoice"></i>
+                    {{ order.serie }}-{{ order.correlativo }}
+                  </h5>
+                  <p class="order-date">
+                    <i class="fas fa-calendar-alt"></i> {{ formatDate(order.fechaventa) }}
+                  </p>
+                </div>
+                <div class="order-status">
+                  <span class="status-badge status-completed">Completado</span>
+                </div>
+              </div>
+              <div class="order-details">
+                <div class="detail-row">
+                  <span><i class="fas fa-tag"></i> Tipo:</span>
+                  <span>{{ order.tipoComprobante?.nombrecomprobante || 'Boleta' }}</span>
+                </div>
+                <div class="detail-row">
+                  <span><i class="fas fa-user"></i> Cliente:</span>
+                  <span>{{ order.cliente?.persona?.nombre || 'N/A' }}</span>
+                </div>
+                <div class="detail-row">
+                  <span><i class="fas fa-percent"></i> IGV:</span>
+                  <span>{{ order.igv || 0 }}%</span>
+                </div>
+              </div>
+              <div class="order-total">
+                <span>Total:</span>
+                <span class="total-amount">{{ formatCurrency(order.subtotal || 0) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
   </div>
 </div>

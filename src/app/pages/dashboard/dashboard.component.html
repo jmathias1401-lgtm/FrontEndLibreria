@@ -122,10 +122,12 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let p of topProducts">
-                        <td>{{ p.name }}</td>
-                        <td><span class="badge badge-success">{{ p.quantity }}</span></td>
-                      </tr>
+                      @for (p of topProducts; track p.name) {
+                        <tr>
+                          <td>{{ p.name }}</td>
+                          <td><span class="badge badge-success">{{ p.quantity }}</span></td>
+                        </tr>
+                      }
                     </tbody>
                   </table>
                 </div>
@@ -141,10 +143,12 @@
               <div class="col-md-12">
                 <p class="text-center"><strong>Productos Menos Vendidos</strong></p>
                 <div class="d-flex flex-wrap justify-content-around">
-                  <div *ngFor="let p of bottomProducts" class="text-center p-2 border rounded m-1 bg-light" style="min-width: 120px;">
-                    <small class="d-block text-truncate" style="max-width: 100px;" [title]="p.name">{{ p.name }}</small>
-                    <span class="badge badge-danger">{{ p.quantity }}</span>
-                  </div>
+                  @for (p of bottomProducts; track p.name) {
+                    <div class="text-center p-2 border rounded m-1 bg-light" style="min-width: 120px;">
+                      <small class="d-block text-truncate" style="max-width: 100px;" [title]="p.name">{{ p.name }}</small>
+                      <span class="badge badge-danger">{{ p.quantity }}</span>
+                    </div>
+                  }
                 </div>
               </div>
             </div>
@@ -179,14 +183,16 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let venta of latestSales">
-                  <td><a href="javascript:void(0)">{{ venta.idventa }}</a></td>
-                  <td>{{ venta.cliente?.persona?.nombre }}</td>
-                  <td><span class="badge badge-success">{{ venta.serie }}</span></td>
-                  <td>
-                    <div class="sparkbar" data-color="#00a65a" data-height="20">{{ venta.costoventa| number }}</div>
-                  </td>
-                </tr>
+                @for (venta of latestSales; track (venta.idventa || $index)) {
+                  <tr>
+                    <td><a href="javascript:void(0)">{{ venta.idventa }}</a></td>
+                    <td>{{ venta.cliente?.persona?.nombre }}</td>
+                    <td><span class="badge badge-success">{{ venta.serie }}</span></td>
+                    <td>
+                      <div class="sparkbar" data-color="#00a65a" data-height="20">{{ venta.costoventa| number }}</div>
+                    </td>
+                  </tr>
+                }
                 </tbody>
               </table>
             </div>

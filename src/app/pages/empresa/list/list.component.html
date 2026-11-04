@@ -1,68 +1,74 @@
 <div class="container-fluid">
-   <div class="row">
-     <div class="col-12">
-       <div class="card">
-         <div class="card-header">
-           <h3 class="card-title">Lista de Empresas</h3>
-           <div class="card-tools">
-             <a routerLink="/empresas/form" class="btn btn-primary btn-sm">
-               <i class="fas fa-plus"></i> Agregar Empresa
-             </a>
-           </div>
-         </div>
-         <div class="card-body table-responsive p-0">
-           <table class="table table-hover text-nowrap">
-             <thead>
-               <tr>
-                 <th>ID</th>
-                 <th>Nombre</th>
-                 <th>Dirección</th>
-                 <th>Teléfono</th>
-                 <th>Correo</th>
-                 <th>Acciones</th>
-               </tr>
-             </thead>
-             <tbody>
-               <tr *ngFor="let empresa of empresas">
-                 <td>{{ empresa.idempresa }}</td>
-                 <td>{{ empresa.nombre }}</td>
-                 <td>{{ empresa.direccion }}</td>
-                 <td>{{ empresa.telefono }}</td>
-                 <td>{{ empresa.correo }}</td>
-                 <td>
-                   <a [routerLink]="['/empresas/form', empresa.idempresa]" class="btn btn-warning btn-sm">
-                     <i class="fas fa-edit"></i> Editar
-                   </a>
-                   <button (click)="deleteEmpresa(empresa.idempresa)" class="btn btn-danger btn-sm ml-2">
-                     <i class="fas fa-trash"></i> Eliminar
-                   </button>
-                 </td>
-               </tr>
-             </tbody>
-           </table>
-         </div>
-         <div class="card-footer">
-           <div class="row">
-             <div class="col-sm-12 col-md-5">
-               <div class="dataTables_info">
-                 Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > total ? total : page * xpage }} de {{ total }} registros
-               </div>
-             </div>
-             <div class="col-sm-12 col-md-7">
-               <div class="dataTables_paginate paging_simple_numbers">
-                 <ul class="pagination">
-                   <li class="paginate_button page-item previous" [class.disabled]="page === 1">
-                     <a (click)="previousPage()" class="page-link">Anterior</a>
-                   </li>
-                   <li class="paginate_button page-item next" [class.disabled]="page * xpage >= total">
-                     <a (click)="nextPage()" class="page-link">Siguiente</a>
-                   </li>
-                 </ul>
-               </div>
-             </div>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
- </div>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Lista de Empresas</h3>
+          <div class="card-tools">
+            <a routerLink="/empresas/form" class="btn btn-primary btn-sm">
+              <i class="fas fa-plus"></i> Agregar Empresa
+            </a>
+          </div>
+        </div>
+        <div class="card-body table-responsive p-0">
+          <table class="table table-hover text-nowrap">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (empresa of empresas; track empresa.idempresa) {
+                <tr>
+                  <td>{{ empresa.idempresa }}</td>
+                  <td>{{ empresa.nombre }}</td>
+                  <td>{{ empresa.direccion }}</td>
+                  <td>{{ empresa.telefono }}</td>
+                  <td>{{ empresa.correo }}</td>
+                  <td>
+                    <a [routerLink]="['/empresas/form', empresa.idempresa]" class="btn btn-warning btn-sm">
+                      <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <button (click)="deleteEmpresa(empresa.idempresa)" class="btn btn-danger btn-sm ml-2">
+                      <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-3">No hay empresas registradas</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-sm-12 col-md-5">
+              <div class="dataTables_info">
+                Mostrando {{ (page - 1) * xpage + 1 }} a {{ page * xpage > total ? total : page * xpage }} de {{ total }} registros
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+              <div class="dataTables_paginate paging_simple_numbers">
+                <ul class="pagination">
+                  <li class="paginate_button page-item previous" [class.disabled]="page === 1">
+                    <a (click)="previousPage()" class="page-link">Anterior</a>
+                  </li>
+                  <li class="paginate_button page-item next" [class.disabled]="page * xpage >= total">
+                    <a (click)="nextPage()" class="page-link">Siguiente</a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
