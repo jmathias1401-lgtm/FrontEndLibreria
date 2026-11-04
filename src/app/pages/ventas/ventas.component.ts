@@ -1,24 +1,47 @@
-import { Component, LOCALE_ID, OnInit } from '@angular/core';
+import { Component, LOCALE_ID, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 import { ProductoService } from '../../services/producto.service';
 import { VentasService } from '../../services/ventas.service';
 import { Product } from '../../models/product';
 import { ModalVentasComponent } from '../modal/modal-ventas/modal-ventas.component';
 import { VentaProductoModalComponent } from '../modal/venta-producto-modal/venta-producto-modal.component';
+import { PaginateComponent } from '../../shared/paginate/paginate.component';
 
 @Component({
   selector: 'app-ventas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaginateComponent],
   templateUrl: './ventas.component.html',
   styleUrl: './ventas.component.css',
-  providers: [{ provide: LOCALE_ID, useValue: "en-US" }, VentasService]
+  providers: [{ provide: LOCALE_ID, useValue: 'en-US' }, VentasService]
 })
-export class VentaComponent implements OnInit {
+export class VentaComponent implements OnInit, OnDestroy {
+  // Productos & Paginación
+  prod: any[] = [];
+  total: number = 0;
+  xpage: number = 10;
+  currentPage: number = 1;
+  search: string = '';
+  codBarra: string = '';
+
+  // Carrito de Venta
+  totalVenta: number = 0;
+  prodDetalle: Product[] = [];
+
+  // Estado del proceso
+  procesoEnCurso = false;
+  mensaje: string | null = null;
+  error = false;
+
+  // Búsqueda con debounce
+  private searchSubject = new Subject<void>();
+  private searchSubscription?: Subscription;
 
   constructor(
     private productoService: ProductoService,
@@ -26,79 +49,103 @@ export class VentaComponent implements OnInit {
     private toastr: ToastrService
   ) {}
 
-  prod: any[] = [];
-  total: number = 0;
-  xpage: number = 0;
-  search: string = "";
-  codBarra: string = "";
-  terminoBusqueda: string = '';
-  totalVenta: number = 0;
-  prodDetalle: Product[] = [];
-  elegirPrecio: number = 0.0;
-  procesoEnCurso = false;
-  mensaje: string | null = null;
-  error = false;
-
   ngOnInit(): void {
-    this.vertodos(1); 
+    this.setupDebouncedSearch();
+    this.vertodos(1);
+  }
+
+  ngOnDestroy(): void {
+    this.searchSubscription?.unsubscribe();
+  }
+
+  private setupDebouncedSearch(): void {
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(350)
+    ).subscribe(() => {
+      this.buscar();
+    });
+  }
+
+  onSearchInput(): void {
+    this.searchSubject.next();
   }
 
   vertodos(index: number): void {
-    this.productoService.getProductos(index).subscribe(response => {
-      this.prod = response.list;
-      this.total = response.total;
-      this.xpage = response.xpage;
+    this.currentPage = index;
+    this.productoService.getProductos(index).subscribe({
+      next: (response) => {
+        this.prod = response.list || [];
+        this.total = response.total || 0;
+        this.xpage = response.xpage || 10;
+      },
+      error: (err) => console.error('Error al cargar productos:', err)
     });
   }
 
-  buscarProducto(): void {
-    console.log('Buscando:', this.terminoBusqueda);
+  onPageChange(page: number): void {
+    this.vertodos(page);
   }
-  
+
   buscar(): void {
-    if (this.search.length > 0) {
-      this.productoService.getProductosBySearch(this.search).subscribe(response => {
-        this.prod = response.list;
-        this.total = response.total;
-        this.xpage = response.xpage;
+    const s = this.search.trim();
+    const c = this.codBarra.trim();
+
+    if (s.length > 0) {
+      this.productoService.getProductosBySearch(s).subscribe({
+        next: (response) => {
+          this.prod = response.list || [];
+          this.total = response.total || 0;
+          this.xpage = response.xpage || 10;
+        },
+        error: (err) => console.error('Error en búsqueda por nombre:', err)
       });
-    } else if (this.codBarra.length > 0) {
-      this.productoService.getProductosByCodBarra(this.codBarra).subscribe(response => {
-        this.prod = response.list;
-        this.total = response.total;
-        this.xpage = response.xpage;
+    } else if (c.length > 0) {
+      this.productoService.getProductosByCodBarra(c).subscribe({
+        next: (response) => {
+          this.prod = response.list || [];
+          this.total = response.total || 0;
+          this.xpage = response.xpage || 10;
+        },
+        error: (err) => console.error('Error en búsqueda por código de barra:', err)
       });
-    } else if (this.codBarra.length === 0 && this.search.length === 0) {
-      this.vertodos(1); 
+    } else {
+      this.vertodos(1);
     }
   }
-  
+
+  limpiarBusqueda(): void {
+    this.search = '';
+    this.codBarra = '';
+    this.vertodos(1);
+  }
+
   agregarProducto(producto: Product): void {
-    if (producto.stock === 0) {
+    if (!producto.stock || producto.stock <= 0) {
       this.toastr.warning('No hay stock disponible para este producto.');
       return;
     }
-    
+
     const dialogRef = this.dialog.open(VentaProductoModalComponent, {
       width: '600px',
-      height: '400px',
+      height: '420px',
       data: { producto: producto }
     });
 
-    dialogRef.afterClosed().subscribe(resultado => {
+    dialogRef.afterClosed().subscribe((resultado) => {
       if (resultado) {
         const existingProductIndex = this.prodDetalle.findIndex(
-          item => item.idproducto === resultado.idproducto && item.tipoPrecioSeleccionado === resultado.tipoPrecioSeleccionado
+          (item) => item.idproducto === resultado.idproducto && item.tipoPrecioSeleccionado === resultado.tipoPrecioSeleccionado
         );
+
         if (existingProductIndex > -1) {
           const existingItem = this.prodDetalle[existingProductIndex];
           const nuevaCantidad = (existingItem.cantidadLlevar || 0) + resultado.cantidadLlevar;
-          
+
           if (nuevaCantidad > (producto.stock || 0)) {
-            this.toastr.warning('La cantidad total acumulada para este producto supera el stock disponible (' + producto.stock + ').');
+            this.toastr.warning(`La cantidad total acumulada para este producto supera el stock disponible (${producto.stock}).`);
             return;
           }
-          
+
           existingItem.cantidadLlevar = nuevaCantidad;
           existingItem.subTotal = (existingItem.subTotal || 0) + resultado.subTotal;
         } else {
@@ -120,19 +167,14 @@ export class VentaComponent implements OnInit {
     this.totalVenta = this.prodDetalle.reduce((sum, item) => sum + (item.subTotal || 0), 0);
   }
 
-  finalizarVenta(): void {
+  agregarProductosAVenta(): void {
     if (this.prodDetalle.length === 0) {
-      this.toastr.warning('No hay productos en la venta');
+      this.toastr.warning('Debe agregar al menos un producto a la venta');
       return;
     }
-    
-    this.toastr.info(`Venta completada. Total: S/ ${this.totalVenta.toFixed(2)}`);
-    this.cancelarVenta();
-  }
 
-  agregarProductosAVenta(): void {
     this.procesoEnCurso = true;
-    this.mensaje = 'Creando la venta...';
+    this.mensaje = 'Abriendo formulario de pago...';
     this.error = false;
 
     try {
@@ -140,18 +182,19 @@ export class VentaComponent implements OnInit {
         maxWidth: '800px',
         data: this.prodDetalle
       });
-     
+
       modalVenta.afterClosed().subscribe((resultado) => {
+        this.procesoEnCurso = false;
         if (resultado === 'venta-finalizada') {
           this.limpiarVentaYBusqueda();
           this.mensaje = '✅ Venta completada y comprobante impreso exitosamente.';
+          this.toastr.success('¡Venta realizada con éxito!');
         }
       });
     } catch (err: any) {
+      this.procesoEnCurso = false;
       this.error = true;
       this.mensaje = `❌ Error: ${err.message}`;
-    } finally {
-      this.procesoEnCurso = false;
     }
   }
 
@@ -159,6 +202,7 @@ export class VentaComponent implements OnInit {
     if (this.prodDetalle.length === 0 || confirm('¿Estás seguro de cancelar esta venta?')) {
       this.prodDetalle = [];
       this.totalVenta = 0;
+      this.mensaje = null;
     }
   }
 
@@ -167,7 +211,6 @@ export class VentaComponent implements OnInit {
     this.totalVenta = 0;
     this.search = '';
     this.codBarra = '';
-    this.vertodos(1);
+    this.vertodos(this.currentPage);
   }
 }
-

@@ -1,80 +1,26 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+.container-fluid {
+  font-family: inherit;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+.table th {
+  font-size: 0.82rem;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    border-color: #d32f2f;
-    border-width: 1px;
+.table td {
+  font-size: 0.88rem;
+  vertical-align: middle;
 }
 
-th {
-    background-color: #f2f2f2;
+.cursor-pointer {
+  cursor: pointer;
 }
 
-.form-group {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.gap-2 {
+  gap: 0.5rem;
 }
 
-label {
-    display: inline-block;
-    width: 100px;
+.fs-5 {
+  font-size: 1.15rem;
 }
-
-input, select {
-    padding: 6px;
-}
-
-button {
-    padding: 8px 15px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-right: 10px;
-    border-radius: 4px;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.btn-eliminar, .btn-cancelar {
-    background-color: #f44336;
-}
-
-.btn-eliminar:hover, .btn-cancelar:hover {
-    background-color: #d32f2f;
-}
-
-.actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.sale-detail input {
-    width: 56px;
-    text-align: center;
-    border: 1px solid #971616;
-    border-radius: 4px;
-    background-color: #e6e5ef;
-    margin-left: 23px;
-}
-
