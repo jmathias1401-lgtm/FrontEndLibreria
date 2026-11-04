@@ -2,6 +2,7 @@ import { Component, LOCALE_ID, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
 
 import { ProductoService } from '../../services/producto.service';
 import { VentasService } from '../../services/ventas.service';
@@ -21,7 +22,8 @@ export class VentaComponent implements OnInit {
 
   constructor(
     private productoService: ProductoService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private toastr: ToastrService
   ) {}
 
   prod: any[] = [];
@@ -73,7 +75,7 @@ export class VentaComponent implements OnInit {
   
   agregarProducto(producto: Product): void {
     if (producto.stock === 0) {
-      alert('No hay stock disponible para este producto.');
+      this.toastr.warning('No hay stock disponible para este producto.');
       return;
     }
     
@@ -93,7 +95,7 @@ export class VentaComponent implements OnInit {
           const nuevaCantidad = (existingItem.cantidadLlevar || 0) + resultado.cantidadLlevar;
           
           if (nuevaCantidad > (producto.stock || 0)) {
-            alert('La cantidad total acumulada para este producto supera el stock disponible (' + producto.stock + ').');
+            this.toastr.warning('La cantidad total acumulada para este producto supera el stock disponible (' + producto.stock + ').');
             return;
           }
           
@@ -120,12 +122,11 @@ export class VentaComponent implements OnInit {
 
   finalizarVenta(): void {
     if (this.prodDetalle.length === 0) {
-      alert('No hay productos en la venta');
+      this.toastr.warning('No hay productos en la venta');
       return;
     }
     
-    console.log('Venta finalizada:', this.prodDetalle);
-    alert(`Venta finalizada. Total: ${this.totalVenta}`);
+    this.toastr.info(`Venta completada. Total: S/ ${this.totalVenta.toFixed(2)}`);
     this.cancelarVenta();
   }
 

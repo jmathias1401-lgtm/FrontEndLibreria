@@ -49,7 +49,7 @@
     <div class="navbar-container">
       <!-- Logo -->
       <div class="navbar-logo">
-        <a href="/">
+        <a routerLink="/home">
           <img src="/assets/img/LOGOR.png" alt="New Farma Logo" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <span class="logo-text" style="display: none;">BOTICA NEW FARMA</span>
         </a>
@@ -84,7 +84,7 @@
 
       <!-- Login -->
       <div class="navbar-item">
-        <a href="/login" class="navbar-link">
+        <a routerLink="/login" class="navbar-link">
           <i class="fas fa-user"></i>
           <span>Iniciar Sesión</span>
         </a>
@@ -92,7 +92,7 @@
 
       <!-- Cart -->
       <div class="navbar-item navbar-cart">
-        <a href="/cart" class="navbar-link cart-link">
+        <a routerLink="/cart" class="navbar-link cart-link">
           <i class="fas fa-shopping-cart"></i>
           <span>Carrito</span>
           <span class="cart-badge">{{ getCartItemCount() }}</span>

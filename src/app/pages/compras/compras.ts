@@ -190,18 +190,17 @@ export class ComprasComponent implements OnInit {
 
   finalizarCompra(): void {
     if (this.prodDetalle.length === 0) {
-      alert('No hay productos en la compra');
+      this.toastr.warning('No hay productos en la compra');
       return;
     }
 
     console.log('Compra finalizada:', this.prodDetalle);
-    alert(`Compra finalizada. Total: ${this.totalCompra}`); // Consider using MatDialog for alerts
+    this.toastr.success(`Compra finalizada. Total: S/ ${this.totalCompra.toFixed(2)}`);
 
     this.cancelarCompra(); // Clear the purchase after finalizing
   }
 
   agregarProductosACompra() {
-    debugger;
     if (!this.selectedProveedor || !this.selectedComprobante || !this.selectedEmpleado || !this.serie || !this.correlativo) {
       this.toastr.warning('Debe completar todos los campos de la compra');
       return;
@@ -252,38 +251,52 @@ export class ComprasComponent implements OnInit {
     }
   }
   RegistrarDetalleCompra(idcompra: number) {
-
     for (const producto of this.prodDetalle) {
       const detallecompra = {
         compra: { idcompra: idcompra },
         producto: { idproducto: producto.idproducto },
-        codigodetallecompra: "DC-W" + "-" + Date.now(),
+        codigodetalleventa: 'DC-W-' + Date.now() + '-' + producto.idproducto,
+        codigodetallecompra: 'DC-W-' + Date.now() + '-' + producto.idproducto,
         unidades: producto.cantidadLlevar,
-        costounidad: producto.precioventa,
-        lote: 0,
+        costounidad: producto.preciocompra || producto.precioventa,
+        lote: producto.lote || '0',
         total: producto.subTotal,
+      };
+
+      let vencimientoFormatted = '2030-01-01';
+      if (producto.vencimiento) {
+        const vStr = String(producto.vencimiento);
+        if (vStr.includes('/')) {
+          const parts = vStr.split('/');
+          vencimientoFormatted = parts[2] + '-' + parts[1] + '-' + parts[0];
+        } else {
+          vencimientoFormatted = vStr;
+        }
       }
-      debugger;
+
       const productoupdate: any = {
         idproducto: producto.idproducto,
         codigoproducto: producto.codigoproducto,
         nombre: producto.nombre,
-        vencimiento: producto.vencimiento.toString(),
-        //vencimiento:moment(producto.vencimiento, 'DD-MM-YYYY').format('YYYY-MM-DD'),
+        vencimiento: vencimientoFormatted,
         estado: producto.estado,
         composicion: producto.composicion,
         ubicacion: producto.ubicacion,
-        stock: producto.stock + producto.cantidadLlevar,
+        stock: (producto.stock || 0) + producto.cantidadLlevar,
         precioventa: producto.precioventa,
         precioblister: producto.precioblister,
         preciocaja: producto.preciocaja,
         codbarra: producto.codbarra,
-        laboratorio: { idlaboratorio: producto.laboratorio.idlaboratorio, nombrelaboratorio: producto.laboratorio.nombrelaboratorio },
-        presentacion: { idpresentacion: producto.presentacion.idpresentacion, nombrepresentacion: producto.presentacion.nombrepresentacion },
-        unidadmedida: { idunidadmedida: producto.unidadmedida.idunidadmedida, nombreunidad: producto.unidadmedida.nombreunidad },
-      }
-      //guarda el detalle de compra
-      debugger;
+        imagen_path: producto.imagen_path || '',
+        idlaboratorio: producto.laboratorio?.idlaboratorio || producto.idlaboratorio,
+        idpresentacion: producto.presentacion?.idpresentacion || producto.idpresentacion,
+        idunidadmedida: producto.unidadmedida?.idunidadmedida || producto.idunidadmedida,
+        laboratorio: producto.laboratorio,
+        presentacion: producto.presentacion,
+        unidadmedida: producto.unidadmedida,
+      };
+
+      // Guarda el detalle de compra
       this.DetalleCompraService.Save(detallecompra).subscribe({
         next: (response: any) => {
           console.log('Detalle de compra guardado:', response);
@@ -292,11 +305,10 @@ export class ComprasComponent implements OnInit {
           console.error('Error al guardar el detalle de compra:', error);
         }
       });
-      //actualiza stock del producto
-      debugger
+
+      // Actualiza stock del producto
       const formData = new FormData();
       const productoBlob = new Blob([JSON.stringify(productoupdate)], { type: 'application/json' });
-
       formData.append('producto', productoBlob);
 
       this.productoService.saveProducto(formData).subscribe({

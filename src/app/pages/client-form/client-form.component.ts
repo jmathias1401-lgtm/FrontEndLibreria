@@ -141,7 +141,7 @@ export class ClientFormComponent {
                   //realizar registro en la bd persona y cliente
                   if(this.data==null)
                     {
-                      alert("DNI no encontrado, Ingrese un DNI válido");
+                      this.toastr.warning("DNI no encontrado, Ingrese un DNI válido");
                       this.dni='';
                       this.persona=[];
                       return;
@@ -192,7 +192,7 @@ export class ClientFormComponent {
             }
             else
             {
-              alert("DNI no encontrado, Ingrese un DNI válido");
+              this.toastr.warning("DNI no encontrado, Ingrese un DNI válido");
               this.dni='';
               this.persona=[];
              // this.habilitarBotones = false; 

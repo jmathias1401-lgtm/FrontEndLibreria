@@ -5,31 +5,31 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="./home" class="nav-link">Home</a>
+        <a routerLink="/home" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="./compras" class="nav-link">Compras</a>
+        <a routerLink="/compras" class="nav-link">Compras</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="./ventas" class="nav-link">Ventas</a>
+        <a routerLink="/ventas" class="nav-link">Ventas</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="./clientes" class="nav-link">Clientes</a>
+        <a routerLink="/clientes" class="nav-link">Clientes</a>
       </li>
        <li class="nav-item d-none d-sm-inline-block">
-         <a href="./productos" class="nav-link">Productos</a>
+         <a routerLink="/productos" class="nav-link">Productos</a>
        </li>
        <li class="nav-item d-none d-sm-inline-block">
-         <a href="./cart" class="nav-link">Carrito</a>
+         <a routerLink="/cart" class="nav-link">Carrito</a>
        </li>
        <li class="nav-item d-none d-sm-inline-block">
-         <a href="./orders" class="nav-link">Pedidos</a>
+         <a routerLink="/orders" class="nav-link">Pedidos</a>
        </li>
        <li class="nav-item d-none d-sm-inline-block">
-         <a href="./proveedores" class="nav-link">Proveedores</a>
+         <a routerLink="/proveedores" class="nav-link">Proveedores</a>
        </li>
        <li class="nav-item d-none d-sm-inline-block">
-         <a href="./empleados" class="nav-link">Empleados</a>
+         <a routerLink="/empleados" class="nav-link">Empleados</a>
        </li>
       
       <li class="nav-item d-none d-sm-inline-block dropdown">
@@ -38,8 +38,8 @@
         </a>
         <div class="dropdown-menu">
          
-          <a href="./reports/ventas" class="dropdown-item">Reporte de Ventas</a>
-          <a href="./reports/compras" class="dropdown-item">Reporte de Compras</a>
+          <a routerLink="/reports/ventas" class="dropdown-item">Reporte de Ventas</a>
+          <a routerLink="/reports/compras" class="dropdown-item">Reporte de Compras</a>
         </div>
       </li>
    
@@ -48,7 +48,7 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-        <a href="./cart" class="nav-link">
+        <a routerLink="/cart" class="nav-link">
           <i class="fas fa-shopping-cart"></i>
           @if (cartItemCount > 0) {
             <span class="badge badge-danger navbar-badge">{{ cartItemCount }}</span>

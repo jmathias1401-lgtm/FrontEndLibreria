@@ -14,6 +14,7 @@ import { DetalleVenta } from '../../../models/detalleventa';
 import { RespuestaVenta } from '../../../models/RespuestaVenta';
 import { ProductoService } from '../../../services/producto.service';
 import { TicketService } from '../../../services/ticket.service';
+import { ToastrService } from 'ngx-toastr';
 import { Producto } from '../../../models/producto';
 import { forkJoin } from 'rxjs';
 
@@ -55,7 +56,8 @@ export class ModalVentasComponent implements OnInit {
     private ClienteService: ClienteService,
     private detalleventaservice: DetalleVentaService,
     private productoservice: ProductoService,
-    private ticketService: TicketService
+    private ticketService: TicketService,
+    private toastr: ToastrService
   ) {
     this.prodDetalle = data || [];
     this.totalVenta = this.prodDetalle.reduce((sum, item) => sum + item.subTotal, 0);
@@ -165,12 +167,12 @@ export class ModalVentasComponent implements OnInit {
               },
               error: (e) => {
                 console.error('Error consultando RENIEC:', e);
-                alert('No se encontró el DNI ingresado. Se usará Público General.');
+                this.toastr.warning('No se encontró el DNI ingresado. Se usará Público General.');
                 this.usarClienteGenerico();
               }
             });
           } else {
-            alert('Ingrese un DNI válido de 8 dígitos o seleccione Público General.');
+            this.toastr.warning('Ingrese un DNI válido de 8 dígitos o seleccione Público General.');
             this.usarClienteGenerico();
           }
         }
@@ -226,20 +228,20 @@ export class ModalVentasComponent implements OnInit {
               this.guardarDetalleVenta(idDeLaVenta, venta, nombreComprobante);
             } else {
               this.loading = false;
-              alert('Error: No se recibió confirmación de venta del servidor.');
+              this.toastr.error('Error: No se recibió confirmación de venta del servidor.');
             }
           },
           error: (error: any) => {
             this.loading = false;
             console.error('Error registrando venta:', error);
-            alert('Error al registrar venta: ' + (error?.error?.message || error?.message || 'Error del servidor'));
+            this.toastr.error('Error al registrar venta: ' + (error?.error?.message || error?.message || 'Error del servidor'));
           }
         });
       },
       error: (error: any) => {
         this.loading = false;
         console.error('Error al consultar lista de ventas:', error);
-        alert('Error al consultar correlativo de venta.');
+        this.toastr.error('Error al consultar correlativo de venta.');
       }
     });
   }
@@ -325,7 +327,7 @@ export class ModalVentasComponent implements OnInit {
       error: (error) => {
         console.error('Error al guardar detalle de venta:', error);
         this.loading = false;
-        alert('La venta se registró pero hubo un problema al actualizar el inventario.');
+        this.toastr.warning('La venta se registró pero hubo un problema al actualizar el inventario.');
 
         // Imprimir y cerrar para no retener al cliente
         try {

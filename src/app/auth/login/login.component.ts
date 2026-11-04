@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { RegisterComponent } from '../register/register.component';
@@ -9,7 +9,7 @@ import { RegisterComponent } from '../register/register.component';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RegisterComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, RegisterComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })

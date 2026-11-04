@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { ProductoService } from '../../services/producto.service';
 import { CartService } from '../../services/cart.service';
 import { ProductList, Product } from '../../models/product';
@@ -21,7 +22,7 @@ interface Promo {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, CartSidebarComponent, LoginComponent, RegisterComponent, OrdersSidebarComponent],
+  imports: [CommonModule, FormsModule, RouterModule, CartSidebarComponent, LoginComponent, RegisterComponent, OrdersSidebarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })

@@ -2,6 +2,7 @@ import { Component, Inject, OnInit, ViewChild, ElementRef, AfterViewInit } from 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
 import { Producto } from '../../../models/producto';
 import { CantidadComponent } from '../cantidad/cantidad.component';
 
@@ -25,7 +26,8 @@ export class VentaProductoModalComponent implements OnInit, AfterViewInit {
   constructor(
     public dialogRef: MatDialogRef<VentaProductoModalComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { producto: Producto },
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private toastr: ToastrService
   ) {
     this.producto = data.producto;
     this.pricePerUnit = this.producto.precioventa || 0;
@@ -102,12 +104,12 @@ export class VentaProductoModalComponent implements OnInit, AfterViewInit {
 
   addToSale(): void {
     if (this.producto.stock === 0) {
-      alert('No hay stock disponible para este producto.');
+      this.toastr.warning('No hay stock disponible para este producto.');
       return;
     }
 
     if (this.quantity > (this.producto.stock || 0)) {
-      alert('La cantidad ingresada supera el stock disponible (' + this.producto.stock + ').');
+      this.toastr.warning('La cantidad ingresada supera el stock disponible (' + this.producto.stock + ').');
       return;
     }
 
