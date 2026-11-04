@@ -1,155 +1,249 @@
-<div class="container">
-  <div class="product-search">
-    <div class="form-group">
-      <div class="search-row">
-        <label class="col">Cod. Barra
-          <input class="form-control" type="text" [(ngModel)]="codBarra" (keydown)="buscar()"/>
-        </label>
-        <label class="col">Nombre
-          <input class="form-control" type="text" [(ngModel)]="search" (keydown)="buscar()"/>
-        </label>
-        <button (click)="buscarProducto()">Buscar</button>
+<div class="container-fluid px-4 py-3">
+  <!-- Sección Búsqueda de Productos -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+      <h5 class="mb-0"><i class="fas fa-boxes mr-2"></i> Catálogo de Productos para Compra</h5>
+      <span class="badge badge-light text-primary font-weight-bold">Total: {{ total }}</span>
+    </div>
+    <div class="card-body">
+      <!-- Buscador -->
+      <div class="row mb-3 align-items-end">
+        <div class="col-md-4 mb-2">
+          <label class="form-label font-weight-bold">Código de Barra</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+            </div>
+            <input 
+              class="form-control" 
+              type="text" 
+              placeholder="Escanear o escribir..." 
+              [(ngModel)]="codBarra" 
+              (input)="onSearchInput()"
+              (keyup.enter)="buscar()"
+            />
+          </div>
+        </div>
+        <div class="col-md-5 mb-2">
+          <label class="form-label font-weight-bold">Nombre / Descripción</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input 
+              class="form-control" 
+              type="text" 
+              placeholder="Buscar por nombre..." 
+              [(ngModel)]="search" 
+              (input)="onSearchInput()"
+              (keyup.enter)="buscar()"
+            />
+          </div>
+        </div>
+        <div class="col-md-3 mb-2 d-flex gap-2">
+          <button class="btn btn-primary flex-fill" (click)="buscar()">
+            <i class="fas fa-search"></i> Buscar
+          </button>
+          <button class="btn btn-outline-secondary" (click)="limpiarBusqueda()" title="Limpiar búsqueda">
+            <i class="fas fa-undo"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de Productos -->
+      <div class="table-responsive">
+        <table class="table table-sm table-hover table-bordered align-middle">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th style="width: 50px;">ID</th>
+              <th>NOMBRE</th>
+              <th>VCTO.</th>
+              <th>UBIC.</th>
+              <th>PRESENTACIÓN</th>
+              <th>U. MEDIDA</th>
+              <th>LABORATORIO</th>
+              <th>P. VENTA</th>
+              <th>P. BLISTER</th>
+              <th>P. CAJA</th>
+              <th class="table-info font-weight-bold">STOCK</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (producto of prod; track producto.idproducto) {
+              <tr (click)="agregarProducto(producto)" style="cursor: pointer;" title="Haga clic para agregar a la compra">
+                <td class="text-center font-weight-bold">{{ producto.idproducto }}</td>
+                <td><span class="text-primary font-weight-bold">{{ producto.nombre }}</span></td>
+                <td class="text-center">{{ producto.vencimiento || '-' }}</td>
+                <td class="text-center">{{ producto.ubicacion || '-' }}</td>
+                <td>{{ producto.presentacion?.nombrepresentacion || '-' }}</td>
+                <td>{{ producto.unidadmedida?.nombreunidad || '-' }}</td>
+                <td>{{ producto.laboratorio?.nombrelaboratorio || '-' }}</td>
+                <td class="text-right">{{ producto.precioventa | currency:'PEN':'S/ ' }}</td>
+                <td class="text-right">{{ producto.precioblister ? (producto.precioblister | currency:'PEN':'S/ ') : '-' }}</td>
+                <td class="text-right">{{ producto.preciocaja ? (producto.preciocaja | currency:'PEN':'S/ ') : '-' }}</td>
+                <td class="text-center font-weight-bold" [ngClass]="{'text-danger': producto.stock <= 5, 'text-success': producto.stock > 5}">
+                  {{ producto.stock }}
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="11" class="text-center py-4 text-muted">
+                  <i class="fas fa-inbox fa-2x mb-2 d-block"></i> No se encontraron productos.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="d-flex justify-content-center mt-2">
+        <app-paginate 
+          [total]="total" 
+          [pageSize]="xpage" 
+          [currentPage]="currentPage" 
+          (SendIndex)="onPageChange($event)">
+        </app-paginate>
       </div>
     </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th class="name">ID</th>
-          <th class="name">NOMBRE</th>
-          <th class="conposision">FECHA</th>        
-          <th class="ubic">UBIC.</th>
-          <th class="ubic">PRES.</th>
-          <th class="ubic">U.M</th>
-          <th class="ubic">MARCA</th>
-          <th class="pv">P.U.</th>
-          <th class="pv">P.D</th>
-          <th class="pv">P.%</th>
-          <th class="stock">STOCK</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (producto of prod; track producto.idproducto) {
-          <tr (click)="agregarProducto(producto)" style="cursor: pointer;">
-            <td>{{producto.idproducto}}</td>
-            <td>{{producto.nombre}}</td>
-            <td>{{producto.vencimiento}}</td>
-            <td>{{producto.ubicacion}}</td>
-            <td>{{producto.presentacion?.nombrepresentacion}}</td>
-            <td>{{producto.unidadmedida?.nombreunidad}}</td>
-            <td>{{producto.laboratorio?.nombrelaboratorio}}</td>
-            <td>{{producto.precioventa}}</td>
-            <td>{{producto.precioblister}}</td>
-            <td>{{producto.preciocaja}}</td>
-            <td class="stock">{{producto.stock}}</td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="11" style="text-align: center; color: #888;">No se encontraron productos</td>
-          </tr>
-        }
-      </tbody>
-    </table>
   </div>
-  <hr style="border: 2px solid rgb(255, 0, 0);">
-  <div class="purchase-detail">
-    <h2>Detalle de Compra</h2>
 
-    <!-- Purchase Form -->
-    <div class="row">
-      <div class="form-group col">
-        <select class="form-control" [(ngModel)]="selectedProveedor">
-          <option [ngValue]="null">Seleccionar proveedor</option>
-          @for (proveedor of proveedores; track proveedor.idproveedor) {
-            <option [ngValue]="proveedor">
-              {{proveedor.persona?.nombre}}
-            </option>
+  <!-- Sección Detalle de Compra -->
+  <div class="card shadow-sm border-danger">
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center py-2">
+      <h5 class="mb-0"><i class="fas fa-file-invoice-dollar mr-2"></i> Datos de la Compra y Detalle</h5>
+      <span class="badge badge-light text-danger font-weight-bold">{{ prodDetalle.length }} producto(s) en orden</span>
+    </div>
+    <div class="card-body">
+      <!-- Formulario de Encabezado de Compra -->
+      <div class="row g-3 mb-4 p-3 bg-light rounded border">
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">Proveedor <span class="text-danger">*</span></label>
+          <select class="form-control form-control-sm" [(ngModel)]="selectedProveedor">
+            <option [ngValue]="null">Seleccionar proveedor</option>
+            @for (proveedor of proveedores; track proveedor.idproveedor) {
+              <option [ngValue]="proveedor">
+                {{ getProveedorNombre(proveedor) }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">Comprobante <span class="text-danger">*</span></label>
+          <select class="form-control form-control-sm" [(ngModel)]="selectedComprobante">
+            <option [ngValue]="null">Seleccionar tipo</option>
+            @for (comprobante of comprobantes; track comprobante.idtipocomprobante) {
+              <option [ngValue]="comprobante">
+                {{ comprobante.nombrecomprobante }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label font-weight-bold">Empleado <span class="text-danger">*</span></label>
+          <select class="form-control form-control-sm" [(ngModel)]="selectedEmpleado">
+            <option [ngValue]="null">Seleccionar empleado</option>
+            @for (empleado of empleados; track empleado.idempleado) {
+              <option [ngValue]="empleado">
+                {{ getEmpleadoNombre(empleado) }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="col-md-1">
+          <label class="form-label font-weight-bold">Serie <span class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-sm text-center" [(ngModel)]="serie" placeholder="F001">
+        </div>
+
+        <div class="col-md-1">
+          <label class="form-label font-weight-bold">Número <span class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-sm text-center" [(ngModel)]="correlativo" placeholder="000001">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label font-weight-bold">Fecha <span class="text-danger">*</span></label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="fechaCompra">
+        </div>
+      </div>
+
+      <!-- Tabla de Detalle de Compra -->
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered align-middle">
+          <thead class="thead-dark text-center">
+            <tr>
+              <th style="width: 50px;">ID</th>
+              <th>PRODUCTO</th>
+              <th>PRESENTACIÓN</th>
+              <th>U. MEDIDA</th>
+              <th class="text-right">P. COMPRA</th>
+              <th class="text-center" style="width: 100px;">CANTIDAD</th>
+              <th class="text-right" style="width: 120px;">SUBTOTAL</th>
+              <th class="text-center" style="width: 80px;">ACCIÓN</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of prodDetalle; track $index) {
+              <tr>
+                <td class="text-center">{{ item.idproducto }}</td>
+                <td class="font-weight-bold">{{ item.nombre }}</td>
+                <td>{{ item.presentacion?.nombrepresentacion || '-' }}</td>
+                <td>{{ item.unidadmedida?.nombreunidad || '-' }}</td>
+                <td class="text-right font-weight-bold text-success">{{ item.preciocompra | currency:'PEN':'S/ ' }}</td>
+                <td class="text-center font-weight-bold">{{ item.cantidadLlevar }}</td>
+                <td class="text-right font-weight-bold">{{ item.subTotal | currency:'PEN':'S/ ' }}</td>
+                <td class="text-center">
+                  <button (click)="eliminarProducto($index)" class="btn btn-outline-danger btn-sm" title="Eliminar fila">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8" class="text-center py-4 text-muted">
+                  <i class="fas fa-shopping-basket fa-2x mb-2 d-block text-secondary"></i>
+                  Seleccione productos del catálogo superior para agregarlos a la orden de compra.
+                </td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr class="table-active">
+              <td colspan="6" class="text-right font-weight-bold fs-5">TOTAL COMPRA:</td>
+              <td class="text-right font-weight-bold text-primary fs-5">{{ totalCompra | currency:'PEN':'S/ ' }}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Barra de Acciones y Notificaciones -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          @if (mensaje) {
+            <span [ngClass]="{'text-success font-weight-bold': !error, 'text-danger font-weight-bold': error}">
+              {{ mensaje }}
+            </span>
           }
-        </select>
-      </div>
-
-      <div class="form-group col">
-        <select class="form-control" [(ngModel)]="selectedComprobante">
-          <option [ngValue]="null">Seleccionar comprobante</option>
-          @for (comprobante of comprobantes; track comprobante.idtipocomprobante) {
-            <option [ngValue]="comprobante">
-              {{comprobante.nombrecomprobante}}
-            </option>
-          }
-        </select>
-      </div>
-
-      <div class="form-group col">
-        <select class="form-control" [(ngModel)]="selectedEmpleado">
-          <option [ngValue]="null">Seleccionar empleado</option>
-          @for (empleado of empleados; track empleado.idempleado) {
-            <option [ngValue]="empleado">
-              {{empleado.persona?.nombre}} 
-            </option>
-          }
-        </select>
-      </div>
-      <div class="form-group col">
-        <input type="text" class="form-control" [(ngModel)]="serie" placeholder="A-1">
-      </div>
-
-      <div class="form-group col">
-        <input type="text" class="form-control" [(ngModel)]="correlativo" placeholder="000001">
-      </div>
-
-      <div class="form-group col">
-        <input type="date" class="form-control w-60" [(ngModel)]="fechaCompra">
+        </div>
+        <div class="d-flex gap-2">
+          <button (click)="cancelarCompra()" class="btn btn-secondary px-3" [disabled]="procesoEnCurso">
+            <i class="fas fa-times mr-1"></i> Cancelar
+          </button>
+          <button 
+            (click)="agregarProductosACompra()" 
+            class="btn btn-success px-4 font-weight-bold" 
+            [disabled]="procesoEnCurso || prodDetalle.length === 0">
+            @if (procesoEnCurso) {
+              <span class="spinner-border spinner-border-sm mr-1"></span> Procesando...
+            } @else {
+              <i class="fas fa-save mr-1"></i> Finalizar Compra
+            }
+          </button>
+        </div>
       </div>
     </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th class="id">ID</th>
-          <th class="name">NOMBRE</th>
-          <th class="ubic">PRES.</th>
-          <th class="ubic">U.M</th>
-          <th class="prec">P.COMPRA</th>
-          <th class="stock">UNIDADES</th>
-          <th class="stock">SUB TOTAL</th>
-          <th class="center">OPCIONES</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of prodDetalle; track $index) {
-          <tr>
-            <td>{{item.idproducto}}</td>
-            <td>{{item.nombre}}</td>
-            <td>{{item.presentacion?.nombrepresentacion}}</td>
-            <td>{{item.unidadmedida?.nombreunidad}}</td>
-            <td>{{item.preciocompra}}</td>
-            <td style="text-align: center;">{{item.cantidadLlevar}}</td>
-            <td style="text-align: center;">{{item.subTotal | currency:'PEN':'S/ ':'1.2-2'}}</td>
-            <td><button (click)="eliminarProducto($index)" class="btn-eliminar">Eliminar</button></td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="8" style="text-align: center; color: #888;">No hay productos en el detalle de compra</td>
-          </tr>
-        }
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="6" style="text-align: right;"><strong>Total:</strong></td>
-          <td style="text-align: center;">{{totalCompra | currency:'PEN':'S/ ':'1.2-2'}}</td>
-          <td><button (click)="agregarProductosACompra()" class="btn-primary">Procesar</button></td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <div class="actions">
-      <button (click)="cancelarCompra()" class="btn-cancelar">Cancelar</button>
-    </div>
-
-    @if (mensaje) {
-      <div [ngClass]="{'text-success': !error, 'text-danger': error}">
-        {{mensaje}}
-      </div>
-    }
   </div>
 </div>

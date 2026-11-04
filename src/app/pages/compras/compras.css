@@ -1,115 +1,26 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-    font-family: Arial, sans-serif;
+.container-fluid {
+  font-family: inherit;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-
+.table th {
+  font-size: 0.82rem;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    border-color: #d32f2f;
-    border-width: 1PX;
+.table td {
+  font-size: 0.88rem;
+  vertical-align: middle;
 }
 
-th {
-    background-color: #f2f2f2;
+.cursor-pointer {
+  cursor: pointer;
 }
 
-.form-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.gap-2 {
+  gap: 0.5rem;
 }
 
-label {
-    font-weight: bold;
-}
-
-.row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.search-row {
-    display: flex;
-    gap: 10px;
-    flex: 1;
-    align-items: center;
-}
-
-.col {
-    flex: 1;
-}
-
-label {
-    font-weight: bold;
-}
-
-.col {
-    flex: 1;
-}
-
-input, select {
-    padding: 6px;
-
-}
-
-button {
-   
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin: 17px;
-    border-radius: 4px;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.btn-eliminar, .btn-cancelar {
-    background-color: #f44336;
-}
-
-.btn-eliminar:hover, .btn-cancelar:hover {
-    background-color: #d32f2f;
-}
-
-.btn-primary {
-    background-color: #007bff;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
-.actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.purchase-detail input, .purchase-detail select {
-    width: 100%;
-    text-align: center;
-    border: 1px solid #971616;
-    border-radius: 4px;
-    background-color: #e6e5ef;
-}
-.purchase-detail h2{
-    text-align: center;
+.fs-5 {
+  font-size: 1.15rem;
 }
