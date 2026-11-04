@@ -28,7 +28,8 @@
               "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.css",
               "node_modules/ngx-toastr/toastr.css",
-              "src/assets/plugins/fontawesome-free/css/all.min.css"
+              "src/assets/plugins/fontawesome-free/css/all.min.css",
+              "src/assets/dist/css/adminlte.min.css"
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
@@ -56,7 +57,12 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
-              "outputMode": "static"
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
