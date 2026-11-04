@@ -153,21 +153,34 @@ export class ReportsComponent implements OnInit {
      });
    }
 
+  isPrinting: boolean = false;
+
   reimprimirTicket(venta: Venta): void {
+    if (this.isPrinting) return;
+    this.isPrinting = true;
+
     const ventaId = venta.idventa!;
     if (!this.detallesVenta[ventaId]) {
-      this.detalleVentaService.getDetallesPorVenta(ventaId).subscribe((response: DetalleVentaList) => {
-        this.detallesVenta[ventaId] = response.list;
-        this.imprimir(venta, response.list);
+      this.detalleVentaService.getDetallesPorVenta(ventaId).subscribe({
+        next: (response: DetalleVentaList) => {
+          this.detallesVenta[ventaId] = response.list;
+          this.imprimir(venta, response.list);
+          setTimeout(() => this.isPrinting = false, 1000);
+        },
+        error: () => {
+          this.isPrinting = false;
+        }
       });
     } else {
       this.imprimir(venta, this.detallesVenta[ventaId]);
+      setTimeout(() => this.isPrinting = false, 1000);
     }
   }
 
   private imprimir(venta: any, detalles: DetalleVenta[]): void {
-    const clienteNombre = `${venta.cliente.persona.nombre} ${venta.cliente.persona.paterno} ${venta.cliente.persona.materno}`;
-    const ticketHTML = this.ticketService.createTicketHTML(venta, detalles, clienteNombre);
-    this.ticketService.openPrintPreview(ticketHTML);
+    const cliente = venta.cliente?.persona;
+    const clienteNombre = cliente ? `${cliente.nombre || ''} ${cliente.paterno || ''} ${cliente.materno || ''}`.trim() : 'PÚBLICO GENERAL';
+    const ticketHTML = this.ticketService.createTicketHTML(venta, detalles, clienteNombre || 'PÚBLICO GENERAL', 'REIMPRESIÓN DE TICKET');
+    this.ticketService.printDirect(ticketHTML);
   }
 }
