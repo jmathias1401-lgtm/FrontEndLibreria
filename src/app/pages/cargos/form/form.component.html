@@ -31,9 +31,11 @@
               <label for="estado">Estado</label>
               <select class="form-control" id="estado" formControlName="estado">
                 <option value="">Seleccione un estado</option>
-                <option *ngFor="let estado of estados" [value]="estado.idestado">
-                  {{ estado.estado }}
-                </option>
+                @for (estado of estados; track estado.idestado) {
+                  <option [value]="estado.idestado">
+                    {{ estado.estado }}
+                  </option>
+                }
               </select>
             </div>
           </div>

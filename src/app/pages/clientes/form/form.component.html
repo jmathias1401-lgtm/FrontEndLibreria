@@ -56,9 +56,11 @@
                   <label for="tipopersona">Tipo Persona</label>
                   <select id="tipopersona" class="form-select" formControlName="tipopersona" [compareWith]="compareWith">
                     <option [ngValue]="null" disabled>Seleccione un tipo</option>
-                    <option *ngFor="let tipo of tipopersonas" [ngValue]="tipo">
-                      {{tipo.nombre}}
-                    </option>
+                    @for (tipo of tipopersonas; track tipo.idtipopersona) {
+                      <option [ngValue]="tipo">
+                        {{ tipo.nombre }}
+                      </option>
+                    }
                   </select>
                   </div>
                   <div class="col-md-6 mb-3">

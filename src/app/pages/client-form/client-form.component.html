@@ -16,64 +16,80 @@
                     <button class="btn btn-success" type="button" (click)="BuscarPersona()"><i class="fas fa-search"></i></button>
                   </div>
                 </div>
-                <div *ngIf="clientForm.get('dni')?.invalid && clientForm.get('dni')?.touched" class="text-danger">
-                  DNI requerido y debe tener 8 dígitos.
-                </div>
+                @if (clientForm.get('dni')?.invalid && clientForm.get('dni')?.touched) {
+                  <div class="text-danger">
+                    DNI requerido y debe tener 8 dígitos.
+                  </div>
+                }
               </div>
               <div class="col-md-6 mb-3">
                 <label for="ruc" class="form-label">RUC</label>
                 <input type="text" class="form-control" id="ruc" formControlName="ruc" placeholder="Ingrese RUC (opcional)">
-                <div *ngIf="clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched" class="text-danger">
-                  RUC debe tener 11 dígitos.
-                </div>
+                @if (clientForm.get('ruc')?.invalid && clientForm.get('ruc')?.touched) {
+                  <div class="text-danger">
+                    RUC debe tener 11 dígitos.
+                  </div>
+                }
               </div>
             </div>
             <div class="row">
               <div class="col-md-4 mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Ingrese nombre">
-                <div *ngIf="clientForm.get('nombre')?.invalid && clientForm.get('nombre')?.touched" class="text-danger">
-                  Nombre requerido.
-                </div>
+                @if (clientForm.get('nombre')?.invalid && clientForm.get('nombre')?.touched) {
+                  <div class="text-danger">
+                    Nombre requerido.
+                  </div>
+                }
               </div>
               <div class="col-md-4 mb-3">
                 <label for="paterno" class="form-label">Apellido Paterno</label>
                 <input type="text" class="form-control" id="paterno" formControlName="paterno" placeholder="Ingrese apellido paterno">
-                <div *ngIf="clientForm.get('paterno')?.invalid && clientForm.get('paterno')?.touched" class="text-danger">
-                  Apellido paterno requerido.
-                </div>
+                @if (clientForm.get('paterno')?.invalid && clientForm.get('paterno')?.touched) {
+                  <div class="text-danger">
+                    Apellido paterno requerido.
+                  </div>
+                }
               </div>
               <div class="col-md-4 mb-3">
                 <label for="materno" class="form-label">Apellido Materno</label>
                 <input type="text" class="form-control" id="materno" formControlName="materno" placeholder="Ingrese apellido materno">
-                <div *ngIf="clientForm.get('materno')?.invalid && clientForm.get('materno')?.touched" class="text-danger">
-                  Apellido materno requerido.
-                </div>
+                @if (clientForm.get('materno')?.invalid && clientForm.get('materno')?.touched) {
+                  <div class="text-danger">
+                    Apellido materno requerido.
+                  </div>
+                }
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="fechanacimiento" class="form-label">Fecha de Nacimiento</label>
                 <input type="date" class="form-control" id="fechanacimiento" formControlName="fechanacimiento">
-                <div *ngIf="clientForm.get('fechanacimiento')?.invalid && clientForm.get('fechanacimiento')?.touched" class="text-danger">
-                  Fecha de nacimiento requerida.
-                </div>
+                @if (clientForm.get('fechanacimiento')?.invalid && clientForm.get('fechanacimiento')?.touched) {
+                  <div class="text-danger">
+                    Fecha de nacimiento requerida.
+                  </div>
+                }
               </div>
               <div class="col-md-6 mb-3">
                 <label for="telefono" class="form-label">Teléfono</label>
                 <input type="text" class="form-control" id="telefono" formControlName="telefono" placeholder="Ingrese teléfono">
-                <div *ngIf="clientForm.get('telefono')?.invalid && clientForm.get('telefono')?.touched" class="text-danger">
-                  Teléfono requerido.
-                </div>
+                @if (clientForm.get('telefono')?.invalid && clientForm.get('telefono')?.touched) {
+                  <div class="text-danger">
+                    Teléfono requerido.
+                  </div>
+                }
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="correo" class="form-label">Correo</label>
                 <input type="email" class="form-control" id="correo" formControlName="correo" placeholder="Ingrese correo">
-                <div *ngIf="clientForm.get('correo')?.invalid && clientForm.get('correo')?.touched" class="text-danger">
-                  Correo válido requerido.
-                </div>
+                @if (clientForm.get('correo')?.invalid && clientForm.get('correo')?.touched) {
+                  <div class="text-danger">
+                    Correo válido requerido.
+                  </div>
+                }
               </div>
               <div class="col-md-6 mb-3">
                 <label for="sexo" class="form-label">Sexo</label>
@@ -82,17 +98,21 @@
                   <option value="M">Masculino</option>
                   <option value="F">Femenino</option>
                 </select>
-                <div *ngIf="clientForm.get('sexo')?.invalid && clientForm.get('sexo')?.touched" class="text-danger">
-                  Sexo requerido.
-                </div>
+                @if (clientForm.get('sexo')?.invalid && clientForm.get('sexo')?.touched) {
+                  <div class="text-danger">
+                    Sexo requerido.
+                  </div>
+                }
               </div>
             </div>
             <div class="mb-3">
               <label for="direccion" class="form-label">Dirección</label>
               <textarea class="form-control" id="direccion" formControlName="direccion" rows="3" placeholder="Ingrese dirección"></textarea>
-              <div *ngIf="clientForm.get('direccion')?.invalid && clientForm.get('direccion')?.touched" class="text-danger">
-                Dirección requerida.
-              </div>
+              @if (clientForm.get('direccion')?.invalid && clientForm.get('direccion')?.touched) {
+                <div class="text-danger">
+                  Dirección requerida.
+                </div>
+              }
             </div>
             <button type="submit" class="btn btn-primary" [disabled]="!clientForm.valid">Registrar pedido</button>
           </form>

@@ -1,44 +1,46 @@
-<div class="login-overlay" *ngIf="isVisible" (click)="closeModal($event)">
-  <div class="login-box" (click)="$event.stopPropagation()">
-    <div class="login-logo">
-      <a href="#"><b>New</b>Farma</a>
-    </div>
-    <div class="card">
-      <div class="card-body login-card-body">
-        <p class="login-box-msg">Inicie sesión para continuar</p>
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Nombre de usuario" formControlName="usuario" required>
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fas fa-user"></span>
+@if (isVisible) {
+  <div class="login-overlay" (click)="closeModal($event)">
+    <div class="login-box" (click)="$event.stopPropagation()">
+      <div class="login-logo">
+        <a href="#"><b>New</b>Farma</a>
+      </div>
+      <div class="card">
+        <div class="card-body login-card-body">
+          <p class="login-box-msg">Inicie sesión para continuar</p>
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Nombre de usuario" formControlName="usuario" required>
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-user"></span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="input-group mb-3">
-            <input type="password" class="form-control" placeholder="Contraseña" formControlName="password" required>
-            <div class="input-group-append">
-              <div class="input-group-text">
-                <span class="fas fa-lock"></span>
+            <div class="input-group mb-3">
+              <input type="password" class="form-control" placeholder="Contraseña" formControlName="password" required>
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
               </div>
             </div>
-          </div>
-        <div class="row">
-          <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
-          </div>
+            <div class="row">
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-12 text-center">
+                <button type="button" class="btn btn-link p-0" (click)="openRegisterModal()">
+                  ¿No tienes cuenta? Regístrate aquí
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-        <div class="row mt-3">
-          <div class="col-12 text-center">
-            <button type="button" class="btn btn-link p-0" (click)="openRegisterModal()">
-              ¿No tienes cuenta? Regístrate aquí
-            </button>
-          </div>
-        </div>
-        </form>
       </div>
     </div>
   </div>
-</div>
+}
 
 <app-register [isVisible]="showRegisterModal"></app-register>

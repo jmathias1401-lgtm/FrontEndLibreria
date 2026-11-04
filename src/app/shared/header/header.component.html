@@ -50,7 +50,9 @@
       <li class="nav-item">
         <a href="./cart" class="nav-link">
           <i class="fas fa-shopping-cart"></i>
-          <span class="badge badge-danger navbar-badge" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+          @if (cartItemCount > 0) {
+            <span class="badge badge-danger navbar-badge">{{ cartItemCount }}</span>
+          }
         </a>
       </li>
       <!-- Navbar Search -->

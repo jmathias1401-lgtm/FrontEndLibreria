@@ -12,64 +12,80 @@
               <div class="col-md-6 mb-3">
                 <label for="dni" class="form-label">DNI</label>
                 <input type="text" class="form-control" id="dni" formControlName="dni" placeholder="Ingrese DNI">
-                <div *ngIf="empleadoForm.get('dni')?.invalid && empleadoForm.get('dni')?.touched" class="text-danger">
-                  DNI requerido y debe tener 8 dígitos.
-                </div>
+                @if (empleadoForm.get('dni')?.invalid && empleadoForm.get('dni')?.touched) {
+                  <div class="text-danger">
+                    DNI requerido y debe tener 8 dígitos.
+                  </div>
+                }
               </div>
               <div class="col-md-6 mb-3">
                 <label for="ruc" class="form-label">RUC</label>
                 <input type="text" class="form-control" id="ruc" formControlName="ruc" placeholder="Ingrese RUC (opcional)">
-                <div *ngIf="empleadoForm.get('ruc')?.invalid && empleadoForm.get('ruc')?.touched" class="text-danger">
-                  RUC debe tener 11 dígitos.
-                </div>
+                @if (empleadoForm.get('ruc')?.invalid && empleadoForm.get('ruc')?.touched) {
+                  <div class="text-danger">
+                    RUC debe tener 11 dígitos.
+                  </div>
+                }
               </div>
             </div>
             <div class="row">
               <div class="col-md-4 mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Ingrese nombre">
-                <div *ngIf="empleadoForm.get('nombre')?.invalid && empleadoForm.get('nombre')?.touched" class="text-danger">
-                  Nombre requerido.
-                </div>
+                @if (empleadoForm.get('nombre')?.invalid && empleadoForm.get('nombre')?.touched) {
+                  <div class="text-danger">
+                    Nombre requerido.
+                  </div>
+                }
               </div>
               <div class="col-md-4 mb-3">
                 <label for="paterno" class="form-label">Apellido Paterno</label>
                 <input type="text" class="form-control" id="paterno" formControlName="paterno" placeholder="Ingrese apellido paterno">
-                <div *ngIf="empleadoForm.get('paterno')?.invalid && empleadoForm.get('paterno')?.touched" class="text-danger">
-                  Apellido paterno requerido.
-                </div>
+                @if (empleadoForm.get('paterno')?.invalid && empleadoForm.get('paterno')?.touched) {
+                  <div class="text-danger">
+                    Apellido paterno requerido.
+                  </div>
+                }
               </div>
               <div class="col-md-4 mb-3">
                 <label for="materno" class="form-label">Apellido Materno</label>
                 <input type="text" class="form-control" id="materno" formControlName="materno" placeholder="Ingrese apellido materno">
-                <div *ngIf="empleadoForm.get('materno')?.invalid && empleadoForm.get('materno')?.touched" class="text-danger">
-                  Apellido materno requerido.
-                </div>
+                @if (empleadoForm.get('materno')?.invalid && empleadoForm.get('materno')?.touched) {
+                  <div class="text-danger">
+                    Apellido materno requerido.
+                  </div>
+                }
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="fechanacimiento" class="form-label">Fecha de Nacimiento</label>
                 <input type="date" class="form-control" id="fechanacimiento" formControlName="fechanacimiento">
-                <div *ngIf="empleadoForm.get('fechanacimiento')?.invalid && empleadoForm.get('fechanacimiento')?.touched" class="text-danger">
-                  Fecha de nacimiento requerida.
-                </div>
+                @if (empleadoForm.get('fechanacimiento')?.invalid && empleadoForm.get('fechanacimiento')?.touched) {
+                  <div class="text-danger">
+                    Fecha de nacimiento requerida.
+                  </div>
+                }
               </div>
               <div class="col-md-6 mb-3">
                 <label for="telefono" class="form-label">Teléfono</label>
                 <input type="text" class="form-control" id="telefono" formControlName="telefono" placeholder="Ingrese teléfono">
-                <div *ngIf="empleadoForm.get('telefono')?.invalid && empleadoForm.get('telefono')?.touched" class="text-danger">
-                  Teléfono requerido.
-                </div>
+                @if (empleadoForm.get('telefono')?.invalid && empleadoForm.get('telefono')?.touched) {
+                  <div class="text-danger">
+                    Teléfono requerido.
+                  </div>
+                }
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="correo" class="form-label">Correo</label>
                 <input type="email" class="form-control" id="correo" formControlName="correo" placeholder="Ingrese correo">
-                <div *ngIf="empleadoForm.get('correo')?.invalid && empleadoForm.get('correo')?.touched" class="text-danger">
-                  Correo válido requerido.
-                </div>
+                @if (empleadoForm.get('correo')?.invalid && empleadoForm.get('correo')?.touched) {
+                  <div class="text-danger">
+                    Correo válido requerido.
+                  </div>
+                }
               </div>
               <div class="col-md-6 mb-3">
                 <label for="sexo" class="form-label">Sexo</label>
@@ -78,17 +94,21 @@
                   <option value="M">Masculino</option>
                   <option value="F">Femenino</option>
                 </select>
-                <div *ngIf="empleadoForm.get('sexo')?.invalid && empleadoForm.get('sexo')?.touched" class="text-danger">
-                  Sexo requerido.
-                </div>
+                @if (empleadoForm.get('sexo')?.invalid && empleadoForm.get('sexo')?.touched) {
+                  <div class="text-danger">
+                    Sexo requerido.
+                  </div>
+                }
               </div>
             </div>
             <div class="mb-3">
               <label for="direccion" class="form-label">Dirección</label>
               <textarea class="form-control" id="direccion" formControlName="direccion" rows="3" placeholder="Ingrese dirección"></textarea>
-              <div *ngIf="empleadoForm.get('direccion')?.invalid && empleadoForm.get('direccion')?.touched" class="text-danger">
-                Dirección requerida.
-              </div>
+              @if (empleadoForm.get('direccion')?.invalid && empleadoForm.get('direccion')?.touched) {
+                <div class="text-danger">
+                  Dirección requerida.
+                </div>
+              }
             </div>
 
             <h4>Información de Usuario</h4>
@@ -96,16 +116,20 @@
               <div class="col-md-6 mb-3">
                 <label for="nombreusuario" class="form-label">Nombre de Usuario</label>
                 <input type="text" class="form-control" id="nombreusuario" formControlName="nombreusuario" placeholder="Ingrese nombre de usuario">
-                <div *ngIf="empleadoForm.get('nombreusuario')?.invalid && empleadoForm.get('nombreusuario')?.touched" class="text-danger">
-                  Nombre de usuario requerido.
-                </div>
+                @if (empleadoForm.get('nombreusuario')?.invalid && empleadoForm.get('nombreusuario')?.touched) {
+                  <div class="text-danger">
+                    Nombre de usuario requerido.
+                  </div>
+                }
               </div>
               <div class="col-md-6 mb-3">
                 <label for="clave" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="clave" formControlName="clave" placeholder="Ingrese contraseña">
-                <div *ngIf="empleadoForm.get('clave')?.invalid && empleadoForm.get('clave')?.touched" class="text-danger">
-                  Contraseña requerida.
-                </div>
+                @if (empleadoForm.get('clave')?.invalid && empleadoForm.get('clave')?.touched) {
+                  <div class="text-danger">
+                    Contraseña requerida.
+                  </div>
+                }
               </div>
             </div>
             <div class="row">
@@ -113,29 +137,37 @@
                 <label for="cargo" class="form-label">Cargo</label>
                 <select class="form-control" id="cargo" formControlName="cargo">
                   <option value="">Seleccione Cargo</option>
-                  <option *ngFor="let cargo of cargos" [value]="cargo.idcargo">{{ cargo.nombrecargo }}</option>
+                  @for (cargo of cargos; track cargo.idcargo) {
+                    <option [value]="cargo.idcargo">{{ cargo.nombrecargo }}</option>
+                  }
                 </select>
-                <div *ngIf="empleadoForm.get('cargo')?.invalid && empleadoForm.get('cargo')?.touched" class="text-danger">
-                  Cargo requerido.
-                </div>
+                @if (empleadoForm.get('cargo')?.invalid && empleadoForm.get('cargo')?.touched) {
+                  <div class="text-danger">
+                    Cargo requerido.
+                  </div>
+                }
               </div>
               <div class="col-md-6 mb-3">
                 <label for="estado" class="form-label">Estado</label>
                 <select class="form-control" id="estado" formControlName="estado">
                   <option value="">Seleccione Estado</option>
-                  <option *ngFor="let estado of estados" [value]="estado.idestado">{{ estado.estado }}</option>
+                  @for (estado of estados; track estado.idestado) {
+                    <option [value]="estado.idestado">{{ estado.estado }}</option>
+                  }
                 </select>
-                <div *ngIf="empleadoForm.get('estado')?.invalid && empleadoForm.get('estado')?.touched" class="text-danger">
-                  Estado requerido.
-                </div>
+                @if (empleadoForm.get('estado')?.invalid && empleadoForm.get('estado')?.touched) {
+                  <div class="text-danger">
+                    Estado requerido.
+                  </div>
+                }
               </div>
             </div>
 
             <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary" [disabled]="!empleadoForm.valid">
+              <button type="submit" class="btn btn-primary" [disabled]="!empleadoForm.valid">
                 {{ isEditMode ? 'Actualizar' : 'Crear' }} Empleado
-                </button>
-                <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancelar</button>
+              </button>
+              <button type="button" class="btn btn-secondary ml-2" (click)="cancel()">Cancelar</button>
             </div>
           </form>
         </div>

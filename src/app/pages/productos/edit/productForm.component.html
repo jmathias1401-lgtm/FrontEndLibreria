@@ -1,4 +1,3 @@
-
 <div class="modal-content mt-5">
     <div class="modal-header">
         <h3 class="modal-title">{{operacion}} Producto</h3>
@@ -13,9 +12,11 @@
                 <div class="form-group full-width">
                     <label for="name">Nombre del Producto</label>
                     <input id="name" class="form-control" formControlName="nombre" (input)="mayusculas('nombre')" type="text" placeholder="Ej: Plumón Indeleble...">
-                    <small class="text-danger" *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched">
-                        El nombre es obligatorio.
-                    </small>
+                    @if (form.get('nombre')?.invalid && form.get('nombre')?.touched) {
+                        <small class="text-danger">
+                            El nombre es obligatorio.
+                        </small>
+                    }
                 </div>
 
                 <div class="form-group">
@@ -45,7 +46,9 @@
                     <label for="unidadmedida">Unidad de Medida</label>
                     <select id="unidadmedida" class="form-select" formControlName="unidadmedida">
                         <option [ngValue]="null" disabled>Seleccione unidad</option>
-                        <option [ngValue]="uni" *ngFor="let uni of unidadmedida">{{uni.nombreunidad}}</option>
+                        @for (uni of unidadmedida; track uni.idunidadmedida) {
+                            <option [ngValue]="uni">{{uni.nombreunidad}}</option>
+                        }
                     </select>
                 </div>
 
@@ -53,7 +56,9 @@
                     <label for="presentacion">Presentación</label>
                     <select id="presentacion" class="form-select" formControlName="presentacion">
                         <option [ngValue]="null" disabled>Seleccione presentación</option>
-                        <option [ngValue]="prese" *ngFor="let prese of presentacion">{{prese.nombrepresentacion}}</option>
+                        @for (prese of presentacion; track prese.idpresentacion) {
+                            <option [ngValue]="prese">{{prese.nombrepresentacion}}</option>
+                        }
                     </select>
                 </div>
 
@@ -61,7 +66,9 @@
                     <label for="laboratorio">Marca</label>
                     <select id="laboratorio" class="form-select" formControlName="laboratorio">
                         <option [ngValue]="null" disabled>Seleccione marca</option>
-                        <option [ngValue]="labo" *ngFor="let labo of laboratorio">{{labo.nombrelaboratorio}}</option>
+                        @for (labo of laboratorio; track labo.idlaboratorio) {
+                            <option [ngValue]="labo">{{labo.nombrelaboratorio}}</option>
+                        }
                     </select>
                 </div>
             </div>
@@ -79,10 +86,12 @@
                     <input #imagenInput type="file" (change)="onFileSelected($event)" accept="image/*" class="form-control mb-2">
                     <p class="text-muted small">Formatos permitidos: JPG, PNG. Tamaño máx: 2MB</p>
                     
-                    <div class="preview-container" *ngIf="imagePreview">
-                        <img [src]="imagePreview" class="preview-image" alt="Vista previa">
-                        <p class="mt-2 small text-primary">{{form.get('imagen_path')?.value}}</p>
-                    </div>
+                    @if (imagePreview) {
+                        <div class="preview-container">
+                            <img [src]="imagePreview" class="preview-image" alt="Vista previa">
+                            <p class="mt-2 small text-primary">{{form.get('imagen_path')?.value}}</p>
+                        </div>
+                    }
                 </div>
             </div>
 

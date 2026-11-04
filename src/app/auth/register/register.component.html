@@ -1,78 +1,91 @@
-<div class="register-overlay" *ngIf="isVisible">
-  <div class="register-modal">
-    <div class="card">
-      <div class="card-header">
-        <h4 class="mb-0">Registrar Nuevo Usuario</h4>
-        <button type="button" class="close" (click)="closeModal()">
-          <span>&times;</span>
-        </button>
-      </div>
-      <div class="card-body">
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-          <div class="form-group mb-3">
-            <label for="nombreusuario">Nombre de Usuario</label>
-            <input 
-              type="text" 
-              class="form-control" 
-              id="nombreusuario" 
-              placeholder="Ingrese nombre de usuario"
-              formControlName="nombreusuario"
-              required>
-            <div class="invalid-feedback" *ngIf="registerForm.get('nombreusuario')?.invalid && registerForm.get('nombreusuario')?.touched">
-              El nombre de usuario es requerido (mínimo 3 caracteres)
+@if (isVisible) {
+  <div class="register-overlay">
+    <div class="register-modal">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">Registrar Nuevo Usuario</h4>
+          <button type="button" class="close" (click)="closeModal()">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="form-group mb-3">
+              <label for="nombreusuario">Nombre de Usuario</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="nombreusuario" 
+                placeholder="Ingrese nombre de usuario"
+                formControlName="nombreusuario"
+                required>
+              @if (registerForm.get('nombreusuario')?.invalid && registerForm.get('nombreusuario')?.touched) {
+                <div class="invalid-feedback d-block">
+                  El nombre de usuario es requerido (mínimo 3 caracteres)
+                </div>
+              }
             </div>
-          </div>
 
-          <div class="form-group mb-3">
-            <label for="clave">Contraseña</label>
-            <input 
-              type="password" 
-              class="form-control" 
-              id="clave" 
-              placeholder="Ingrese contraseña"
-              formControlName="clave"
-              required>
-            <div class="invalid-feedback" *ngIf="registerForm.get('clave')?.invalid && registerForm.get('clave')?.touched">
-              La contraseña es requerida (mínimo 6 caracteres)
+            <div class="form-group mb-3">
+              <label for="clave">Contraseña</label>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="clave" 
+                placeholder="Ingrese contraseña"
+                formControlName="clave"
+                required>
+              @if (registerForm.get('clave')?.invalid && registerForm.get('clave')?.touched) {
+                <div class="invalid-feedback d-block">
+                  La contraseña es requerida (mínimo 6 caracteres)
+                </div>
+              }
             </div>
-          </div>
 
-          <div class="form-group mb-3">
-            <label for="fechacreacion">Fecha de Creación</label>
-            <input 
-              type="date" 
-              class="form-control" 
-              id="fechacreacion"
-              formControlName="fechacreacion"
-              required>
-          </div>
-
-          <div class="form-group mb-3">
-            <label for="idcargo">Cargo</label>
-            <select class="form-control" id="idcargo" formControlName="idcargo" required>
-              <option value="">Seleccione un cargo</option>
-              <option *ngFor="let cargo of cargos" [value]="cargo.idcargo">
-                {{ cargo.nombrecargo }}
-              </option>
-            </select>
-            <div class="invalid-feedback" *ngIf="registerForm.get('idcargo')?.invalid && registerForm.get('idcargo')?.touched">
-              Seleccione un cargo
+            <div class="form-group mb-3">
+              <label for="fechacreacion">Fecha de Creación</label>
+              <input 
+                type="date" 
+                class="form-control" 
+                id="fechacreacion"
+                formControlName="fechacreacion"
+                required>
             </div>
-          </div>
 
-          <div class="form-group mb-0">
-            <button 
-              type="submit" 
-              class="btn btn-primary btn-block"
-              [disabled]="isLoading || registerForm.invalid">
-              <span *ngIf="!isLoading">Registrar Usuario</span>
-              <span *ngIf="isLoading">
-                <i class="fas fa-spinner fa-spin"></i> Registrando...
-              </span>
-            </button>
-          </div>
-        </form>
+            <div class="form-group mb-3">
+              <label for="idcargo">Cargo</label>
+              <select class="form-control" id="idcargo" formControlName="idcargo" required>
+                <option value="">Seleccione un cargo</option>
+                @for (cargo of cargos; track cargo.idcargo) {
+                  <option [value]="cargo.idcargo">
+                    {{ cargo.nombrecargo }}
+                  </option>
+                }
+              </select>
+              @if (registerForm.get('idcargo')?.invalid && registerForm.get('idcargo')?.touched) {
+                <div class="invalid-feedback d-block">
+                  Seleccione un cargo
+                </div>
+              }
+            </div>
+
+            <div class="form-group mb-0">
+              <button 
+                type="submit" 
+                class="btn btn-primary btn-block"
+                [disabled]="isLoading || registerForm.invalid">
+                @if (!isLoading) {
+                  <span>Registrar Usuario</span>
+                } @else {
+                  <span>
+                    <i class="fas fa-spinner fa-spin"></i> Registrando...
+                  </span>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
+}

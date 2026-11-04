@@ -17,8 +17,8 @@
           </tr>
         </thead>
         <tbody>
-          <ng-container *ngFor="let compra of agrupados">
-            <tr (click)="toggleDetalles(compra.idcompra!)" style="cursor: pointer;"  class="prueba">
+          @for (compra of agrupados; track compra.idcompra) {
+            <tr (click)="toggleDetalles(compra.idcompra!)" style="cursor: pointer;" class="prueba">
               <td>{{ compra.idcompra }}</td>
               <td>{{ compra.serie }}</td>
               <td>{{ compra.correlativo }}</td>
@@ -27,34 +27,44 @@
               <td>{{ compra.proveedor.persona.nombre }}</td>
               <td>{{ compra.empleado?.persona.nombre }} {{ compra.empleado?.persona.paterno }}</td>
             </tr>
-            <tr class="tbodys" *ngIf="selectedCompraId === compra.idcompra">
-              <td colspan="7">
-                <div *ngIf="detallesCompra[compra.idcompra!]">
-                  <h5>Detalles de la Compra</h5>
-                  <table class="table table-sm table-striped">
-                    <thead>
-                      <tr>
-                        <th>Producto</th>
-                        <th>Lote</th>
-                        <th>Cantidad</th>
-                        <th>Precio Unitario</th>
-                        <th>Subtotal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let detalle of detallesCompra[compra.idcompra!]">
-                        <td>{{ detalle.producto.nombre }}</td>
-                        <td>{{ detalle.lote }}</td>
-                        <td>{{ detalle.unidades }}</td>
-                        <td>S/ {{ detalle.costounidad.toFixed(2) }}</td>
-                        <td>S/ {{ detalle.total.toFixed(2) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </td>
+            @if (selectedCompraId === compra.idcompra) {
+              <tr class="tbodys">
+                <td colspan="7">
+                  @if (detallesCompra[compra.idcompra!]) {
+                    <div>
+                      <h5>Detalles de la Compra</h5>
+                      <table class="table table-sm table-striped">
+                        <thead>
+                          <tr>
+                            <th>Producto</th>
+                            <th>Lote</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Subtotal</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (detalle of detallesCompra[compra.idcompra!]; track detalle.iddetallecompra || $index) {
+                            <tr>
+                              <td>{{ detalle.producto.nombre }}</td>
+                              <td>{{ detalle.lote }}</td>
+                              <td>{{ detalle.unidades }}</td>
+                              <td>S/ {{ detalle.costounidad.toFixed(2) }}</td>
+                              <td>S/ {{ detalle.total.toFixed(2) }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  }
+                </td>
+              </tr>
+            }
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-center text-muted py-3">No hay compras registradas</td>
             </tr>
-          </ng-container>
+          }
         </tbody>
       </table>
     </div>
