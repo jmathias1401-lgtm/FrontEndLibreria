@@ -25,23 +25,29 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let cliente of clientes">
-                <td>{{ cliente.idcliente }}</td>
-                <td>{{ cliente.persona.nombre }}</td>
-                <td>{{ cliente.persona?.paterno }} {{ cliente.persona?.materno }}</td>
-                <td>{{ cliente.persona?.dni }}</td>
-                <td>{{ cliente.persona?.ruc }}</td>
-                <td>{{ cliente.persona.telefono }}</td>
-                <td>{{ cliente.persona.tipoPersona.nombre }}</td>
-                <td>
-                  <button class="btn btn-sm btn-info" (click)="editCliente(cliente.idcliente)">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteCliente(cliente.idcliente)">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
+              @for (cliente of clientes; track cliente.idcliente) {
+                <tr>
+                  <td>{{ cliente.idcliente }}</td>
+                  <td>{{ cliente.persona?.nombre }}</td>
+                  <td>{{ cliente.persona?.paterno }} {{ cliente.persona?.materno }}</td>
+                  <td>{{ cliente.persona?.dni }}</td>
+                  <td>{{ cliente.persona?.ruc }}</td>
+                  <td>{{ cliente.persona?.telefono }}</td>
+                  <td>{{ cliente.persona?.tipoPersona?.nombre }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info me-1" (click)="editCliente(cliente.idcliente)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteCliente(cliente.idcliente)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">No hay clientes registrados</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>

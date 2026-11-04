@@ -1,23 +1,3 @@
-<!-- Hero Section 
-<section class="hero-section bg-primary text-white py-5 ">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-8">
-        <h1 class="display-4 text-center">BOTICA NEW FARMA</h1>
-        <p class="lead text-center">Tu salud es nuestra prioridad. Encuentra medicamentos de calidad y asesoramiento profesional.</p>
-      </div>
-      <div class="contacto col-md-4">
-        <div class="contact-info">
-          <h5>Dónde comprar</h5>
-          <p><i class="fas fa-phone"></i> 926 424 814</p>
-          <p><i class="fas fa-phone"></i> 953 165 453</p>
-          <p><i class="fas fa-envelope"></i> newfarmarh&#64;newfarma.com.pe</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
--->
 <!-- Promotional Reel Section -->
 <section class="promo-reel-section">
   <div class="container-fluid px-0">
@@ -26,19 +6,21 @@
         <i class="fas fa-chevron-left"></i>
       </button>
       <div class="promo-reel" #promoReel>
-        <div class="promo-item" *ngFor="let promo of promos; let i = index">
-          <div class="promo-card" [style.background]="promo.bgColor">
-            <div class="promo-content">
-              <div class="promo-icon">
-                <i class="{{ promo.icon }}"></i>
-              </div>
-              <div class="promo-text">
-                <h5>{{ promo.title }}</h5>
-                <p>{{ promo.description }}</p>
+        @for (promo of promos; track promo.title) {
+          <div class="promo-item">
+            <div class="promo-card" [style.background]="promo.bgColor">
+              <div class="promo-content">
+                <div class="promo-icon">
+                  <i class="{{ promo.icon }}"></i>
+                </div>
+                <div class="promo-text">
+                  <h5>{{ promo.title }}</h5>
+                  <p>{{ promo.description }}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        }
         <!-- WhatsApp Card -->
         <div class="promo-item">
           <div class="promo-card whatsapp-card" (click)="openWhatsApp()">
@@ -132,37 +114,50 @@
   <div class="container">
     
     <!-- Search indicator -->
-    <div *ngIf="isSearching" class="search-info mb-3">
-      <i class="fas fa-search"></i> Resultados de búsqueda para: "<strong>{{ searchQuery }}</strong>"
-      <button class="btn btn-sm btn-outline-secondary ms-2" (click)="clearSearch()">
-        <i class="fas fa-times"></i> Ver todos
-      </button>
-    </div>
+    @if (isSearching) {
+      <div class="search-info mb-3">
+        <i class="fas fa-search"></i> Resultados de búsqueda para: "<strong>{{ searchQuery }}</strong>"
+        <button class="btn btn-sm btn-outline-secondary ms-2" (click)="clearSearch()">
+          <i class="fas fa-times"></i> Ver todos
+        </button>
+      </div>
+    }
+
     <div class="products-grid">
-       <div *ngFor="let product of products; let i = index" class="product-item">
-        <div class="card h-100 product-card d-flex flex-column">
-          <div class="card-img-container">
-             <img [src]="getProductImage(product, i)" [alt]="product.nombre" class="card-img-top">
-          </div>
-           <div class="card-body text-center d-flex flex-column">
-             <h6 class="card-title">{{ product.nombre }}</h6>
-             <h6 class="card-title">{{ product.laboratorio.nombrelaboratorio }}</h6>
-             <h6 class="card-title">{{ product.presentacion.nombrepresentacion }}</h6>
-             <div class="mt-auto">
-               <label class="price-label mb-2">S/. {{ product.preciocaja| number:'1.2-2' }}</label>
-               <div *ngIf="!addedProducts.has(product.idproducto)" class="d-flex justify-content-center align-items-center m-0 product-add-button-container p-0 w-100">
-                 <button class="btn btn-primary w-100" (click)="addToCart(product)">Agregar a carrito</button>
-               </div>
-               <div *ngIf="addedProducts.has(product.idproducto)" class="input-group mb-2">
-                 <button class="btn btn-outline-secondary" (click)="decrementQuantity(product.idproducto)">-</button>
-                 <input type="number" class="form-control text-center" [value]="getQuantity(product.idproducto)" (input)="updateQuantity(product.idproducto, $any($event.target).value)" min="1">
-                 <button class="btn btn-outline-secondary" (click)="incrementQuantity(product.idproducto)">+</button>
+      @for (product of products; track product.idproducto; let i = $index) {
+        <div class="product-item">
+          <div class="card h-100 product-card d-flex flex-column">
+            <div class="card-img-container">
+               <img [src]="getProductImage(product, i)" [alt]="product.nombre" class="card-img-top">
+            </div>
+             <div class="card-body text-center d-flex flex-column">
+               <h6 class="card-title">{{ product.nombre }}</h6>
+               <h6 class="card-title">{{ product.laboratorio.nombrelaboratorio }}</h6>
+               <h6 class="card-title">{{ product.presentacion.nombrepresentacion }}</h6>
+               <div class="mt-auto">
+                 <label class="price-label mb-2">S/. {{ product.preciocaja | number:'1.2-2' }}</label>
+                 @if (!addedProducts.has(product.idproducto)) {
+                   <div class="d-flex justify-content-center align-items-center m-0 product-add-button-container p-0 w-100">
+                     <button class="btn btn-primary w-100" (click)="addToCart(product)">Agregar a carrito</button>
+                   </div>
+                 } @else {
+                   <div class="input-group mb-2">
+                     <button class="btn btn-outline-secondary" (click)="decrementQuantity(product.idproducto)">-</button>
+                     <input type="number" class="form-control text-center" [value]="getQuantity(product.idproducto)" (input)="updateQuantity(product.idproducto, $any($event.target).value)" min="1">
+                     <button class="btn btn-outline-secondary" (click)="incrementQuantity(product.idproducto)">+</button>
+                   </div>
+                 }
                </div>
              </div>
-           </div>
+          </div>
         </div>
-      </div>
+      } @empty {
+        <div class="col-12 text-center py-5">
+          <p class="text-muted">No se encontraron productos disponibles.</p>
+        </div>
+      }
     </div>
+
     <!-- Pagination -->
     <nav aria-label="Page navigation" class="mt-4">
       <ul class="pagination justify-content-center">
@@ -186,22 +181,6 @@
   </div>
 </section>
 
-<!-- About Section 
-<section class="about-section py-5 bg-light">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-md-6">
-        <h2>Nosotros</h2>
-        <p>Comprometidos con tu bienestar y salud. Nuestra empresa se especializa en la comercialización y distribución de productos farmacéuticos. Ofrecemos una amplia gama de productos y servicios para promover la salud y el bienestar de tu familia.</p>
-        <a href="/nosotros" class="btn btn-primary">Saber Más</a>
-      </div>
-      <div class="col-md-6">
-        <img src="/assets/img/nosotros.jpg" alt="Sobre nosotros" class="img-fluid rounded">
-      </div>
-    </div>
-  </div>
-</section>
--->
 <!-- Services Section -->
 <section class="services-section py-5">
   <div class="container">

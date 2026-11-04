@@ -1,4 +1,3 @@
-
 <div class="row">
     <label class="col">Cod. Barra
         <input class="form-control" type="text" [(ngModel)]="codBarra" (keydown)="buscar()"/>
@@ -11,8 +10,8 @@
        <button type="button" class="btn btn-success" (click)="exportToExcel()">
          <i class="fas fa-file-excel"></i> Exportar Excel
        </button>
-       <button type="button" class="btn btn-primary"  (click)="vertodos(1)">Actualizar</button>
-       <button  class="btn btn-primary" routerLink="/add">Nuevo Registro</button>
+       <button type="button" class="btn btn-primary" (click)="vertodos(1)">Actualizar</button>
+       <button class="btn btn-primary" routerLink="/add">Nuevo Registro</button>
      </div>
 </div>
 
@@ -35,34 +34,40 @@
       </tr>
     </thead>
     <tbody class="tbody">
-          <tr *ngFor="let producto of prod | filtro:index">
-            <td class="id">{{producto.idproducto}}</td>
-            <td class="img">
-                <img [src]="producto.imagen_path ? '/assets/img/imagenes/' + producto.imagen_path : '/assets/img/imagenes/default.png'" alt="">
-            </td>
-            <td class="name" [title]="producto.nombre">{{producto.nombre}}</td>
-           
-            <td class="vcto">{{producto.vencimiento}}</td>
-            <td class="ubic">{{producto.ubicacion}}</td>
-            <td class="pres">{{producto.presentacion.nombrepresentacion}}</td>
-            <td class="pres">{{producto.unidadmedida.nombreunidad}}</td>
-            <td class="ubic">{{producto.laboratorio.nombrelaboratorio}}</td>
+      @for (producto of prod | filtro:index; track producto.idproducto) {
+        <tr>
+          <td class="id">{{producto.idproducto}}</td>
+          <td class="img">
+              <img [src]="producto.imagen_path ? '/assets/img/imagenes/' + producto.imagen_path : '/assets/img/imagenes/default.png'" alt="">
+          </td>
+          <td class="name" [title]="producto.nombre">{{producto.nombre}}</td>
+         
+          <td class="vcto">{{producto.vencimiento}}</td>
+          <td class="ubic">{{producto.ubicacion}}</td>
+          <td class="pres">{{producto.presentacion?.nombrepresentacion}}</td>
+          <td class="pres">{{producto.unidadmedida?.nombreunidad}}</td>
+          <td class="ubic">{{producto.laboratorio?.nombrelaboratorio}}</td>
 
-            <td class="price">{{producto.precioventa}}</td>
-            <td class="price">{{producto.precioblister}}</td>
-            <td class="price">{{producto.preciocaja}}</td>
+          <td class="price">{{producto.precioventa}}</td>
+          <td class="price">{{producto.precioblister}}</td>
+          <td class="price">{{producto.preciocaja}}</td>
 
-            <td class="stock">{{producto.stock}}</td>
-             <td class="center">
-                 <button class="btn btn-success btn-sm" routerLink="/edit/{{producto.idproducto}}">
-                  <i class="nav-icon fas fa-edit"></i>
-                 </button>
-                 
-                 <button class="btn btn-danger btn-sm" (click)="eliminarProducto(producto.idproducto)">
-                     <i class="nav-icon fas fa-trash"></i>
-                 </button>
-             </td>
-          </tr>
+          <td class="stock">{{producto.stock}}</td>
+           <td class="center">
+               <button class="btn btn-success btn-sm me-1" routerLink="/edit/{{producto.idproducto}}">
+                <i class="nav-icon fas fa-edit"></i>
+               </button>
+               
+               <button class="btn btn-danger btn-sm" (click)="eliminarProducto(producto.idproducto)">
+                   <i class="nav-icon fas fa-trash"></i>
+               </button>
+           </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="13" class="text-center py-4 text-muted">No se encontraron productos registrados.</td>
+        </tr>
+      }
     </tbody>
    
     <tfoot class="paginate">

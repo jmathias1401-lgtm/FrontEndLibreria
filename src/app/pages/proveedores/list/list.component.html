@@ -25,23 +25,29 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let proveedor of proveedores">
-                <td>{{ proveedor.idproveedor }}</td>
-                <td>{{ proveedor.persona.nombre }}</td>
-                <td>{{ proveedor.persona?.paterno }} {{ proveedor.persona?.materno }}</td>
-                <td>{{ proveedor.persona?.dni }}</td>
-                <td>{{ proveedor.persona?.ruc }}</td>
-                <td>{{ proveedor.persona.telefono }}</td>
-                <td>{{ proveedor.persona.tipoPersona.nombre }}</td>
-                <td>
-                  <button class="btn btn-sm btn-info" (click)="editProveedor(proveedor.idproveedor)">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteProveedor(proveedor.idproveedor)">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
+              @for (proveedor of proveedores; track proveedor.idproveedor) {
+                <tr>
+                  <td>{{ proveedor.idproveedor }}</td>
+                  <td>{{ proveedor.persona?.nombre }}</td>
+                  <td>{{ proveedor.persona?.paterno }} {{ proveedor.persona?.materno }}</td>
+                  <td>{{ proveedor.persona?.dni }}</td>
+                  <td>{{ proveedor.persona?.ruc }}</td>
+                  <td>{{ proveedor.persona?.telefono }}</td>
+                  <td>{{ proveedor.persona?.tipoPersona?.nombre }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info me-1" (click)="editProveedor(proveedor.idproveedor)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteProveedor(proveedor.idproveedor)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">No hay proveedores registrados</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>

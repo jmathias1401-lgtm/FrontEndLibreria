@@ -24,22 +24,28 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let empleado of empleados">
-                <td>{{ empleado.idempleado }}</td>
-                <td>{{ empleado.persona?.nombre }}</td>
-                <td>{{ empleado.persona?.paterno }} {{ empleado.persona?.materno }}</td>
-                <td>{{ empleado.persona?.dni }}</td>
-                <td>{{ empleado.usuario?.nombreusuario }}</td>
-                <td>{{ empleado.estado?.estado  }}</td>
-                <td>
-                  <button class="btn btn-sm btn-info" routerLink="/empleados/editar/{{ empleado.idempleado }}">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="btn btn-sm btn-danger" (click)="deleteEmpleado(empleado.idempleado)">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
+              @for (empleado of empleados; track empleado.idempleado) {
+                <tr>
+                  <td>{{ empleado.idempleado }}</td>
+                  <td>{{ empleado.persona?.nombre }}</td>
+                  <td>{{ empleado.persona?.paterno }} {{ empleado.persona?.materno }}</td>
+                  <td>{{ empleado.persona?.dni }}</td>
+                  <td>{{ empleado.usuario?.nombreusuario }}</td>
+                  <td>{{ empleado.estado?.estado }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info me-1" routerLink="/empleados/editar/{{ empleado.idempleado }}">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="deleteEmpleado(empleado.idempleado)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="text-center py-4 text-muted">No hay empleados registrados</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>

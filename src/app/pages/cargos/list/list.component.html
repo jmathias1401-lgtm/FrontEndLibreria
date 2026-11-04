@@ -22,20 +22,26 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let cargo of cargos">
-                <td>{{ cargo.idcargo }}</td>
-                <td>{{ cargo.nombrecargo }}</td>
-                <td>{{ cargo.descripcion }}</td>
-                <td>{{ cargo.estado?.estado }}</td>
-                <td>
-                  <a [routerLink]="['/cargos/form', cargo.idcargo]" class="btn btn-warning btn-sm">
-                    <i class="fas fa-edit"></i> Editar
-                  </a>
-                  <button (click)="deleteCargo(cargo.idcargo)" class="btn btn-danger btn-sm ml-2">
-                    <i class="fas fa-trash"></i> Eliminar
-                  </button>
-                </td>
-              </tr>
+              @for (cargo of cargos; track cargo.idcargo) {
+                <tr>
+                  <td>{{ cargo.idcargo }}</td>
+                  <td>{{ cargo.nombrecargo }}</td>
+                  <td>{{ cargo.descripcion }}</td>
+                  <td>{{ cargo.estado?.estado }}</td>
+                  <td>
+                    <a [routerLink]="['/cargos/form', cargo.idcargo]" class="btn btn-warning btn-sm me-1">
+                      <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <button (click)="deleteCargo(cargo.idcargo)" class="btn btn-danger btn-sm">
+                      <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="text-center py-4 text-muted">No hay cargos registrados</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
@@ -50,10 +56,10 @@
               <div class="dataTables_paginate paging_simple_numbers">
                 <ul class="pagination">
                   <li class="paginate_button page-item previous" [class.disabled]="page === 1">
-                    <a (click)="previousPage()" class="page-link">Anterior</a>
+                    <a (click)="previousPage()" class="page-link" role="button">Anterior</a>
                   </li>
                   <li class="paginate_button page-item next" [class.disabled]="page * xpage >= total">
-                    <a (click)="nextPage()" class="page-link">Siguiente</a>
+                    <a (click)="nextPage()" class="page-link" role="button">Siguiente</a>
                   </li>
                 </ul>
               </div>
