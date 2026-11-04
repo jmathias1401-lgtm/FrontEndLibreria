@@ -1,27 +1,24 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Compra, CompraList } from '../models/compra';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ComprasService {
-  result: any;
-   constructor(private http: HttpClient) { }
-   private url: string = "/api/compra";
+  private readonly baseUrl = `${environment.apiUrl}/compra`;
 
-   urlList="/api/compra";
-List(page: number, xpage: number){
-      return  this.http.get<CompraList>(`${this.urlList}?page=${page}&xpage=${xpage}`);
+  constructor(private http: HttpClient) { }
 
-    }
+  List(page: number, xpage: number) {
+    return this.http.get<CompraList>(`${this.baseUrl}?page=${page}&xpage=${xpage}`);
+  }
 
-saveCompra(compra: any)
-  {
+  saveCompra(compra: any) {
     console.log("Datos de compra a enviar:", compra);
-    return this.http.post<any>(this.url, compra, {
+    return this.http.post<any>(this.baseUrl, compra, {
       observe: 'response',
-
     });
   }
 }

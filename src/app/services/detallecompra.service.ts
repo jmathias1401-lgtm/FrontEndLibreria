@@ -1,28 +1,31 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { DetalleCompra,DetalleCompraList } from "../models/detallecompra";
+import { DetalleCompra, DetalleCompraList } from "../models/detallecompra";
+import { environment } from '../../environments/environment';
 
 @Injectable({
-    providedIn:'root'
+  providedIn: 'root'
 })
-export class DetalleCompraService
-{
-    constructor(private http:HttpClient){}
-    private url:string="/api/detallecompra";
-    urlList="/api/detallecompra?page=1&xpage=10";
-    List(){
-        return this.http.get<DetalleCompraList>(this.urlList);
-    }
-    Save(detalle:any){
+export class DetalleCompraService {
+  private readonly baseUrl = `${environment.apiUrl}/detallecompra`;
 
-        return this.http.post<DetalleCompra>(this.url,detalle,{
-            observe: 'response'
-        })
-    }
-    getDetallesPorCompra(compraId: number){
-        return this.http.get<DetalleCompraList>(`${this.url}/${compraId}`);
-    }
-    getLastPrecioCompra(ProductId: number){
-        return this.http.get<DetalleCompraList>(`${this.url}/producto/${ProductId}`);
-    }
+  constructor(private http: HttpClient) {}
+
+  List() {
+    return this.http.get<DetalleCompraList>(`${this.baseUrl}?page=1&xpage=10`);
+  }
+
+  Save(detalle: any) {
+    return this.http.post<DetalleCompra>(this.baseUrl, detalle, {
+      observe: 'response'
+    });
+  }
+
+  getDetallesPorCompra(compraId: number) {
+    return this.http.get<DetalleCompraList>(`${this.baseUrl}/${compraId}`);
+  }
+
+  getLastPrecioCompra(ProductId: number) {
+    return this.http.get<DetalleCompraList>(`${this.baseUrl}/producto/${ProductId}`);
+  }
 }

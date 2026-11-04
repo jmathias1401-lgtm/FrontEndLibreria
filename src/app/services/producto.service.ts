@@ -3,63 +3,62 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ProductList } from '../models/product';
 import { Producto } from '../models/producto';
-
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class ProductoService {
+  private readonly baseUrl = `${environment.apiUrl}/producto`;
+  private url: string = `${this.baseUrl}?page=1&xpage=10`;
+  private urlEndpoint: string = `${this.baseUrl}?page=`;
 
-  //private url: string="https://newfarmabak.azurewebsites.net/api/producto?page=1&xpage=10";
-  private url: string = "/api/producto?page=1&xpage=10";
-
-  private urlEndpoint: string = "/api/producto?page=";
   constructor(private http: HttpClient) { }
 
   list() {
-    return this.http.get(`/api/producto?page=1&xpage=10`);
+    return this.http.get(`${this.baseUrl}?page=1&xpage=10`);
   }
-  //devuelve un solo producto por codigo de barra
+
   get(codBarra: number) {
-    return this.http.get<ProductList>(this.urlEndpoint + '1&xpage=10&codbarra=' + codBarra);
+    return this.http.get<ProductList>(`${this.urlEndpoint}1&xpage=10&codbarra=${codBarra}`);
   }
-  //devuelve un solo producto por Id
+
   getProductById(id: number) {
-    let ListUrlProducto = "/api/producto/" + id;
-    return this.http.get<ProductList>(ListUrlProducto);
+    return this.http.get<ProductList>(`${this.baseUrl}/${id}`);
   }
 
   getProductos(index: number, xpage: number = 5) {
-    return this.http.get<ProductList>(this.urlEndpoint + index + "&xpage=" + xpage);
+    return this.http.get<ProductList>(`${this.urlEndpoint}${index}&xpage=${xpage}`);
   }
+
   getAllProductos(index: number, xpage: number) {
-    return this.http.get<ProductList>(this.urlEndpoint + index + "&xpage=" + xpage);
+    return this.http.get<ProductList>(`${this.urlEndpoint}${index}&xpage=${xpage}`);
   }
+
   getProductosBySearch(search: string) {
-    return this.http.get<ProductList>(this.url + "&search=" + search);
+    return this.http.get<ProductList>(`${this.url}&search=${search}`);
   }
+
   getProductosByCodBarra(codBarra: string) {
-    return this.http.get<ProductList>(this.url + "&codbarra=" + codBarra);
+    return this.http.get<ProductList>(`${this.url}&codbarra=${codBarra}`);
   }
 
   changeProducto(index: number, product: any) {
-    return this.http.put(`/api/producto/${index}`, product);
+    return this.http.put(`${this.baseUrl}/${index}`, product);
   }
-  saveProducto(data: FormData) {
-    let save_url = "/api/producto";
 
-    return this.http.post<any>(save_url, data, {
+  saveProducto(data: FormData) {
+    return this.http.post<any>(this.baseUrl, data, {
       observe: 'response'
     });
   }
+
   deleteProducto(index: number) {
     console.log("---------------", index);
-    let del_url = "/api/producto/" + index;
-    return this.http.delete<ProductList>(del_url);
+    return this.http.delete<ProductList>(`${this.baseUrl}/${index}`);
   }
+
   createProducto(product: any, imagen?: File | null) {
-    const save_url = "/api/producto";
     const formData = new FormData();
 
     formData.append(
@@ -71,9 +70,8 @@ export class ProductoService {
       formData.append('imagen', imagen, product.imagen_path || imagen.name);
     }
 
-    return this.http.post<any>(save_url, formData, {
+    return this.http.post<any>(this.baseUrl, formData, {
       observe: 'response'
     });
   }
-
 }

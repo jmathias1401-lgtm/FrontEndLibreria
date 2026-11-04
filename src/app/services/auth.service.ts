@@ -4,11 +4,13 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { usuario } from '../models/usuario';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly baseUrl = `${environment.apiUrl}/auth`;
   private tokenKey = 'authToken';
   private userKey = 'currentUser';
   private currentUserSubject = new BehaviorSubject<any>(null);
@@ -19,7 +21,6 @@ export class AuthService {
     const userData = localStorage.getItem(this.userKey);
     
     if (token && !this.isTokenExpired()) {
-      
       const user = userData ? JSON.parse(userData) : { token };
       this.currentUserSubject.next(user);
     } else {
@@ -31,22 +32,18 @@ export class AuthService {
   }
 
   login(credentials: { usuario: string; password: string }): Observable<any> {
-    const url = '/api/auth/login';
+    const url = `${this.baseUrl}/login`;
     return this.http.post<any>(url, credentials).pipe(
       tap(response => {
-       
-        
         if (response.access_token) {
-         
           localStorage.setItem(this.tokenKey, response.access_token);
           
           // Store user data including cargo information
           const userData = {
             token: response.access_token,
-            ...response.user // Assuming the API returns user data with cargo
+            ...response.user
           };
           
-         
           localStorage.setItem(this.userKey, JSON.stringify(userData));
           this.currentUserSubject.next(userData);
         } else {
@@ -77,7 +74,6 @@ export class AuthService {
   }
 
   getUserFromToken(): any {
-    // Try to get user data from localStorage first (more complete info)
     const userData = localStorage.getItem(this.userKey);
     if (userData) {
       try {
@@ -87,7 +83,6 @@ export class AuthService {
       }
     }
     
-    // Fallback to token payload
     const token = this.getToken();
     if (!token) return null;
     
@@ -107,6 +102,6 @@ export class AuthService {
   }
 
   register(usuarioData: Partial<usuario>): Observable<any> {
-    return this.http.post('/api/auth/register', usuarioData);
+    return this.http.post(`${this.baseUrl}/register`, usuarioData);
   }
 }
