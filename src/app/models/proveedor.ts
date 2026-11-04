@@ -1,7 +1,8 @@
 import { Persona } from "./persona";
 
 export interface Proveedor {
-    idproveedor: number;
+    idproveedor?: number;
+    idProveedor?: number;
     persona?: Persona;
     nombre?: string;
     ruc?: string;

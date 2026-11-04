@@ -1,32 +1,45 @@
 export interface Product {
   idproducto: number;
+  idProducto?: number;
   codigoproducto: string;
+  codigoProducto?: string;
   nombre: string;
-  vencimiento: Date;
+  vencimiento: any;
   estado: string;
   composicion: string;
   ubicacion: string;
   stock: number;
   precioventa: number;
+  precioVenta?: number;
   precioblister: number;
+  precioBlister?: number;
   preciocaja: number;
+  precioCaja?: number;
   codbarra: string;
+  codBarra?: string;
   laboratorio: {
-    idlaboratorio: number;
-    nombrelaboratorio: string;
+    idlaboratorio?: number;
+    idLaboratorio?: number;
+    nombrelaboratorio?: string;
+    nombreLaboratorio?: string;
   };
   presentacion: {
-    idpresentacion: number;
-    nombrepresentacion: string;
+    idpresentacion?: number;
+    idPresentacion?: number;
+    nombrepresentacion?: string;
+    nombrePresentacion?: string;
   };
   unidadmedida: {
-    idunidadmedida: number;
-    nombreunidad: string;
+    idunidadmedida?: number;
+    idUnidadMedida?: number;
+    nombreunidad?: string;
+    nombreUnidad?: string;
   };
   cantidadLlevar: number;
   subTotal: number;
   tipoPrecioSeleccionado: 'PU' | 'PB' | 'PC';
   imagen_path: string;
+  imagenPath?: string;
 }
 
 export interface ProductList {
@@ -35,6 +48,7 @@ export interface ProductList {
   page: number;
   list: Product[];
 }
+
 export interface Productos {
   prod: Product;
 }
