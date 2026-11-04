@@ -61,4 +61,8 @@ export class SidebarComponent implements OnInit {
     this.isVisitante = cargoId === 3;
     
   }
+
+  logout(): void {
+    this.authService.logout();
+  }
 }

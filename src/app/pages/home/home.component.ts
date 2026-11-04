@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ProductoService } from '../../services/producto.service';
 import { CartService } from '../../services/cart.service';
+import { AuthService } from '../../services/auth.service';
 import { ProductList, Product } from '../../models/product';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -44,6 +45,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   isSearching: boolean = false;
   showRegisterModal: boolean = false;
   showLoginModal: boolean = false;
+  isLoggedIn: boolean = false;
+  currentUser: any = null;
 
   promos: Promo[] = [
     { title: 'Envío Gratis', description: 'En compras mayores a S/. 150.00', icon: 'fas fa-truck', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
@@ -56,9 +59,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     { title: 'Productos Ecoamigables', description: 'Variedad en productos ecológicos', icon: 'fas fa-leaf', bgColor: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }
   ];
 
-  constructor(private productoService: ProductoService, private cartService: CartService, private toastr: ToastrService) { }
+  constructor(
+    private productoService: ProductoService,
+    private cartService: CartService,
+    private toastr: ToastrService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isLoggedIn = !!user && !this.authService.isTokenExpired();
+    });
     this.loadProducts();
     this.startAutoScroll();
     this.setupSearchListener();
@@ -269,6 +281,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   openRegisterModal(): void {
     this.showRegisterModal = true;
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.toastr.info('Has cerrado sesión correctamente');
   }
 
   openOrdersSidebar(): void {

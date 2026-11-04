@@ -175,10 +175,18 @@
           <i class="fas fa-th-large"></i>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" (click)="logout()" style="cursor: pointer;" title="Cerrar sesión">
-          <i class="fas fa-sign-out-alt"></i>
-        </a>
+      <!-- User profile & Logout -->
+      @if (currentUser) {
+        <li class="nav-item d-none d-md-flex align-items-center mr-2">
+          <span class="badge badge-light px-2 py-1 text-dark">
+            <i class="fas fa-user-circle mr-1 text-primary"></i> {{ currentUser?.nombreusuario || 'Usuario' }}
+          </span>
+        </li>
+      }
+      <li class="nav-item d-flex align-items-center ml-1 mr-2">
+        <button (click)="logout()" class="btn btn-danger btn-sm font-weight-bold px-3 py-1 shadow-sm" title="Cerrar sesión del sistema">
+          <i class="fas fa-sign-out-alt mr-1"></i> Salir
+        </button>
       </li>
     </ul>
 </nav>

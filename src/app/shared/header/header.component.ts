@@ -13,12 +13,16 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
   cartItemCount: number = 0;
+  currentUser: any = null;
 
   constructor(private cartService: CartService, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.cartService.cart$.subscribe(items => {
       this.cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
+    });
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
     });
   }
 

@@ -13,13 +13,18 @@
       <div class="image">
         <img src="./assets/dist/img/avatar5.png" class="img-circle elevation-2" alt="User Image">
       </div>
-      <div class="info">
-        <a class="d-block">
-          {{ currentUser?.nombreusuario || 'Usuario' }}
+      <div class="info d-flex justify-content-between align-items-center w-100">
+        <div>
+          <a class="d-block text-white font-weight-bold">
+            {{ currentUser?.nombreusuario || 'Usuario' }}
+          </a>
           @if (isVisitante) {
-            <small class="d-block text-warning">(VISITANTE)</small>
+            <small class="d-block text-warning font-weight-bold">(VISITANTE)</small>
           }
-        </a>
+        </div>
+        <button (click)="logout()" class="btn btn-outline-danger btn-xs text-white" title="Cerrar sesión" style="border-radius: 4px; padding: 2px 6px;">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
       </div>
     </div>
 
@@ -209,6 +214,14 @@
             </ul>
           </li>
         }
+
+        <!-- Botón Cerrar Sesión en Menú Lateral -->
+        <li class="nav-item mt-3 pt-2 border-top border-secondary">
+          <a (click)="logout()" class="nav-link text-danger" style="cursor: pointer;" title="Cerrar sesión actual">
+            <i class="nav-icon fas fa-sign-out-alt text-danger"></i>
+            <p class="font-weight-bold text-danger">Cerrar Sesión</p>
+          </a>
+        </li>
       </ul>
     </nav>
     <!-- /.sidebar-menu -->
