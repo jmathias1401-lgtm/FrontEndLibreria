@@ -29,76 +29,78 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let producto of prod" (click)="agregarProducto(producto)" style="cursor: pointer;">
-          <td>{{producto.idproducto}}</td>
-          <td>{{producto.nombre}}</td>
-          <td>{{producto.vencimiento}}</td>
-          
-          <td>{{producto.ubicacion}}</td>
-          <td>{{producto.presentacion.nombrepresentacion}}</td>
-          <td>{{producto.unidadmedida.nombreunidad}}</td>
-          <td>{{producto.laboratorio.nombrelaboratorio}}</td>
-          <td>{{producto.precioventa}}</td>
-          <td>{{producto.precioblister}}</td>
-          <td>{{producto.preciocaja}}</td>
-          <td class="stock">{{producto.stock}}</td>
-        </tr>
+        @for (producto of prod; track producto.idproducto) {
+          <tr (click)="agregarProducto(producto)" style="cursor: pointer;">
+            <td>{{producto.idproducto}}</td>
+            <td>{{producto.nombre}}</td>
+            <td>{{producto.vencimiento}}</td>
+            <td>{{producto.ubicacion}}</td>
+            <td>{{producto.presentacion?.nombrepresentacion}}</td>
+            <td>{{producto.unidadmedida?.nombreunidad}}</td>
+            <td>{{producto.laboratorio?.nombrelaboratorio}}</td>
+            <td>{{producto.precioventa}}</td>
+            <td>{{producto.precioblister}}</td>
+            <td>{{producto.preciocaja}}</td>
+            <td class="stock">{{producto.stock}}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="11" style="text-align: center; color: #888;">No se encontraron productos</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
-<hr style="border: 2px solid rgb(255, 0, 0);">
+  <hr style="border: 2px solid rgb(255, 0, 0);">
   <div class="purchase-detail">
     <h2>Detalle de Compra</h2>
 
     <!-- Purchase Form -->
     <div class="row">
       <div class="form-group col">
-       <!-- <label>Proveedor</label>-->
         <select class="form-control" [(ngModel)]="selectedProveedor">
-          <option [ngValue]="null" >Seleccionar proveedor</option>
-          <option  *ngFor="let proveedor of proveedores" [ngValue]="proveedor">
-            {{proveedor.persona.nombre}}
-          </option>
+          <option [ngValue]="null">Seleccionar proveedor</option>
+          @for (proveedor of proveedores; track proveedor.idproveedor) {
+            <option [ngValue]="proveedor">
+              {{proveedor.persona?.nombre}}
+            </option>
+          }
         </select>
       </div>
 
       <div class="form-group col">
-       <!-- <label>Comprobante</label>-->
         <select class="form-control" [(ngModel)]="selectedComprobante">
           <option [ngValue]="null">Seleccionar comprobante</option>
-          <option *ngFor="let comprobante of comprobantes" [ngValue]="comprobante">
-            {{comprobante.nombrecomprobante}}
-          </option>
+          @for (comprobante of comprobantes; track comprobante.idtipocomprobante) {
+            <option [ngValue]="comprobante">
+              {{comprobante.nombrecomprobante}}
+            </option>
+          }
         </select>
       </div>
 
       <div class="form-group col">
-        <!--<label>Empleado</label>-->
         <select class="form-control" [(ngModel)]="selectedEmpleado">
           <option [ngValue]="null">Seleccionar empleado</option>
-          <option *ngFor="let empleado of empleados" [ngValue]="empleado">
-            {{empleado.persona.nombre}} 
-          </option>
+          @for (empleado of empleados; track empleado.idempleado) {
+            <option [ngValue]="empleado">
+              {{empleado.persona?.nombre}} 
+            </option>
+          }
         </select>
       </div>
       <div class="form-group col">
-        <!--<label>Serie</label>-->
         <input type="text" class="form-control" [(ngModel)]="serie" placeholder="A-1">
       </div>
 
       <div class="form-group col">
-        <!--<label>Correlativo</label>-->
         <input type="text" class="form-control" [(ngModel)]="correlativo" placeholder="000001">
       </div>
 
       <div class="form-group col">
-        <!--<label>Fecha</label>-->
         <input type="date" class="form-control w-60" [(ngModel)]="fechaCompra">
       </div>
-
     </div>
-
-    
 
     <table>
       <thead>
@@ -114,16 +116,22 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of prodDetalle; let i = index">
-          <td>{{item.idproducto}}</td>
-          <td>{{item.nombre}}</td>
-          <td>{{item.presentacion.nombrepresentacion}}</td>
-          <td>{{item.unidadmedida.nombreunidad}}</td>
-          <td>{{item.preciocompra}}</td>
-          <td style="text-align: center;">{{item.cantidadLlevar}}</td>
-          <td style="text-align: center;">{{item.subTotal | currency:'PEN':'S/ ':'1.2-2'}}</td>
-          <td><button (click)="eliminarProducto(i)" class="btn-eliminar">Eliminar</button></td>
-        </tr>
+        @for (item of prodDetalle; track $index) {
+          <tr>
+            <td>{{item.idproducto}}</td>
+            <td>{{item.nombre}}</td>
+            <td>{{item.presentacion?.nombrepresentacion}}</td>
+            <td>{{item.unidadmedida?.nombreunidad}}</td>
+            <td>{{item.preciocompra}}</td>
+            <td style="text-align: center;">{{item.cantidadLlevar}}</td>
+            <td style="text-align: center;">{{item.subTotal | currency:'PEN':'S/ ':'1.2-2'}}</td>
+            <td><button (click)="eliminarProducto($index)" class="btn-eliminar">Eliminar</button></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" style="text-align: center; color: #888;">No hay productos en el detalle de compra</td>
+          </tr>
+        }
       </tbody>
       <tfoot>
         <tr>
@@ -138,8 +146,10 @@
       <button (click)="cancelarCompra()" class="btn-cancelar">Cancelar</button>
     </div>
 
-    <div *ngIf="mensaje" [ngClass]="{'text-success': !error, 'text-danger': error}">
-      {{mensaje}}
-    </div>
+    @if (mensaje) {
+      <div [ngClass]="{'text-success': !error, 'text-danger': error}">
+        {{mensaje}}
+      </div>
+    }
   </div>
 </div>

@@ -12,7 +12,7 @@ import { CartComponent } from './pages/cart/cart.component';
 import { OrdersComponent } from './pages/orders/orders.component';
 
 import { productFormComponent } from './pages/productos/edit/productForm.component';
-import { VentaComponent } from './pages/ventas/ventas/ventas.component';
+import { VentaComponent } from './pages/ventas/ventas.component';
 import { ModalVentasComponent } from './pages/modal/modal-ventas/modal-ventas.component';
 import { ClientFormComponent } from './pages/client-form/client-form.component';
 import { ReportsComponent } from './pages/reports/reports.ventas/reports.component';

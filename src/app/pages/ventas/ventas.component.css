@@ -10,7 +10,6 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-    
 }
 
 th, td {
@@ -18,7 +17,7 @@ th, td {
     padding: 8px;
     text-align: left;
     border-color: #d32f2f;
-    border-width: 1PX;
+    border-width: 1px;
 }
 
 th {
@@ -39,7 +38,6 @@ label {
 
 input, select {
     padding: 6px;
-    
 }
 
 button {
@@ -70,11 +68,12 @@ button:hover {
     justify-content: flex-end;
     gap: 10px;
 }
-.sale-detail input{
+
+.sale-detail input {
     width: 56px;
     text-align: center;
     border: 1px solid #971616;
     border-radius: 4px;
     background-color: #e6e5ef;
     margin-left: 23px;
-}   
+}
