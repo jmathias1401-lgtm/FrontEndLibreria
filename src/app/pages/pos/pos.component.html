@@ -1,323 +1,363 @@
-<div class="pos-container">
-  <!-- ==================== COLUMNA IZQUIERDA (60%): BÚSQUEDA & PRODUCTOS ==================== -->
-  <div class="pos-catalog-column">
-    <!-- Barra Superior de Entradas -->
-    <div class="card shadow-sm mb-2 border-0">
-      <div class="card-body p-2 bg-white rounded">
-        <div class="row g-2 align-items-center">
-          <!-- Escáner de Código de Barras (F2) -->
-          <div class="col-md-6">
-            <div class="input-group input-group-lg">
-              <span class="input-group-text bg-primary text-white border-primary">
-                <i class="fas fa-barcode"></i>
-              </span>
-              <input 
-                #barcodeInput
-                type="text" 
-                class="form-control form-control-lg font-weight-bold" 
-                placeholder="Escanear código de barra (Enter)..." 
-                [(ngModel)]="barcode"
-                (keyup.enter)="onBarcodeScan()"
-                autofocus
-              />
-            </div>
-          </div>
-
-          <!-- Buscador por Nombre / Descripción -->
-          <div class="col-md-6">
-            <div class="input-group input-group-lg">
-              <span class="input-group-text bg-light text-muted border-end-0">
-                <i class="fas fa-search"></i>
-              </span>
-              <input 
-                #searchInput
-                type="text" 
-                class="form-control form-control-lg" 
-                placeholder="Buscar por nombre o marca..." 
-                [(ngModel)]="searchQuery"
-                (input)="onSearchChange()"
-              />
-              @if (searchQuery) {
-                <button class="btn btn-outline-secondary" type="button" (click)="searchQuery=''; onSearchChange()">
-                  <i class="fas fa-times"></i>
-                </button>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
+<div class="pos-kiosk-wrapper">
+  <!-- Barra Superior del POS (Kiosko) -->
+  <header class="pos-kiosk-topbar">
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-primary px-3 py-2 font-weight-bold text-white shadow-sm" style="font-size: 0.92rem; letter-spacing: 0.5px;">
+        <i class="fas fa-prescription-bottle-alt mr-1"></i> NEWFARMA
+      </span>
+      <span class="pos-title font-weight-bold text-secondary d-none d-sm-inline" style="font-size: 0.9rem;">
+        TERMINAL PUNTO DE VENTA (CAJA EXPRESS)
+      </span>
     </div>
 
-    <!-- Rejilla de Productos Compacta -->
-    <div class="catalog-scroll-area">
-      @if (isLoadingCatalog) {
-        <div class="text-center py-5">
-          <div class="spinner-border text-primary" role="status"></div>
-          <p class="text-muted mt-2">Cargando productos...</p>
-        </div>
-      } @else {
-        <div class="product-grid">
-          @for (prod of productos; track prod.idproducto) {
-            <div 
-              class="product-card" 
-              [class.out-of-stock]="!prod.stock || prod.stock <= 0"
-              (click)="agregarProductoAlTicket(prod, 'precioventa')">
-              
-              <div class="product-header">
-                <span class="product-name" [title]="prod.nombre">{{ prod.nombre }}</span>
-                <span class="stock-badge" [ngClass]="(prod.stock || 0) <= 5 ? 'stock-low' : 'stock-ok'">
-                  {{ prod.stock || 0 }} u.
+    <div class="d-flex align-items-center gap-2">
+      <!-- Usuario Logueado -->
+      <span class="badge badge-light border text-dark px-3 py-2 font-weight-bold shadow-sm">
+        <i class="fas fa-user-circle text-primary mr-1"></i> {{ currentUserName }}
+      </span>
+
+      <!-- Botón Pantalla Completa -->
+      <button type="button" class="btn btn-outline-secondary btn-sm font-weight-bold" (click)="toggleFullscreen()" title="Pantalla Completa">
+        <i class="fas" [ngClass]="isFullscreen ? 'fa-compress' : 'fa-expand'"></i>
+        <span class="d-none d-md-inline ml-1">{{ isFullscreen ? 'Restaurar' : 'Pantalla Completa' }}</span>
+      </button>
+
+      <!-- Volver al Menú Principal -->
+      <a routerLink="/dashboard" class="btn btn-outline-primary btn-sm font-weight-bold" title="Volver al Menú del Sistema">
+        <i class="fas fa-columns mr-1"></i>
+        <span class="d-none d-md-inline">Menú</span>
+      </a>
+
+      <!-- Cerrar Turno / Salir -->
+      <button type="button" class="btn btn-danger btn-sm font-weight-bold shadow-sm" (click)="cerrarTurno()" title="Cerrar Turno / Salir">
+        <i class="fas fa-sign-out-alt mr-1"></i>
+        <span class="d-none d-md-inline">Cerrar Turno</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal del POS -->
+  <div class="pos-container">
+    <!-- ==================== COLUMNA IZQUIERDA (60%): BÚSQUEDA & PRODUCTOS ==================== -->
+    <div class="pos-catalog-column">
+      <!-- Barra Superior de Entradas -->
+      <div class="card shadow-sm mb-2 border-0">
+        <div class="card-body p-2 bg-white rounded">
+          <div class="row g-2 align-items-center">
+            <!-- Escáner de Código de Barras (F2) -->
+            <div class="col-md-6">
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-primary text-white border-primary">
+                  <i class="fas fa-barcode"></i>
                 </span>
-              </div>
-
-              <div class="product-meta">
-                <span class="meta-tag">{{ prod.presentacion.nombrepresentacion }}</span>
-                <span class="meta-tag text-muted">{{ prod.laboratorio.nombrelaboratorio }}</span>
-              </div>
-
-              <div class="product-prices">
-                <div class="price-main">
-                  <small>Unidad</small>
-                  <strong>{{ prod.precioventa | currency:'PEN':'S/ ' }}</strong>
-                </div>
-
-                @if (prod.precioblister) {
-                  <button 
-                    type="button" 
-                    class="btn-price-alt" 
-                    (click)="$event.stopPropagation(); agregarProductoAlTicket(prod, 'precioblister')"
-                    title="Agregar por Blíster">
-                    <small>Blíster</small>
-                    <span>{{ prod.precioblister | currency:'PEN':'S/ ' }}</span>
-                  </button>
-                }
-
-                @if (prod.preciocaja) {
-                  <button 
-                    type="button" 
-                    class="btn-price-alt" 
-                    (click)="$event.stopPropagation(); agregarProductoAlTicket(prod, 'preciocaja')"
-                    title="Agregar por Caja">
-                    <small>Caja</small>
-                    <span>{{ prod.preciocaja | currency:'PEN':'S/ ' }}</span>
-                  </button>
-                }
+                <input 
+                  #barcodeInput
+                  type="text" 
+                  class="form-control form-control-lg font-weight-bold" 
+                  placeholder="Escanear código de barra (Enter)..." 
+                  [(ngModel)]="barcode"
+                  (keyup.enter)="onBarcodeScan()"
+                  autofocus
+                />
               </div>
             </div>
-          } @empty {
-            <div class="col-12 text-center py-5 text-muted">
-              <i class="fas fa-boxes fa-3x mb-3 text-secondary"></i>
-              <h5>No se encontraron productos coincidentes</h5>
-              <p>Escanee un código de barras o modifique el término de búsqueda.</p>
-            </div>
-          }
-        </div>
-      }
-    </div>
 
-    <!-- Barra de Atajos de Teclado -->
-    <div class="pos-hotkeys-footer">
-      <span class="hotkey"><kbd>F2</kbd> Escanear</span>
-      <span class="hotkey"><kbd>F4</kbd> Cancelar</span>
-      <span class="hotkey"><kbd>F12</kbd> Cobrar e Imprimir</span>
-    </div>
-  </div>
-
-  <!-- ==================== COLUMNA DERECHA (40%): TICKET & COBRO ==================== -->
-  <div class="pos-ticket-column">
-    <div class="card h-100 shadow-sm border-0 d-flex flex-column">
-      
-      <!-- Encabezado del Ticket -->
-      <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-2">
-          <i class="fas fa-receipt fa-lg"></i>
-          <h6 class="mb-0 font-weight-bold">Ticket de Venta</h6>
-          <span class="badge badge-light text-success font-weight-bold ml-1">{{ cart.length }} items</span>
-        </div>
-        @if (cart.length > 0) {
-          <button (click)="cancelarVenta()" class="btn btn-outline-light btn-xs text-white" title="Vaciar Ticket (F4)">
-            <i class="fas fa-trash-alt mr-1"></i> Limpiar
-          </button>
-        }
-      </div>
-
-      <!-- Lista de Productos en el Carrito (Scrollable) -->
-      <div class="ticket-items-scroll">
-        @if (cart.length === 0) {
-          <div class="empty-ticket-msg">
-            <i class="fas fa-shopping-cart fa-3x mb-2 text-muted"></i>
-            <p class="font-weight-bold mb-1">Ticket Vacío</p>
-            <small class="text-muted">Escanee un código de barra o seleccione productos del catálogo.</small>
-          </div>
-        } @else {
-          <div class="ticket-list">
-            @for (item of cart; track item.idproducto + '-' + item.tipoPrecio) {
-              <div class="ticket-row">
-                <div class="ticket-row-info">
-                  <span class="item-name">{{ item.nombre }}</span>
-                  <div class="item-sub-meta">
-                    <span class="badge badge-secondary mr-1">{{ item.tipoPrecio.replace('precio', '') }}</span>
-                    <span class="text-muted">{{ item.precioUnitario | currency:'PEN':'S/ ' }} c/u</span>
-                  </div>
-                </div>
-
-                <!-- Control de Cantidad -->
-                <div class="ticket-qty-control">
-                  <button type="button" class="btn-qty" (click)="decrementarCantidad(item)">-</button>
-                  <input 
-                    type="number" 
-                    class="input-qty" 
-                    [value]="item.cantidad" 
-                    min="1" 
-                    [max]="item.stockDisponible"
-                    (change)="actualizarCantidadManual(item, $any($event.target).value)"
-                  />
-                  <button type="button" class="btn-qty" (click)="incrementarCantidad(item)">+</button>
-                </div>
-
-                <!-- Subtotal y Eliminar -->
-                <div class="ticket-row-total">
-                  <strong class="text-success">{{ item.subtotal | currency:'PEN':'S/ ' }}</strong>
-                  <button type="button" class="btn-remove-item" (click)="eliminarDelTicket(item)" title="Quitar">
+            <!-- Buscador por Nombre / Descripción -->
+            <div class="col-md-6">
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-light text-muted border-end-0">
+                  <i class="fas fa-search"></i>
+                </span>
+                <input 
+                  #searchInput
+                  type="text" 
+                  class="form-control form-control-lg" 
+                  placeholder="Buscar por nombre o marca..." 
+                  [(ngModel)]="searchQuery"
+                  (input)="onSearchChange()"
+                />
+                @if (searchQuery) {
+                  <button class="btn btn-outline-secondary" type="button" (click)="searchQuery=''; onSearchChange()">
                     <i class="fas fa-times"></i>
                   </button>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rejilla de Productos Compacta -->
+      <div class="catalog-scroll-area">
+        @if (isLoadingCatalog) {
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="text-muted mt-2">Cargando productos...</p>
+          </div>
+        } @else {
+          <div class="product-grid">
+            @for (prod of productos; track prod.idproducto) {
+              <div 
+                class="product-card" 
+                [class.out-of-stock]="!prod.stock || prod.stock <= 0"
+                (click)="agregarProductoAlTicket(prod, 'precioventa')">
+                
+                <div class="product-header">
+                  <span class="product-name" [title]="prod.nombre">{{ prod.nombre }}</span>
+                  <span class="stock-badge" [ngClass]="(prod.stock || 0) <= 5 ? 'stock-low' : 'stock-ok'">
+                    {{ prod.stock || 0 }} u.
+                  </span>
                 </div>
+
+                <div class="product-meta">
+                  <span class="meta-tag">{{ prod.presentacion.nombrepresentacion }}</span>
+                  <span class="meta-tag text-muted">{{ prod.laboratorio.nombrelaboratorio }}</span>
+                </div>
+
+                <div class="product-prices">
+                  <div class="price-main">
+                    <small>Unidad</small>
+                    <strong>{{ prod.precioventa | currency:'PEN':'S/ ' }}</strong>
+                  </div>
+
+                  @if (prod.precioblister) {
+                    <button 
+                      type="button" 
+                      class="btn-price-alt" 
+                      (click)="$event.stopPropagation(); agregarProductoAlTicket(prod, 'precioblister')"
+                      title="Agregar por Blíster">
+                      <small>Blíster</small>
+                      <span>{{ prod.precioblister | currency:'PEN':'S/ ' }}</span>
+                    </button>
+                  }
+
+                  @if (prod.preciocaja) {
+                    <button 
+                      type="button" 
+                      class="btn-price-alt" 
+                      (click)="$event.stopPropagation(); agregarProductoAlTicket(prod, 'preciocaja')"
+                      title="Agregar por Caja">
+                      <small>Caja</small>
+                      <span>{{ prod.preciocaja | currency:'PEN':'S/ ' }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <div class="col-12 text-center py-5 text-muted">
+                <i class="fas fa-boxes fa-3x mb-3 text-secondary"></i>
+                <h5>No se encontraron productos coincidentes</h5>
+                <p>Escanee un código de barras o modifique el término de búsqueda.</p>
               </div>
             }
           </div>
         }
       </div>
 
-      <!-- Panel de Cobro In-Line -->
-      <div class="ticket-checkout-panel bg-light border-top p-3">
-        <!-- 1. Selección de Cliente -->
-        <div class="checkout-client-row mb-2">
-          <div class="btn-group btn-group-sm w-100 mb-1" role="group">
-            <button 
-              type="button" 
-              class="btn" 
-              [ngClass]="clienteTipo === 'GENERAL' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary'"
-              (click)="setClienteGeneral()">
-              <i class="fas fa-user-friends mr-1"></i> Público General
-            </button>
-            <button 
-              type="button" 
-              class="btn" 
-              [ngClass]="clienteTipo === 'DNI' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary'"
-              (click)="clienteTipo = 'DNI'">
-              <i class="fas fa-id-card mr-1"></i> Ingresar DNI
-            </button>
-          </div>
+      <!-- Barra de Atajos de Teclado -->
+      <div class="pos-hotkeys-footer">
+        <span class="hotkey"><kbd>F2</kbd> Escanear</span>
+        <span class="hotkey"><kbd>F4</kbd> Cancelar</span>
+        <span class="hotkey"><kbd>F12</kbd> Cobrar e Imprimir</span>
+      </div>
+    </div>
 
-          @if (clienteTipo === 'DNI') {
-            <div class="input-group input-group-sm mt-1">
-              <input 
-                type="text" 
-                class="form-control" 
-                placeholder="Número de DNI (8 dígitos)..." 
-                maxlength="8" 
-                [(ngModel)]="clienteDni"
-                (keyup.enter)="buscarDniCliente()"
-              />
-              <button class="btn btn-primary" type="button" (click)="buscarDniCliente()" [disabled]="buscandoCliente">
-                @if (buscandoCliente) {
-                  <span class="spinner-border spinner-border-sm"></span>
-                } @else {
-                  <i class="fas fa-search"></i>
-                }
+    <!-- ==================== COLUMNA DERECHA (40%): TICKET & COBRO ==================== -->
+    <div class="pos-ticket-column">
+      <div class="card h-100 shadow-sm border-0 d-flex flex-column">
+        
+        <!-- Encabezado del Ticket -->
+        <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-receipt fa-lg"></i>
+            <h6 class="mb-0 font-weight-bold">Ticket de Venta</h6>
+            <span class="badge badge-light text-success font-weight-bold ml-1">{{ cart.length }} items</span>
+          </div>
+          @if (cart.length > 0) {
+            <button (click)="cancelarVenta()" class="btn btn-outline-light btn-xs text-white" title="Vaciar Ticket (F4)">
+              <i class="fas fa-trash-alt mr-1"></i> Limpiar
+            </button>
+          }
+        </div>
+
+        <!-- Lista de Productos en el Carrito (Scrollable) -->
+        <div class="ticket-items-scroll">
+          @if (cart.length === 0) {
+            <div class="empty-ticket-msg">
+              <i class="fas fa-shopping-cart fa-3x mb-2 text-muted"></i>
+              <p class="font-weight-bold mb-1">Ticket Vacío</p>
+              <small class="text-muted">Escanee un código de barra o seleccione productos del catálogo.</small>
+            </div>
+          } @else {
+            <div class="ticket-list">
+              @for (item of cart; track item.idproducto + '-' + item.tipoPrecio) {
+                <div class="ticket-row">
+                  <div class="ticket-row-info">
+                    <span class="item-name">{{ item.nombre }}</span>
+                    <div class="item-sub-meta">
+                      <span class="badge badge-secondary mr-1">{{ item.tipoPrecio.replace('precio', '') }}</span>
+                      <span class="text-muted">{{ item.precioUnitario | currency:'PEN':'S/ ' }} c/u</span>
+                    </div>
+                  </div>
+
+                  <!-- Control de Cantidad -->
+                  <div class="ticket-qty-control">
+                    <button type="button" class="btn-qty" (click)="decrementarCantidad(item)">-</button>
+                    <input 
+                      type="number" 
+                      class="input-qty" 
+                      [value]="item.cantidad" 
+                      min="1" 
+                      [max]="item.stockDisponible"
+                      (change)="actualizarCantidadManual(item, $any($event.target).value)"
+                    />
+                    <button type="button" class="btn-qty" (click)="incrementarCantidad(item)">+</button>
+                  </div>
+
+                  <!-- Subtotal y Eliminar -->
+                  <div class="ticket-row-total">
+                    <strong class="text-success">{{ item.subtotal | currency:'PEN':'S/ ' }}</strong>
+                    <button type="button" class="btn-remove-item" (click)="eliminarDelTicket(item)" title="Quitar">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Panel de Cobro In-Line -->
+        <div class="ticket-checkout-panel bg-light border-top p-3">
+          <!-- 1. Selección de Cliente -->
+          <div class="checkout-client-row mb-2">
+            <div class="btn-group btn-group-sm w-100 mb-1" role="group">
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="clienteTipo === 'GENERAL' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary'"
+                (click)="setClienteGeneral()">
+                <i class="fas fa-user-friends mr-1"></i> Público General
+              </button>
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="clienteTipo === 'DNI' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary'"
+                (click)="clienteTipo = 'DNI'">
+                <i class="fas fa-id-card mr-1"></i> Ingresar DNI
               </button>
             </div>
-          }
-          <div class="client-name-display text-muted small mt-1 font-weight-bold text-truncate">
-            <i class="fas fa-check-circle text-success mr-1"></i> {{ clienteNombre }}
-          </div>
-        </div>
 
-        <!-- 2. Método de Pago -->
-        <div class="payment-methods-row mb-2">
-          <label class="small font-weight-bold text-muted mb-1 d-block">Medio de Pago:</label>
-          <div class="btn-group btn-group-sm w-100" role="group">
-            <button 
-              type="button" 
-              class="btn" 
-              [ngClass]="metodoPago === 'EFECTIVO' ? 'btn-success font-weight-bold' : 'btn-outline-secondary'"
-              (click)="setMetodoPago('EFECTIVO')">
-              💵 Efectivo
-            </button>
-            <button 
-              type="button" 
-              class="btn" 
-              [ngClass]="metodoPago === 'YAPE' ? 'btn-success font-weight-bold' : 'btn-outline-secondary'"
-              (click)="setMetodoPago('YAPE')">
-              📱 Yape / Plin
-            </button>
-            <button 
-              type="button" 
-              class="btn" 
-              [ngClass]="metodoPago === 'TARJETA' ? 'btn-success font-weight-bold' : 'btn-outline-secondary'"
-              (click)="setMetodoPago('TARJETA')">
-              💳 Tarjeta
-            </button>
-          </div>
-        </div>
-
-        <!-- 3. Calculadora de Vuelto si es Efectivo -->
-        @if (metodoPago === 'EFECTIVO' && totalVenta > 0) {
-          <div class="cash-calculator mb-2 p-2 bg-white rounded border">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="small font-weight-bold text-secondary">Monto Pagado:</span>
-              <div class="d-flex align-items-center gap-1">
+            @if (clienteTipo === 'DNI') {
+              <div class="input-group input-group-sm mt-1">
                 <input 
-                  #montoPagadoInput
-                  type="number" 
-                  class="form-control form-control-sm text-right font-weight-bold text-primary" 
-                  style="width: 110px;" 
-                  [(ngModel)]="montoPagado" 
-                  (input)="calcularVuelto()"
-                  placeholder="0.00"
+                  type="text" 
+                  class="form-control" 
+                  placeholder="Número de DNI (8 dígitos)..." 
+                  maxlength="8" 
+                  [(ngModel)]="clienteDni"
+                  (keyup.enter)="buscarDniCliente()"
                 />
+                <button class="btn btn-primary" type="button" (click)="buscarDniCliente()" [disabled]="buscandoCliente">
+                  @if (buscandoCliente) {
+                    <span class="spinner-border spinner-border-sm"></span>
+                  } @else {
+                    <i class="fas fa-search"></i>
+                  }
+                </button>
+              </div>
+            }
+            <div class="client-name-display text-muted small mt-1 font-weight-bold text-truncate">
+              <i class="fas fa-check-circle text-success mr-1"></i> {{ clienteNombre }}
+            </div>
+          </div>
+
+          <!-- 2. Método de Pago -->
+          <div class="payment-methods-row mb-2">
+            <label class="small font-weight-bold text-muted mb-1 d-block">Medio de Pago:</label>
+            <div class="btn-group btn-group-sm w-100" role="group">
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="metodoPago === 'EFECTIVO' ? 'btn-success font-weight-bold' : 'btn-outline-secondary'"
+                (click)="setMetodoPago('EFECTIVO')">
+                💵 Efectivo
+              </button>
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="metodoPago === 'YAPE' ? 'btn-success font-weight-bold' : 'btn-outline-secondary'"
+                (click)="setMetodoPago('YAPE')">
+                📱 Yape / Plin
+              </button>
+              <button 
+                type="button" 
+                class="btn" 
+                [ngClass]="metodoPago === 'TARJETA' ? 'btn-success font-weight-bold' : 'btn-outline-secondary'"
+                (click)="setMetodoPago('TARJETA')">
+                💳 Tarjeta
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Calculadora de Vuelto si es Efectivo -->
+          @if (metodoPago === 'EFECTIVO' && totalVenta > 0) {
+            <div class="cash-calculator mb-2 p-2 bg-white rounded border">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small font-weight-bold text-secondary">Monto Pagado:</span>
+                <div class="d-flex align-items-center gap-1">
+                  <input 
+                    #montoPagadoInput
+                    type="number" 
+                    class="form-control form-control-sm text-right font-weight-bold text-primary" 
+                    style="width: 110px;" 
+                    [(ngModel)]="montoPagado" 
+                    (input)="calcularVuelto()"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              <!-- Botones de montos rápidos -->
+              <div class="quick-amounts-bar">
+                <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(totalVenta)">Exacto</button>
+                <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(10)">S/10</button>
+                <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(20)">S/20</button>
+                <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(50)">S/50</button>
+                <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(100)">S/100</button>
+              </div>
+
+              <!-- Vuelto Resaltado -->
+              <div class="d-flex justify-content-between align-items-center mt-2 pt-1 border-top">
+                <span class="font-weight-bold text-dark">VUELTO:</span>
+                <span class="vuelto-display font-weight-bold text-danger fs-5">
+                  {{ vuelto | currency:'PEN':'S/ ' }}
+                </span>
               </div>
             </div>
+          }
 
-            <!-- Botones de montos rápidos -->
-            <div class="quick-amounts-bar">
-              <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(totalVenta)">Exacto</button>
-              <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(10)">S/10</button>
-              <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(20)">S/20</button>
-              <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(50)">S/50</button>
-              <button class="btn btn-outline-secondary btn-xs" (click)="setMontoRapido(100)">S/100</button>
-            </div>
-
-            <!-- Vuelto Resaltado -->
-            <div class="d-flex justify-content-between align-items-center mt-2 pt-1 border-top">
-              <span class="font-weight-bold text-dark">VUELTO:</span>
-              <span class="vuelto-display font-weight-bold text-danger fs-5">
-                {{ vuelto | currency:'PEN':'S/ ' }}
-              </span>
-            </div>
+          <!-- 4. TOTAL GIGANTE -->
+          <div class="grand-total-box">
+            <span class="grand-total-label">TOTAL A COBRAR</span>
+            <span class="grand-total-value">{{ totalVenta | currency:'PEN':'S/ ' }}</span>
           </div>
-        }
 
-        <!-- 4. TOTAL GIGANTE -->
-        <div class="grand-total-box">
-          <span class="grand-total-label">TOTAL A COBRAR</span>
-          <span class="grand-total-value">{{ totalVenta | currency:'PEN':'S/ ' }}</span>
+          <!-- 5. Botón de Cobro e Impresión Directa -->
+          <button 
+            type="button" 
+            class="btn btn-success btn-lg btn-block font-weight-bold btn-checkout shadow"
+            [disabled]="procesoEnCurso || cart.length === 0"
+            (click)="cobrarVenta()">
+            @if (procesoEnCurso) {
+              <span class="spinner-border spinner-border-sm mr-2"></span> Registrando venta...
+            } @else {
+              <i class="fas fa-print mr-2"></i> COBRAR E IMPRIMIR (F12)
+            }
+          </button>
         </div>
 
-        <!-- 5. Botón de Cobro e Impresión Directa -->
-        <button 
-          type="button" 
-          class="btn btn-success btn-lg btn-block font-weight-bold btn-checkout shadow"
-          [disabled]="procesoEnCurso || cart.length === 0"
-          (click)="cobrarVenta()">
-          @if (procesoEnCurso) {
-            <span class="spinner-border spinner-border-sm mr-2"></span> Registrando venta...
-          } @else {
-            <i class="fas fa-print mr-2"></i> COBRAR E IMPRIMIR (F12)
-          }
-        </button>
       </div>
-
     </div>
   </div>
 </div>

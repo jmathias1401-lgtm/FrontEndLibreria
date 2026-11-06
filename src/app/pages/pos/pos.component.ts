@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener, LOCALE_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, Subscription, forkJoin } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -11,6 +12,7 @@ import { DetalleVentaService } from '../../services/detalleventa.service';
 import { TicketService } from '../../services/ticket.service';
 import { BuscarDniService } from '../../services/buscar-dni.service';
 import { PersonasService } from '../../services/personas.service';
+import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/product';
 
 export interface PosCartItem {
@@ -27,7 +29,7 @@ export interface PosCartItem {
 @Component({
   selector: 'app-pos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './pos.component.html',
   styleUrl: './pos.component.css',
   providers: [{ provide: LOCALE_ID, useValue: 'en-US' }, VentasService]
@@ -36,6 +38,10 @@ export class PosComponent implements OnInit, OnDestroy {
   @ViewChild('barcodeInput') barcodeInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('searchInput') searchInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('montoPagadoInput') montoPagadoInputRef!: ElementRef<HTMLInputElement>;
+
+  // Información de Terminal / Kiosko
+  currentUserName: string = 'Cajero';
+  isFullscreen: boolean = false;
 
   // Catálogo & Búsqueda
   productos: Product[] = [];
@@ -71,12 +77,40 @@ export class PosComponent implements OnInit, OnDestroy {
     private ticketService: TicketService,
     private buscarDniService: BuscarDniService,
     private personasService: PersonasService,
+    private authService: AuthService,
+    private router: Router,
     private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      if (user?.nombreusuario) {
+        this.currentUserName = user.nombreusuario;
+      }
+    });
     this.setupSearch();
     this.cargarCatalogo();
+  }
+
+  toggleFullscreen(): void {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().then(() => {
+        this.isFullscreen = true;
+      }).catch(err => console.warn('No se pudo activar pantalla completa:', err));
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().then(() => {
+          this.isFullscreen = false;
+        }).catch(err => console.warn('No se pudo salir de pantalla completa:', err));
+      }
+    }
+  }
+
+  cerrarTurno(): void {
+    if (confirm('¿Desea cerrar sesión y salir del Punto de Venta?')) {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+    }
   }
 
   ngAfterViewInit(): void {

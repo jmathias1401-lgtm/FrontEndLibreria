@@ -1,9 +1,33 @@
+/* Kiosko Wrapper de Pantalla Completa */
+.pos-kiosk-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: #eef2f6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Barra Superior de Kiosko (48px) */
+.pos-kiosk-topbar {
+  height: 48px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+  padding: 6px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
 /* Layout Principal Split-Screen */
 .pos-container {
   display: flex;
-  height: calc(100vh - 65px);
-  gap: 15px;
-  padding: 12px;
+  height: calc(100vh - 48px);
+  gap: 12px;
+  padding: 10px;
   background-color: #eef2f6;
   overflow: hidden;
   box-sizing: border-box;
@@ -21,21 +45,21 @@
 .catalog-scroll-area {
   flex: 1;
   overflow-y: auto;
-  padding-right: 5px;
+  padding-right: 4px;
 }
 
 /* Rejilla de Productos */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
 }
 
 .product-card {
   background: #ffffff;
   border: 1px solid #dfe5eb;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 6px;
+  padding: 8px 10px;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
   display: flex;
@@ -45,7 +69,7 @@
 
 .product-card:hover {
   border-color: #0d6efd;
-  box-shadow: 0 4px 10px rgba(13, 110, 253, 0.12);
+  box-shadow: 0 3px 8px rgba(13, 110, 253, 0.12);
   transform: translateY(-2px);
 }
 
@@ -60,19 +84,19 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 4px;
+  margin-bottom: 4px;
 }
 
 .product-name {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: #1e293b;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
 .stock-badge {
@@ -95,16 +119,16 @@
 
 .product-meta {
   display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 6px;
   flex-wrap: wrap;
 }
 
 .meta-tag {
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   background-color: #f1f5f9;
   padding: 1px 5px;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .product-prices {
@@ -112,7 +136,7 @@
   gap: 6px;
   align-items: center;
   border-top: 1px dashed #e2e8f0;
-  padding-top: 6px;
+  padding-top: 4px;
 }
 
 .price-main {
@@ -122,13 +146,13 @@
 }
 
 .price-main small {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: #64748b;
   text-transform: uppercase;
 }
 
 .price-main strong {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: #0f172a;
 }
 
@@ -136,7 +160,7 @@
   background: #f8fafc;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 2px 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -150,12 +174,12 @@
 }
 
 .btn-price-alt small {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: #64748b;
 }
 
 .btn-price-alt span {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #334155;
 }
@@ -164,11 +188,11 @@
 .pos-hotkeys-footer {
   display: flex;
   gap: 15px;
-  padding: 6px 10px;
+  padding: 5px 10px;
   background: #ffffff;
   border-radius: 6px;
-  margin-top: 8px;
-  font-size: 0.82rem;
+  margin-top: 6px;
+  font-size: 0.8rem;
   color: #64748b;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
@@ -211,18 +235,18 @@
 .ticket-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .ticket-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: 6px 8px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  gap: 8px;
+  border-radius: 5px;
+  gap: 6px;
 }
 
 .ticket-row-info {
@@ -232,7 +256,7 @@
 
 .item-name {
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   color: #1e293b;
   display: block;
   white-space: nowrap;
@@ -241,7 +265,7 @@
 }
 
 .item-sub-meta {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
 }
 
 .ticket-qty-control {
@@ -251,8 +275,8 @@
 }
 
 .btn-qty {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
@@ -261,6 +285,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.85rem;
 }
 
 .btn-qty:hover {
@@ -268,20 +293,20 @@
 }
 
 .input-qty {
-  width: 38px;
-  height: 26px;
+  width: 36px;
+  height: 24px;
   text-align: center;
   font-weight: bold;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 
 .ticket-row-total {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 75px;
+  gap: 6px;
+  min-width: 70px;
   justify-content: flex-end;
 }
 
@@ -291,7 +316,7 @@
   color: #ef4444;
   cursor: pointer;
   padding: 2px 4px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .btn-remove-item:hover {
@@ -300,49 +325,49 @@
 
 /* Panel de Cobro Inferior */
 .ticket-checkout-panel {
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 6px 6px;
+  padding: 10px !important;
 }
 
 .quick-amounts-bar {
   display: flex;
-  gap: 4px;
-  margin-top: 4px;
+  gap: 3px;
+  margin-top: 3px;
 }
 
 .quick-amounts-bar button {
   flex: 1;
-  padding: 2px 4px;
-  font-size: 0.75rem;
+  padding: 2px 3px;
+  font-size: 0.72rem;
 }
 
 .grand-total-box {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: #ffffff;
-  padding: 10px 14px;
-  border-radius: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .grand-total-label {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   letter-spacing: 0.5px;
   font-weight: 600;
   color: #94a3b8;
 }
 
 .grand-total-value {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #4ade80;
 }
 
 .btn-checkout {
-  height: 50px;
-  font-size: 1.15rem;
+  height: 46px;
+  font-size: 1.05rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
-

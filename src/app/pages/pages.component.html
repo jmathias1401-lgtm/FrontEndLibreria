@@ -1,8 +1,18 @@
-<div class="wrapper">
+<div class="wrapper" [class.pos-kiosk-mode]="isPosMode">
+  @if (!isPosMode) {
     <app-header></app-header>
     <app-sidebar></app-sidebar>
-    <div class="content-wrapper">
-        <router-outlet></router-outlet>
-    </div>  
+  }
+
+  <div 
+    class="content-wrapper" 
+    [style.margin-left]="isPosMode ? '0px' : null" 
+    [style.min-height]="isPosMode ? '100vh' : null" 
+    [style.background-color]="isPosMode ? '#eef2f6' : null">
+    <router-outlet></router-outlet>
+  </div>  
+
+  @if (!isPosMode) {
     <app-footer></app-footer>
+  }
 </div>
