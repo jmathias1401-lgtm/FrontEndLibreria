@@ -242,23 +242,23 @@
               <button 
                 type="button" 
                 class="btn" 
-                [ngClass]="clienteTipo === 'DNI' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary'"
-                (click)="clienteTipo = 'DNI'">
-                <i class="fas fa-id-card mr-1"></i> Ingresar DNI
+                [ngClass]="clienteTipo === 'DOC' ? 'btn-primary font-weight-bold' : 'btn-outline-secondary'"
+                (click)="clienteTipo = 'DOC'">
+                <i class="fas fa-id-card mr-1"></i> DNI / RUC
               </button>
             </div>
 
-            @if (clienteTipo === 'DNI') {
+            @if (clienteTipo === 'DOC') {
               <div class="input-group input-group-sm mt-1">
                 <input 
                   type="text" 
                   class="form-control" 
-                  placeholder="Número de DNI (8 dígitos)..." 
-                  maxlength="8" 
+                  placeholder="DNI (8 d.) o RUC (11 d.)..." 
+                  maxlength="11" 
                   [(ngModel)]="clienteDni"
                   (keyup.enter)="buscarDniCliente()"
                 />
-                <button class="btn btn-primary" type="button" (click)="buscarDniCliente()" [disabled]="buscandoCliente">
+                <button class="btn btn-primary" type="button" (click)="buscarDniCliente()" [disabled]="buscandoCliente" title="Buscar en BD / RENIEC / SUNAT">
                   @if (buscandoCliente) {
                     <span class="spinner-border spinner-border-sm"></span>
                   } @else {

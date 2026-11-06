@@ -12,6 +12,7 @@ import { DetalleVentaService } from '../../services/detalleventa.service';
 import { TicketService } from '../../services/ticket.service';
 import { BuscarDniService } from '../../services/buscar-dni.service';
 import { PersonasService } from '../../services/personas.service';
+import { ClienteService } from '../../services/cliente.service';
 import { AuthService } from '../../services/auth.service';
 import { Product } from '../../models/product';
 
@@ -57,7 +58,7 @@ export class PosComponent implements OnInit, OnDestroy {
   totalVenta: number = 0;
 
   // Datos de Pago & Cliente
-  clienteTipo: 'GENERAL' | 'DNI' = 'GENERAL';
+  clienteTipo: 'GENERAL' | 'DOC' = 'GENERAL';
   clienteDni: string = '';
   clienteNombre: string = 'PÚBLICO GENERAL';
   clienteId: number = 4; // Cliente Anónimo oficial en DB
@@ -77,6 +78,7 @@ export class PosComponent implements OnInit, OnDestroy {
     private ticketService: TicketService,
     private buscarDniService: BuscarDniService,
     private personasService: PersonasService,
+    private clienteService: ClienteService,
     private authService: AuthService,
     private router: Router,
     private toastr: ToastrService
@@ -351,27 +353,29 @@ export class PosComponent implements OnInit, OnDestroy {
   }
 
   buscarDniCliente(): void {
-    const dni = this.clienteDni.trim();
-    if (dni.length !== 8) {
-      this.toastr.warning('Ingrese un DNI válido de 8 dígitos');
+    const doc = this.clienteDni.trim();
+    if (doc.length !== 8 && doc.length !== 11) {
+      this.toastr.warning('Ingrese un DNI (8 dígitos) o RUC (11 dígitos) válido');
       return;
     }
 
     this.buscandoCliente = true;
-    this.buscarDniService.BuscarDni(dni).subscribe({
-      next: (data: any) => {
+    this.clienteService.consultarDocumento(doc).subscribe({
+      next: (res: any) => {
         this.buscandoCliente = false;
-        if (data && data.nombres) {
-          this.clienteNombre = `${data.nombres} ${data.apellidoPaterno || ''} ${data.apellidoMaterno || ''}`.trim();
-          this.toastr.success(`Cliente: ${this.clienteNombre}`);
+        if (res && res.exito) {
+          this.clienteId = res.idCliente;
+          this.clienteNombre = res.nombreCompleto;
+          const msg = res.origen === 'LOCAL' ? 'Registrado en BD' : `Obtenido de ${res.origen}`;
+          this.toastr.success(`${res.nombreCompleto} (${msg})`);
         } else {
-          this.toastr.warning('DNI no encontrado en RENIEC. Se usará como nuevo.');
-          this.clienteNombre = `Cliente DNI ${dni}`;
+          this.toastr.warning(res?.mensaje || 'No se pudo identificar el cliente');
         }
       },
-      error: () => {
+      error: (err: any) => {
         this.buscandoCliente = false;
-        this.clienteNombre = `Cliente DNI ${dni}`;
+        const msg = err.error?.mensaje || 'Documento no encontrado. Verifique la numeración.';
+        this.toastr.error(msg);
       }
     });
   }

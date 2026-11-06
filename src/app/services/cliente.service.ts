@@ -36,4 +36,8 @@ export class ClienteService {
   updateCliente(id: number, cliente: Cliente) {
     return this.http.put<Cliente>(`${this.baseUrl}/${id}`, cliente);
   }
+
+  consultarDocumento(numero: string) {
+    return this.http.get<any>(`${this.baseUrl}/consulta/${numero}`);
+  }
 }
