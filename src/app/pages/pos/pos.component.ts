@@ -82,7 +82,7 @@ export class PosComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private toastr: ToastrService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
@@ -166,9 +166,9 @@ export class PosComponent implements OnInit, OnDestroy {
     this.searchSubject.next(this.searchQuery);
   }
 
-  cargarCatalogo(page: number = 1): void {
+  cargarCatalogo(page: number = 1, xpage: number = 15): void {
     this.isLoadingCatalog = true;
-    this.productoService.getProductos(page).subscribe({
+    this.productoService.getProductos(page, xpage).subscribe({
       next: (res) => {
         this.productos = res.list || [];
         this.totalProductos = res.total || 0;

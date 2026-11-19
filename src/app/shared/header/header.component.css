@@ -1,3 +1,23 @@
-.active{
+.active {
     color: blue;
+}
+
+.pulse-badge {
+    animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+.dropdown-notifications-container .dropdown-menu {
+    min-width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.stock-alerts-list .dropdown-item:hover {
+    background-color: #f8f9fa;
 }

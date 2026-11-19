@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { StockNotificationService } from '../../services/stock-notification.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,8 +14,13 @@ import { AuthService } from '../../services/auth.service';
 export class SidebarComponent implements OnInit {
   currentUser: any = null;
   isVisitante: boolean = false;
+  lowStockCount: number = 0;
 
-  constructor(private authService: AuthService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private authService: AuthService,
+    private stockNotificationService: StockNotificationService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     // Check localStorage on init
@@ -25,6 +31,11 @@ export class SidebarComponent implements OnInit {
       
       this.checkUserRole();
       this.cdr.detectChanges(); // Force change detection
+    });
+
+    this.stockNotificationService.lowStockProducts$.subscribe(products => {
+      this.lowStockCount = products.length;
+      this.cdr.detectChanges();
     });
   }
 

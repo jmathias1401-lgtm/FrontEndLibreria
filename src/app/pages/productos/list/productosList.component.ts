@@ -47,6 +47,7 @@ export class ProductosListComponent implements OnInit{
   search:string = "";
   codBarra:string = "";
   modalEditar:boolean = false;
+  soloStockBajo: boolean = false;
  public pagesNumber:number=1;
  public nextCount:number=1;
   ngOnInit(): void {
@@ -58,6 +59,7 @@ export class ProductosListComponent implements OnInit{
     this.vertodos(index);
   }
   vertodos(index:number):void{
+  this.soloStockBajo = false;
   this.productoService.getProductos(index).subscribe(
     response=>{
       this.prod=response.list;
@@ -66,6 +68,21 @@ export class ProductosListComponent implements OnInit{
       
     }
     );
+  }
+
+  filtrarStockBajo(): void {
+    this.soloStockBajo = !this.soloStockBajo;
+    if (this.soloStockBajo) {
+      this.productoService.getAllProductos(1, 1000).subscribe(response => {
+        const list = response?.list || [];
+        this.prod = list.filter((p: any) => p.stock !== null && p.stock !== undefined && Number(p.stock) <= 5)
+                        .sort((a: any, b: any) => Number(a.stock) - Number(b.stock));
+        this.total = this.prod.length;
+        this.toastr.info(`Mostrando ${this.prod.length} producto(s) con stock crítico (≤ 5)`);
+      });
+    } else {
+      this.vertodos(1);
+    }
   }
   modificarProducto(productIndex:number){
    //console.log("LIST-----"+productIndex);

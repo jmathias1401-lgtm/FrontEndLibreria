@@ -139,31 +139,68 @@
           <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
         </div>
       </li>
-      <!-- Notifications Dropdown Menu -->
-      <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-bell"></i>
-          <span class="badge badge-warning navbar-badge">15</span>
+      <!-- Stock Notifications Dropdown Menu -->
+      <li class="nav-item dropdown dropdown-notifications-container" [class.show]="notificationOpen">
+        <a class="nav-link" href="javascript:void(0)" (click)="toggleNotificationDropdown($event)" role="button" title="Alertas de Stock Mínimo">
+          <i class="far fa-bell fa-lg"></i>
+          @if (lowStockCount > 0) {
+            <span class="badge badge-danger navbar-badge pulse-badge font-weight-bold">{{ lowStockCount }}</span>
+          }
         </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <span class="dropdown-item dropdown-header">15 Notifications</span>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-envelope mr-2"></i> 4 new messages
-            <span class="float-right text-muted text-sm">3 mins</span>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right shadow-lg border-0" [class.show]="notificationOpen">
+          <!-- Header -->
+          <div class="dropdown-header d-flex justify-content-between align-items-center py-2 px-3 bg-light border-bottom">
+            <span class="font-weight-bold text-dark text-sm">
+              <i class="fas fa-boxes mr-1 text-warning"></i>
+              {{ lowStockCount }} {{ lowStockCount === 1 ? 'Producto Crítico' : 'Productos Críticos' }}
+            </span>
+            <button 
+              type="button" 
+              class="btn btn-xs btn-outline-secondary" 
+              (click)="refreshStockNotifications($event)" 
+              title="Actualizar Stock">
+              <i class="fas fa-sync-alt" [class.fa-spin]="loadingStock"></i>
+            </button>
+          </div>
+
+          <!-- Lista de productos -->
+          <div class="stock-alerts-list" style="max-height: 280px; overflow-y: auto;">
+            @if (lowStockCount === 0) {
+              <div class="p-4 text-center text-muted">
+                <i class="fas fa-check-circle text-success fa-2x mb-2 d-block"></i>
+                <span class="small font-weight-bold d-block">Inventario en orden</span>
+                <span class="text-muted" style="font-size: 0.75rem;">No hay productos con stock menor o igual a 5.</span>
+              </div>
+            } @else {
+              @for (item of lowStockProducts.slice(0, 6); track item.idproducto) {
+                <a routerLink="/productos" (click)="closeNotificationDropdown()" class="dropdown-item py-2 px-3 border-bottom d-block">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-truncate mr-2" style="max-width: 175px;">
+                      <strong class="d-block text-truncate text-sm text-dark">{{ item.nombre }}</strong>
+                      <small class="text-muted text-xs">Cód: {{ item.codigoproducto || '-' }}</small>
+                    </div>
+                    <div>
+                      @if (item.stock <= 0) {
+                        <span class="badge badge-danger font-weight-bold px-2 py-1">Agotado (0)</span>
+                      } @else {
+                        <span class="badge badge-warning font-weight-bold text-dark px-2 py-1">Quedan {{ item.stock }}</span>
+                      }
+                    </div>
+                  </div>
+                </a>
+              }
+              @if (lowStockCount > 6) {
+                <div class="text-center py-1 bg-light text-muted" style="font-size: 0.75rem;">
+                  +{{ lowStockCount - 6 }} productos adicionales con stock bajo
+                </div>
+              }
+            }
+          </div>
+
+          <!-- Footer -->
+          <a routerLink="/productos" (click)="closeNotificationDropdown()" class="dropdown-item dropdown-footer text-center text-primary font-weight-bold py-2 bg-light border-top">
+            <i class="fas fa-list-alt mr-1"></i> Ir al Catálogo de Productos
           </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-users mr-2"></i> 8 friend requests
-            <span class="float-right text-muted text-sm">12 hours</span>
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-file mr-2"></i> 3 new reports
-            <span class="float-right text-muted text-sm">2 days</span>
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
         </div>
       </li>
       <li class="nav-item">

@@ -6,6 +6,14 @@
         <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ total }}</span>
       </div>
       <div class="d-flex gap-2">
+        <button 
+          type="button" 
+          class="btn btn-sm font-weight-bold" 
+          [ngClass]="soloStockBajo ? 'btn-danger' : 'btn-outline-light'"
+          (click)="filtrarStockBajo()">
+          <i class="fas fa-exclamation-triangle mr-1"></i> 
+          {{ soloStockBajo ? 'Ver Todos' : 'Stock Crítico (≤ 5)' }}
+        </button>
         <button type="button" class="btn btn-success btn-sm font-weight-bold" (click)="exportToExcel()">
           <i class="fas fa-file-excel mr-1"></i> Exportar Excel
         </button>
