@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -39,6 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('productsGrid', { static: false }) productsGrid!: ElementRef;
   @ViewChild('promoReel', { static: false }) promoReel!: ElementRef;
   @ViewChild('ordersSidebar', { static: false }) ordersSidebar!: OrdersSidebarComponent;
+  @ViewChild('productsAnchor', { static: false }) productsAnchor!: ElementRef;
   private autoScrollInterval: any;
   searchQuery: string = '';
   private searchSubject: Subject<string> = new Subject<string>();
@@ -184,6 +185,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   openWhatsApp(): void {
     window.open('https://wa.me/51926424814', '_blank');
+  }
+
+  scrollToProducts(): void {
+    if (this.productsAnchor) {
+      this.productsAnchor.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   startAutoScroll(): void {

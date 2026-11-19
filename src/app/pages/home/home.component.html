@@ -1,240 +1,305 @@
-<!-- Promotional Reel Section -->
-<section class="promo-reel-section">
-  <div class="container-fluid px-0">
-    <div class="promo-reel-container">
-      <button class="reel-arrow prev-arrow" (click)="scrollReelLeft()">
-        <i class="fas fa-chevron-left"></i>
-      </button>
-      <div class="promo-reel" #promoReel>
-        @for (promo of promos; track promo.title) {
-          <div class="promo-item">
-            <div class="promo-card" [style.background]="promo.bgColor">
-              <div class="promo-content">
-                <div class="promo-icon">
-                  <i class="{{ promo.icon }}"></i>
-                </div>
-                <div class="promo-text">
-                  <h5>{{ promo.title }}</h5>
-                  <p>{{ promo.description }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-        <!-- WhatsApp Card -->
-        <div class="promo-item">
-          <div class="promo-card whatsapp-card" (click)="openWhatsApp()">
-            <div class="promo-content">
-              <div class="promo-icon">
-                <i class="fab fa-whatsapp"></i>
-              </div>
-              <div class="promo-text">
-                <h5>Escríbenos</h5>
-                <p>926 424 814</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button class="reel-arrow next-arrow" (click)="scrollReelRight()">
-        <i class="fas fa-chevron-right"></i>
-      </button>
+<!-- ========== TOP BAR ========== -->
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <div class="top-bar-left">
+      <i class="fas fa-map-marker-alt"></i>
+      <span>Baños del Inca, Cajamarca</span>
+      <span class="top-divider">|</span>
+      <i class="fas fa-clock"></i>
+      <span>Lun - Sab: 8:00am - 9:00pm</span>
+    </div>
+    <div class="top-bar-right">
+      <a href="https://wa.me/51926424814" target="_blank" class="top-link">
+        <i class="fab fa-whatsapp"></i> 926 424 814
+      </a>
+      <span class="top-divider">|</span>
+      <a href="https://m.me/newfarmarh" target="_blank" class="top-link">
+        <i class="fab fa-facebook-messenger"></i> Messenger
+      </a>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Navigation Bar -->
-<nav class="navbar-section">
-  <div class="container-fluid">
-    <div class="navbar-container">
-      <!-- Logo -->
-      <div class="navbar-logo">
-        <a routerLink="/home">
-          <img src="/assets/img/LOGOR.png" alt="New Farma Logo" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-          <span class="logo-text" style="display: none;">BOTICA NEW FARMA</span>
-        </a>
+<!-- ========== NAVBAR ========== -->
+<nav class="main-navbar">
+  <div class="navbar-inner">
+    <!-- Logo -->
+    <a routerLink="/home" class="nav-logo">
+      <img src="/assets/img/LOGOR.png" alt="New Farma" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <span class="logo-fallback" style="display: none;">
+        <i class="fas fa-store-alt"></i>
+        BOTICA NEW FARMA
+      </span>
+    </a>
+
+    <!-- Search -->
+    <div class="nav-search">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" placeholder="¿Qué producto estás buscando?" [(ngModel)]="searchQuery" (input)="onSearch()" />
       </div>
+    </div>
 
-      <!-- Search Bar -->
-      <div class="navbar-search">
-        <div class="search-container">
-          <input type="text" class="search-input" placeholder="Buscar productos..." [(ngModel)]="searchQuery" (input)="onSearch()" />
-          <button class="search-btn" (click)="onSearch()">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Address -->
-      <div class="navbar-address">
-        <i class="fas fa-map-marker-alt"></i>
-        <div class="address-text">
-          <span class="address-label">Ingresa tu dirección</span>
-          <input type="text" class="address-input" placeholder="Ubicación de entrega" />
-        </div>
-      </div>
-
-      <!-- My Orders -->
-      <div class="navbar-item">
-        <span class="navbar-link" (click)="openOrdersSidebar()">
-          <i class="fas fa-box"></i>
-          <span>Mis Pedidos</span>
-        </span>
-      </div>
-
-      <!-- Login / User Profile & Logout -->
+    <!-- Actions -->
+    <div class="nav-actions">
       @if (isLoggedIn) {
-        <div class="navbar-item d-flex align-items-center gap-2">
-          <span class="navbar-link">
-            <i class="fas fa-user-circle"></i>
-            <span>{{ currentUser?.nombreusuario || 'Mi Cuenta' }}</span>
-          </span>
-          
+        <div class="nav-action-item user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>{{ currentUser?.nombreusuario || 'Mi Cuenta' }}</span>
         </div>
       } @else {
-        <div class="navbar-item">
-          <a routerLink="/login" class="navbar-link">
-            <i class="fas fa-user"></i>
-            <span>Iniciar Sesión</span>
-          </a>
-        </div>
+        <a routerLink="/login" class="nav-action-item">
+          <i class="fas fa-user"></i>
+          <span>Iniciar Sesión</span>
+        </a>
       }
 
-      <!-- Cart -->
-      <div class="navbar-item navbar-cart">
-        <a routerLink="/cart" class="navbar-link cart-link">
-          <i class="fas fa-shopping-cart"></i>
-          <span>Carrito</span>
-          <span class="cart-badge">{{ getCartItemCount() }}</span>
-        </a>
+      <div class="nav-action-item" (click)="openOrdersSidebar()">
+        <i class="fas fa-box"></i>
+        <span>Mis Pedidos</span>
       </div>
+
+      <a routerLink="/cart" class="nav-action-item cart-action">
+        <div class="cart-icon-wrap">
+          <i class="fas fa-shopping-cart"></i>
+          @if (getCartItemCount() > 0) {
+            <span class="cart-count">{{ getCartItemCount() }}</span>
+          }
+        </div>
+        <span>Carrito</span>
+      </a>
     </div>
   </div>
 </nav>
 
-<!-- Messenger Chatbot -->
-<div class="messenger-chatbot">
-  <a href="https://m.me/newfarmarh" target="_blank" class="messenger-btn" title="Chatea con nosotros">
-    <i class="fas fa-headset"></i>
-  </a>
-</div>
-
-<!-- Products Section -->
-<section class="products-section py-5">
-  <div class="container">
-    
-    <!-- Search indicator -->
-    @if (isSearching) {
-      <div class="search-info mb-3">
-        <i class="fas fa-search"></i> Resultados de búsqueda para: "<strong>{{ searchQuery }}</strong>"
-        <button class="btn btn-sm btn-outline-secondary ms-2" (click)="clearSearch()">
-          <i class="fas fa-times"></i> Ver todos
-        </button>
+<!-- ========== PROMO BANNER REEL ========== -->
+<section class="promo-strip">
+  <div class="promo-track" #promoReel>
+    @for (promo of promos; track promo.title) {
+      <div class="promo-chip" [style.background]="promo.bgColor">
+        <i class="{{ promo.icon }}"></i>
+        <div class="promo-chip-text">
+          <strong>{{ promo.title }}</strong>
+          <small>{{ promo.description }}</small>
+        </div>
       </div>
     }
+    <!-- WhatsApp Chip -->
+    <div class="promo-chip whatsapp-chip" (click)="openWhatsApp()">
+      <i class="fab fa-whatsapp"></i>
+      <div class="promo-chip-text">
+        <strong>Escríbenos</strong>
+        <small>926 424 814</small>
+      </div>
+    </div>
+  </div>
+  <button class="strip-arrow strip-prev" (click)="scrollReelLeft()">
+    <i class="fas fa-chevron-left"></i>
+  </button>
+  <button class="strip-arrow strip-next" (click)="scrollReelRight()">
+    <i class="fas fa-chevron-right"></i>
+  </button>
+</section>
 
-    <div class="products-grid">
-      @for (product of products; track product.idproducto; let i = $index) {
-        <div class="product-item">
-          <div class="card h-100 product-card d-flex flex-column">
-            <div class="card-img-container">
-               <img [src]="getProductImage(product, i)" [alt]="product.nombre" class="card-img-top">
-            </div>
-             <div class="card-body text-center d-flex flex-column">
-               <h6 class="card-title">{{ product.nombre }}</h6>
-               <h6 class="card-title">{{ product.laboratorio.nombrelaboratorio }}</h6>
-               <h6 class="card-title">{{ product.presentacion.nombrepresentacion }}</h6>
-               <div class="mt-auto">
-                 <label class="price-label mb-2">S/. {{ product.preciocaja | number:'1.2-2' }}</label>
-                 @if (!addedProducts.has(product.idproducto)) {
-                   <div class="d-flex justify-content-center align-items-center m-0 product-add-button-container p-0 w-100">
-                     <button class="btn btn-primary w-100" (click)="addToCart(product)">Agregar a carrito</button>
-                   </div>
-                 } @else {
-                   <div class="input-group mb-2">
-                     <button class="btn btn-outline-secondary" (click)="decrementQuantity(product.idproducto)">-</button>
-                     <input type="number" class="form-control text-center" [value]="getQuantity(product.idproducto)" (input)="updateQuantity(product.idproducto, $any($event.target).value)" min="1">
-                     <button class="btn btn-outline-secondary" (click)="incrementQuantity(product.idproducto)">+</button>
-                   </div>
-                 }
-               </div>
-             </div>
-          </div>
-        </div>
-      } @empty {
-        <div class="col-12 text-center py-5">
-          <p class="text-muted">No se encontraron productos disponibles.</p>
+<!-- ========== HERO BANNER ========== -->
+<section class="hero-banner">
+  <div class="hero-content">
+    <span class="hero-badge">📚 Librería & Útiles Escolares</span>
+    <h1 class="hero-title">Todo lo que necesitas para <span class="hero-highlight">aprender</span></h1>
+    <p class="hero-subtitle">Cuadernos, lápices, colores, mochilas y más — al mejor precio en Baños del Inca</p>
+    <div class="hero-actions">
+      <a (click)="scrollToProducts()" class="hero-btn hero-btn-primary">
+        <i class="fas fa-shopping-bag"></i> Ver Productos
+      </a>
+      <a href="https://wa.me/51926424814" target="_blank" class="hero-btn hero-btn-outline">
+        <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
+      </a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <img src="/assets/img/imagenes/Utiles-Escolares-y-Libreria.jpg" alt="Útiles Escolares" class="hero-image">
+  </div>
+</section>
+
+<!-- ========== CATEGORY PILLS (optional quick filters) ========== -->
+<section class="categories-section" #productsAnchor>
+  <div class="categories-inner">
+    <div class="section-header-row">
+      <h2 class="section-title">
+        <i class="fas fa-th-large"></i>
+        Nuestros Productos
+      </h2>
+      @if (isSearching) {
+        <div class="search-results-info">
+          <span>Resultados para: "<strong>{{ searchQuery }}</strong>"</span>
+          <button class="clear-search-btn" (click)="clearSearch()">
+            <i class="fas fa-times"></i> Limpiar
+          </button>
         </div>
       }
     </div>
-
-    <!-- Pagination -->
-    <nav aria-label="Page navigation" class="mt-4">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" [class.disabled]="currentPage === 1">
-          <a class="page-link" href="#" (click)="previousPage($event)">
-            <i class="fas fa-chevron-left"></i> Anterior
-          </a>
-        </li>
-        <li class="page-item disabled">
-          <span class="page-link">
-            Página {{ currentPage }} de {{ totalPages }}
-          </span>
-        </li>
-        <li class="page-item" [class.disabled]="currentPage === totalPages || totalPages === 0">
-          <a class="page-link" href="#" (click)="nextPage($event)">
-            Siguiente <i class="fas fa-chevron-right"></i>
-          </a>
-        </li>
-      </ul>
-    </nav>
   </div>
 </section>
 
-<!-- Services Section -->
-<section class="services-section py-5">
-  <div class="container">
-    <h2 class="text-center mb-4">Servicios</h2>
-    <div class="row">
-      <div class="col-md-4 mb-4">
-        <div class="card h-100 service-card">
-          <div class="card-body text-center">
-            <i class="fas fa-truck fa-3x text-primary mb-3"></i>
-            <h5 class="card-title">Distribución</h5>
-            <p class="card-text">Servicio de distribución farmacéutica ágil y eficiente, asegurando entregas oportunas.</p>
+<!-- ========== PRODUCTS GRID ========== -->
+<section class="products-section">
+  <div class="products-inner">
+    @if (loading) {
+      <div class="loading-skeleton">
+        @for (item of [1,2,3,4,5,6,7,8]; track item) {
+          <div class="skeleton-card">
+            <div class="skeleton-img shimmer"></div>
+            <div class="skeleton-line shimmer"></div>
+            <div class="skeleton-line short shimmer"></div>
+            <div class="skeleton-price shimmer"></div>
           </div>
-        </div>
+        }
       </div>
-      <div class="col-md-4 mb-4">
-        <div class="card h-100 service-card">
-          <div class="card-body text-center">
-            <i class="fas fa-store fa-3x text-primary mb-3"></i>
-            <h5 class="card-title">Servicio de Boticas</h5>
-            <p class="card-text">Atención especializada en nuestras boticas con productos de calidad.</p>
+    } @else {
+      <div class="products-grid">
+        @for (product of products; track product.idproducto; let i = $index) {
+          <div class="product-card-wrapper">
+            <div class="product-card">
+              <!-- Image -->
+              <div class="pc-image-box">
+                <img [src]="getProductImage(product, i)" [alt]="product.nombre" loading="lazy">
+                @if (product.stock <= 5 && product.stock > 0) {
+                  <span class="pc-badge pc-badge-low">Últimas und.</span>
+                }
+                @if (product.stock === 0) {
+                  <span class="pc-badge pc-badge-out">Agotado</span>
+                }
+              </div>
+
+              <!-- Info -->
+              <div class="pc-body">
+                <span class="pc-lab">{{ product.laboratorio.nombrelaboratorio || product.laboratorio.nombreLaboratorio || '' }}</span>
+                <h3 class="pc-name">{{ product.nombre }}</h3>
+                <span class="pc-pres">{{ product.presentacion.nombrepresentacion || product.presentacion.nombrePresentacion || '' }}</span>
+
+                <div class="pc-price-row">
+                  <span class="pc-price">S/. {{ product.preciocaja | number:'1.2-2' }}</span>
+                </div>
+
+                <!-- Add to Cart -->
+                <div class="pc-actions">
+                  @if (!addedProducts.has(product.idproducto)) {
+                    <button class="btn-add-cart" (click)="addToCart(product)" [disabled]="product.stock === 0">
+                      <i class="fas fa-cart-plus"></i>
+                      {{ product.stock === 0 ? 'Sin stock' : 'Agregar' }}
+                    </button>
+                  } @else {
+                    <div class="qty-control">
+                      <button class="qty-btn" (click)="decrementQuantity(product.idproducto)">−</button>
+                      <input type="number" class="qty-input" [value]="getQuantity(product.idproducto)" (input)="updateQuantity(product.idproducto, $any($event.target).value)" min="1">
+                      <button class="qty-btn" (click)="incrementQuantity(product.idproducto)">+</button>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        } @empty {
+          <div class="empty-state">
+            <i class="fas fa-search fa-3x"></i>
+            <h3>No se encontraron productos</h3>
+            <p>Intenta con otro término de búsqueda</p>
+          </div>
+        }
       </div>
-      <div class="col-md-4 mb-4">
-        <div class="card h-100 service-card">
-          <div class="card-body text-center">
-            <i class="fas fa-warehouse fa-3x text-primary mb-3"></i>
-            <h5 class="card-title">Almacenamiento</h5>
-            <p class="card-text">Almacenamiento de productos farmacéuticos bajo estrictos estándares de calidad.</p>
-          </div>
+    }
+
+    <!-- Pagination -->
+    @if (!isSearching && totalPages > 1) {
+      <nav class="pagination-bar">
+        <button class="page-btn" [disabled]="currentPage === 1" (click)="previousPage($event)">
+          <i class="fas fa-chevron-left"></i> Anterior
+        </button>
+        <div class="page-indicator">
+          <span class="page-current">{{ currentPage }}</span>
+          <span class="page-sep">de</span>
+          <span class="page-total">{{ totalPages }}</span>
         </div>
+        <button class="page-btn" [disabled]="currentPage === totalPages || totalPages === 0" (click)="nextPage($event)">
+          Siguiente <i class="fas fa-chevron-right"></i>
+        </button>
+      </nav>
+    }
+  </div>
+</section>
+
+<!-- ========== SERVICES SECTION ========== -->
+<section class="services-section">
+  <div class="services-inner">
+    <h2 class="section-title centered">¿Por qué elegirnos?</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="sc-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+          <i class="fas fa-truck"></i>
+        </div>
+        <h4>Delivery Rápido</h4>
+        <p>Entrega en Baños del Inca y alrededores el mismo día</p>
+      </div>
+      <div class="service-card">
+        <div class="sc-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+          <i class="fas fa-tags"></i>
+        </div>
+        <h4>Mejores Precios</h4>
+        <p>Precios competitivos en toda nuestra línea de productos</p>
+      </div>
+      <div class="service-card">
+        <div class="sc-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+          <i class="fas fa-store"></i>
+        </div>
+        <h4>Variedad Garantizada</h4>
+        <p>Amplio catálogo de útiles escolares, librería y más</p>
+      </div>
+      <div class="service-card">
+        <div class="sc-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+          <i class="fas fa-headset"></i>
+        </div>
+        <h4>Atención Personalizada</h4>
+        <p>Nuestro equipo está disponible para ayudarte siempre</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Cart Sidebar Component -->
+<!-- ========== FOOTER ========== -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <h5>Botica New Farma</h5>
+      <p>Tu librería de confianza en Baños del Inca, Cajamarca. Calidad y variedad en útiles escolares y de oficina.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <p><i class="fas fa-phone"></i> 926 424 814</p>
+      <p><i class="fas fa-map-marker-alt"></i> Baños del Inca, Cajamarca</p>
+    </div>
+    <div class="footer-col">
+      <h5>Síguenos</h5>
+      <div class="footer-social">
+        <a href="https://wa.me/51926424814" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://m.me/newfarmarh" target="_blank"><i class="fab fa-facebook"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Botica New Farma — Todos los derechos reservados</p>
+  </div>
+</footer>
+
+<!-- ========== FLOATING WHATSAPP ========== -->
+<div class="floating-wa" (click)="openWhatsApp()">
+  <div class="floating-wa-tooltip">¡Hola! ¿En qué te ayudamos?</div>
+  <div class="floating-wa-btn">
+    <i class="fab fa-whatsapp"></i>
+  </div>
+</div>
+
+<!-- ========== SIDEBARS & MODALS ========== -->
 <app-cart-sidebar (openLoginModal)="showLoginModal = true" (openRegisterModal)="openRegisterModal()"></app-cart-sidebar>
-
-<!-- Orders Sidebar Component -->
 <app-orders-sidebar #ordersSidebar></app-orders-sidebar>
-
-<!-- Login Modal -->
 <app-login [isVisible]="showLoginModal"></app-login>
-
-<!-- Register Modal -->
 <app-register [isVisible]="showRegisterModal" (closeRegister)="showRegisterModal = false; showLoginModal = true"></app-register>
