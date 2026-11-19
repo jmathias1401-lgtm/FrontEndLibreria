@@ -1,4 +1,4 @@
-<!-- ========== TOP BAR ========== -->
+<!-- ========== TOP BAR (Limpio y sin duplicidad) ========== -->
 <div class="top-bar">
   <div class="top-bar-inner">
     <div class="top-bar-left">
@@ -6,41 +6,48 @@
       <span>Baños del Inca, Cajamarca</span>
       <span class="top-divider">|</span>
       <i class="fas fa-clock"></i>
-      <span>Lun - Sab: 8:00am - 9:00pm</span>
+      <span>Lun - Sáb: 8:00am - 9:00pm</span>
     </div>
     <div class="top-bar-right">
-      <a href="https://wa.me/51926424814" target="_blank" class="top-link">
-        <i class="fab fa-whatsapp"></i> 926 424 814
-      </a>
+      <span class="top-badge-info"><i class="fas fa-check-circle"></i> Venta por mayor y menor</span>
       <span class="top-divider">|</span>
       <a href="https://m.me/newfarmarh" target="_blank" class="top-link">
-        <i class="fab fa-facebook-messenger"></i> Messenger
+        <i class="fab fa-facebook-messenger"></i> Facebook
       </a>
     </div>
   </div>
 </div>
 
-<!-- ========== NAVBAR ========== -->
+<!-- ========== NAVBAR PRINCIPAL ========== -->
 <nav class="main-navbar">
   <div class="navbar-inner">
     <!-- Logo -->
     <a routerLink="/home" class="nav-logo">
-      <img src="/assets/img/LOGOR.png" alt="New Farma" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <img src="/assets/img/LOGOR.png" alt="Botica New Farma" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
       <span class="logo-fallback" style="display: none;">
-        <i class="fas fa-store-alt"></i>
-        BOTICA NEW FARMA
+        <i class="fas fa-book-open"></i>
+        LIBRERÍA NEW FARMA
       </span>
     </a>
 
-    <!-- Search -->
+    <!-- Barra de Búsqueda -->
     <div class="nav-search">
       <div class="search-box">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" placeholder="¿Qué producto estás buscando?" [(ngModel)]="searchQuery" (input)="onSearch()" />
+        <input 
+          type="text" 
+          placeholder="¿Qué útiles o producto estás buscando? (ej. Cuadernos, Artesco...)" 
+          [(ngModel)]="searchQuery" 
+          (input)="onSearch()" />
+        @if (searchQuery) {
+          <button class="clear-input-btn" (click)="clearSearch()" title="Borrar">
+            <i class="fas fa-times"></i>
+          </button>
+        }
       </div>
     </div>
 
-    <!-- Actions -->
+    <!-- Acciones de Usuario -->
     <div class="nav-actions">
       @if (isLoggedIn) {
         <div class="nav-action-item user-info">
@@ -50,103 +57,199 @@
       } @else {
         <a routerLink="/login" class="nav-action-item">
           <i class="fas fa-user"></i>
-          <span>Iniciar Sesión</span>
+          <span>Ingresar</span>
         </a>
       }
 
-      <div class="nav-action-item" (click)="openOrdersSidebar()">
+      <div class="nav-action-item" (click)="openOrdersSidebar()" title="Ver el estado de mis pedidos">
         <i class="fas fa-box"></i>
         <span>Mis Pedidos</span>
       </div>
 
-      <a routerLink="/cart" class="nav-action-item cart-action">
+      <!-- Carrito con apertura directa de drawer y badge resaltado -->
+      <div class="nav-action-item cart-action" [class.has-cart-items]="getCartItemCount() > 0" (click)="openCart()" title="Ver carrito de compras">
         <div class="cart-icon-wrap">
           <i class="fas fa-shopping-cart"></i>
           @if (getCartItemCount() > 0) {
             <span class="cart-count">{{ getCartItemCount() }}</span>
           }
         </div>
-        <span>Carrito</span>
-      </a>
+        <span class="cart-label">Carrito</span>
+      </div>
     </div>
   </div>
 </nav>
 
-<!-- ========== PROMO BANNER REEL ========== -->
+<!-- ========== CARRUSEL DE BENEFICIOS (Paleta armoniosa de librería) ========== -->
 <section class="promo-strip">
   <div class="promo-track" #promoReel>
     @for (promo of promos; track promo.title) {
-      <div class="promo-chip" [style.background]="promo.bgColor">
-        <i class="{{ promo.icon }}"></i>
+      <div class="promo-chip" (click)="onPromoClick(promo)" title="Clic para ver más">
+        <div class="promo-chip-icon" [style.background]="promo.iconBg" [style.color]="promo.iconColor">
+          <i class="{{ promo.icon }}"></i>
+        </div>
         <div class="promo-chip-text">
           <strong>{{ promo.title }}</strong>
           <small>{{ promo.description }}</small>
         </div>
       </div>
     }
-    <!-- WhatsApp Chip -->
-    <div class="promo-chip whatsapp-chip" (click)="openWhatsApp()">
-      <i class="fab fa-whatsapp"></i>
-      <div class="promo-chip-text">
-        <strong>Escríbenos</strong>
-        <small>926 424 814</small>
-      </div>
-    </div>
   </div>
-  <button class="strip-arrow strip-prev" (click)="scrollReelLeft()">
+  <button class="strip-arrow strip-prev" (click)="scrollReelLeft()" title="Anterior">
     <i class="fas fa-chevron-left"></i>
   </button>
-  <button class="strip-arrow strip-next" (click)="scrollReelRight()">
+  <button class="strip-arrow strip-next" (click)="scrollReelRight()" title="Siguiente">
     <i class="fas fa-chevron-right"></i>
   </button>
 </section>
 
-<!-- ========== HERO BANNER ========== -->
+<!-- ========== HERO SECTION DINÁMICO (Sin espacios muertos, composición visual moderna) ========== -->
 <section class="hero-banner">
-  <div class="hero-content">
-    <span class="hero-badge">📚 Librería & Útiles Escolares</span>
-    <h1 class="hero-title">Todo lo que necesitas para <span class="hero-highlight">aprender</span></h1>
-    <p class="hero-subtitle">Cuadernos, lápices, colores, mochilas y más — al mejor precio en Baños del Inca</p>
-    <div class="hero-actions">
-      <a (click)="scrollToProducts()" class="hero-btn hero-btn-primary">
-        <i class="fas fa-shopping-bag"></i> Ver Productos
-      </a>
-      <a href="https://wa.me/51926424814" target="_blank" class="hero-btn hero-btn-outline">
-        <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
-      </a>
+  <div class="hero-container">
+    <!-- Columna Izquierda: Información y llamados a la acción -->
+    <div class="hero-content">
+      <div class="campaign-badge">
+        <span class="badge-fire">🎒</span>
+        <span class="badge-text"><strong>Campaña Escolar 2026</strong> • ¡Todo para el regreso a clases!</span>
+      </div>
+      <h1 class="hero-title">
+        Tu Librería de Confianza para <span class="hero-highlight">Aprender y Crear</span>
+      </h1>
+      <p class="hero-subtitle">
+        Cuadernos, mochilas, papelería, colores y útiles escolares de las mejores marcas al mejor precio en Baños del Inca.
+      </p>
+
+      <div class="hero-actions">
+        <button (click)="scrollToProducts()" class="hero-btn hero-btn-primary">
+          <i class="fas fa-shopping-bag"></i> Ver Catálogo
+        </button>
+        <button (click)="cotizarListaEscolar()" class="hero-btn hero-btn-cotizar" title="Envíanos tu lista por WhatsApp para cotizarte al instante">
+          <i class="fab fa-whatsapp"></i> 📋 Cotizar Lista Escolar
+        </button>
+      </div>
+
+      <!-- Métricas rápidas de confianza -->
+      <div class="hero-trust-row">
+        <div class="trust-item">
+          <i class="fas fa-shield-alt"></i>
+          <span>Productos 100% Originales</span>
+        </div>
+        <div class="trust-item">
+          <i class="fas fa-shipping-fast"></i>
+          <span>Entrega el Mismo Día</span>
+        </div>
+        <div class="trust-item">
+          <i class="fas fa-tags"></i>
+          <span>Precios por Mayor</span>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="hero-visual">
-    <img src="/assets/img/imagenes/Utiles-Escolares-y-Libreria.jpg" alt="Útiles Escolares" class="hero-image">
+
+    <!-- Columna Derecha: Composición visual atractiva de librería -->
+    <div class="hero-visual">
+      <div class="visual-composition-card">
+        <img src="/assets/img/hero-backpack.jpg" alt="Útiles Escolares y Mochilas de Librería" class="hero-main-img" onerror="this.src='/assets/img/hero-school.jpg'">
+        
+        <!-- Insignia flotante superior -->
+        <div class="floating-stat-badge badge-top">
+          <div class="badge-icon star-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="badge-text">
+            <strong>+1,000 Productos</strong>
+            <small>Stock listo para entrega</small>
+          </div>
+        </div>
+
+        <!-- Insignia flotante inferior -->
+        <div class="floating-stat-badge badge-bottom">
+          <div class="badge-icon truck-icon">
+            <i class="fas fa-motorcycle"></i>
+          </div>
+          <div class="badge-text">
+            <strong>Delivery en Baños del Inca</strong>
+            <small>Y envíos a todo Cajamarca</small>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ========== CATEGORY PILLS (optional quick filters) ========== -->
+<!-- ========== ACCESOS RÁPIDOS POR CATEGORÍA (6 Tarjetas visuales) ========== -->
 <section class="categories-section" #productsAnchor>
   <div class="categories-inner">
-    <div class="section-header-row">
-      <h2 class="section-title">
-        <i class="fas fa-th-large"></i>
-        Nuestros Productos
-      </h2>
-      @if (isSearching) {
-        <div class="search-results-info">
-          <span>Resultados para: "<strong>{{ searchQuery }}</strong>"</span>
-          <button class="clear-search-btn" (click)="clearSearch()">
-            <i class="fas fa-times"></i> Limpiar
-          </button>
+    <div class="category-header-wrap">
+      <div>
+        <h2 class="category-main-title">
+          <i class="fas fa-shapes"></i> Explora por Categoría
+        </h2>
+        <p class="category-subtitle">Encuentra rápidamente los útiles escolares y de oficina que necesitas</p>
+      </div>
+      @if (selectedCategory || isSearching) {
+        <button class="clear-all-filter-btn" (click)="clearSearch()">
+          <i class="fas fa-times"></i> Ver todo el catálogo
+        </button>
+      }
+    </div>
+
+    <div class="categories-grid">
+      @for (cat of categories; track cat.id) {
+        <div 
+          class="category-card" 
+          [class.active]="selectedCategory === cat.id"
+          (click)="selectCategory(cat)"
+          title="Ver productos de {{ cat.name }}">
+          <div class="cat-icon-circle">
+            <i class="{{ cat.icon }}"></i>
+          </div>
+          <span class="cat-name">{{ cat.name }}</span>
+          <span class="cat-arrow"><i class="fas fa-arrow-right"></i></span>
         </div>
       }
     </div>
+
+    <!-- Sugerencias Populares / Inteligentes -->
+    <div class="popular-tags-row">
+      <span class="tags-label"><i class="fas fa-fire"></i> Búsquedas frecuentes:</span>
+      <div class="tags-list">
+        @for (tag of popularSearches; track tag) {
+          <button class="search-tag-chip" (click)="onSearchTag(tag)">
+            {{ tag }}
+          </button>
+        }
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ========== PRODUCTS GRID ========== -->
+<!-- ========== SECCIÓN DEL CATÁLOGO DE PRODUCTOS ========== -->
 <section class="products-section">
   <div class="products-inner">
+    <!-- Encabezado de Resultados -->
+    <div class="catalog-header-bar">
+      <h3 class="catalog-title">
+        @if (selectedCategory) {
+          <span>Categoría seleccionada</span>
+        } @else if (isSearching) {
+          <span>Resultados para: "<strong>{{ searchQuery }}</strong>"</span>
+        } @else {
+          <span>Catálogo de Productos</span>
+        }
+        <span class="catalog-count-badge">({{ total }} productos)</span>
+      </h3>
+
+      @if (isSearching || selectedCategory) {
+        <button class="btn btn-sm btn-outline-secondary" (click)="clearSearch()">
+          <i class="fas fa-redo"></i> Restablecer filtros
+        </button>
+      }
+    </div>
+
+    <!-- Estado de Carga (Skeletons) -->
     @if (loading) {
       <div class="loading-skeleton">
-        @for (item of [1,2,3,4,5,6,7,8]; track item) {
+        @for (item of [1,2,3,4,5,6,7,8,9,10]; track item) {
           <div class="skeleton-card">
             <div class="skeleton-img shimmer"></div>
             <div class="skeleton-line shimmer"></div>
@@ -156,32 +259,34 @@
         }
       </div>
     } @else {
+      <!-- Grilla de Productos -->
       <div class="products-grid">
         @for (product of products; track product.idproducto; let i = $index) {
           <div class="product-card-wrapper">
             <div class="product-card">
-              <!-- Image -->
+              <!-- Imagen del Producto -->
               <div class="pc-image-box">
                 <img [src]="getProductImage(product, i)" [alt]="product.nombre" loading="lazy">
                 @if (product.stock <= 5 && product.stock > 0) {
-                  <span class="pc-badge pc-badge-low">Últimas und.</span>
+                  <span class="pc-badge pc-badge-low">Últimas {{ product.stock }} und.</span>
                 }
                 @if (product.stock === 0) {
                   <span class="pc-badge pc-badge-out">Agotado</span>
                 }
               </div>
 
-              <!-- Info -->
+              <!-- Cuerpo del Producto -->
               <div class="pc-body">
-                <span class="pc-lab">{{ product.laboratorio.nombrelaboratorio || product.laboratorio.nombreLaboratorio || '' }}</span>
-                <h3 class="pc-name">{{ product.nombre }}</h3>
+                <span class="pc-lab">{{ product.laboratorio.nombrelaboratorio || product.laboratorio.nombreLaboratorio || 'Librería' }}</span>
+                <h4 class="pc-name" title="{{ product.nombre }}">{{ product.nombre }}</h4>
                 <span class="pc-pres">{{ product.presentacion.nombrepresentacion || product.presentacion.nombrePresentacion || '' }}</span>
 
                 <div class="pc-price-row">
-                  <span class="pc-price">S/. {{ product.preciocaja | number:'1.2-2' }}</span>
+                  <span class="pc-currency">S/.</span>
+                  <span class="pc-price">{{ product.preciocaja | number:'1.2-2' }}</span>
                 </div>
 
-                <!-- Add to Cart -->
+                <!-- Botón de compra / Control de cantidad -->
                 <div class="pc-actions">
                   @if (!addedProducts.has(product.idproducto)) {
                     <button class="btn-add-cart" (click)="addToCart(product)" [disabled]="product.stock === 0">
@@ -201,15 +306,16 @@
           </div>
         } @empty {
           <div class="empty-state">
-            <i class="fas fa-search fa-3x"></i>
-            <h3>No se encontraron productos</h3>
-            <p>Intenta con otro término de búsqueda</p>
+            <i class="fas fa-box-open fa-3x"></i>
+            <h3>No encontramos productos</h3>
+            <p>Prueba buscando con otra palabra o revisa nuestras categorías principales.</p>
+            <button class="btn btn-primary mt-2" (click)="clearSearch()">Ver todos los productos</button>
           </div>
         }
       </div>
     }
 
-    <!-- Pagination -->
+    <!-- Paginación Elegante -->
     @if (!isSearching && totalPages > 1) {
       <nav class="pagination-bar">
         <button class="page-btn" [disabled]="currentPage === 1" (click)="previousPage($event)">
@@ -228,38 +334,41 @@
   </div>
 </section>
 
-<!-- ========== SERVICES SECTION ========== -->
+<!-- ========== SECCIÓN DE BENEFICIOS / SERVICIOS ========== -->
 <section class="services-section">
   <div class="services-inner">
-    <h2 class="section-title centered">¿Por qué elegirnos?</h2>
+    <div class="services-header text-center">
+      <h2 class="services-title">¿Por qué comprar en Librería New Farma?</h2>
+      <p class="services-subtitle">Garantizamos la mejor experiencia de compra para padres de familia y colegios</p>
+    </div>
     <div class="services-grid">
       <div class="service-card">
-        <div class="sc-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-          <i class="fas fa-truck"></i>
+        <div class="sc-icon icon-blue">
+          <i class="fas fa-file-invoice"></i>
         </div>
-        <h4>Delivery Rápido</h4>
-        <p>Entrega en Baños del Inca y alrededores el mismo día</p>
+        <h4>Cotización Rápida de Listas</h4>
+        <p>Envíanos la foto de la lista de útiles por WhatsApp y te enviamos el presupuesto con descuento.</p>
       </div>
       <div class="service-card">
-        <div class="sc-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+        <div class="sc-icon icon-orange">
+          <i class="fas fa-truck-moving"></i>
+        </div>
+        <h4>Entrega a Domicilio</h4>
+        <p>Llevamos tu pedido puntualmente a tu casa en Baños del Inca y alrededores.</p>
+      </div>
+      <div class="service-card">
+        <div class="sc-icon icon-green">
           <i class="fas fa-tags"></i>
         </div>
-        <h4>Mejores Precios</h4>
-        <p>Precios competitivos en toda nuestra línea de productos</p>
+        <h4>Precios Competitivos</h4>
+        <p>Ahorra comprando tus útiles escolares al mejor precio del mercado local.</p>
       </div>
       <div class="service-card">
-        <div class="sc-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
-          <i class="fas fa-store"></i>
+        <div class="sc-icon icon-purple">
+          <i class="fas fa-award"></i>
         </div>
-        <h4>Variedad Garantizada</h4>
-        <p>Amplio catálogo de útiles escolares, librería y más</p>
-      </div>
-      <div class="service-card">
-        <div class="sc-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
-          <i class="fas fa-headset"></i>
-        </div>
-        <h4>Atención Personalizada</h4>
-        <p>Nuestro equipo está disponible para ayudarte siempre</p>
+        <h4>Calidad Garantizada</h4>
+        <p>Marcas líderes en útiles de oficina y papelería que cuidan tu economía.</p>
       </div>
     </div>
   </div>
@@ -269,37 +378,41 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-col">
-      <h5>Botica New Farma</h5>
-      <p>Tu librería de confianza en Baños del Inca, Cajamarca. Calidad y variedad en útiles escolares y de oficina.</p>
+      <h5><i class="fas fa-book-reader"></i> Librería New Farma</h5>
+      <p>Tu tienda de confianza en Baños del Inca, Cajamarca. Todo en útiles escolares, papelería de oficina, juguetes y manualidades.</p>
     </div>
     <div class="footer-col">
-      <h5>Contacto</h5>
-      <p><i class="fas fa-phone"></i> 926 424 814</p>
-      <p><i class="fas fa-map-marker-alt"></i> Baños del Inca, Cajamarca</p>
+      <h5>Ubicación y Horarios</h5>
+      <p><i class="fas fa-map-marker-alt"></i> Baños del Inca, Cajamarca - Perú</p>
+      <p><i class="fas fa-clock"></i> Lunes a Sábado: 8:00 AM - 9:00 PM</p>
     </div>
     <div class="footer-col">
-      <h5>Síguenos</h5>
+      <h5>Atención Directa</h5>
+      <p><i class="fas fa-phone-alt"></i> 926 424 814</p>
       <div class="footer-social">
-        <a href="https://wa.me/51926424814" target="_blank"><i class="fab fa-whatsapp"></i></a>
-        <a href="https://m.me/newfarmarh" target="_blank"><i class="fab fa-facebook"></i></a>
+        <a href="https://wa.me/51926424814" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://m.me/newfarmarh" target="_blank" title="Facebook Messenger"><i class="fab fa-facebook-messenger"></i></a>
       </div>
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2026 Botica New Farma — Todos los derechos reservados</p>
+    <p>© 2026 Botica & Librería New Farma — Baños del Inca, Cajamarca</p>
   </div>
 </footer>
 
-<!-- ========== FLOATING WHATSAPP ========== -->
-<div class="floating-wa" (click)="openWhatsApp()">
-  <div class="floating-wa-tooltip">¡Hola! ¿En qué te ayudamos?</div>
+<!-- ========== ÚNICO BOTÓN FLOTANTE: WHATSAPP (Limpio y directo) ========== -->
+<div class="floating-wa" (click)="openWhatsApp()" title="¿Deseas consultar o cotizar tu lista escolar?">
+  <div class="floating-wa-tooltip">
+    <strong>¿Tienes dudas o tu lista escolar?</strong>
+    <span>Escríbenos al instante</span>
+  </div>
   <div class="floating-wa-btn">
     <i class="fab fa-whatsapp"></i>
   </div>
 </div>
 
 <!-- ========== SIDEBARS & MODALS ========== -->
-<app-cart-sidebar (openLoginModal)="showLoginModal = true" (openRegisterModal)="openRegisterModal()"></app-cart-sidebar>
+<app-cart-sidebar #cartSidebar (openLoginModal)="showLoginModal = true" (openRegisterModal)="openRegisterModal()"></app-cart-sidebar>
 <app-orders-sidebar #ordersSidebar></app-orders-sidebar>
 <app-login [isVisible]="showLoginModal"></app-login>
 <app-register [isVisible]="showRegisterModal" (closeRegister)="showRegisterModal = false; showLoginModal = true"></app-register>

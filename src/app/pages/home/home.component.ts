@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ProductoService } from '../../services/producto.service';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
-import { ProductList, Product } from '../../models/product';
+import { Product } from '../../models/product';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { CartSidebarComponent } from '../cart-sidebar/cart-sidebar';
@@ -13,11 +13,21 @@ import { LoginComponent } from '../../auth/login/login.component';
 import { RegisterComponent } from '../../auth/register/register.component';
 import { OrdersSidebarComponent } from '../orders-sidebar/orders-sidebar';
 
-interface Promo {
+export interface PromoItem {
   title: string;
   description: string;
   icon: string;
-  bgColor: string;
+  iconColor: string;
+  iconBg: string;
+  searchTerm?: string;
+  action?: 'search' | 'cotizar';
+}
+
+export interface CategoryItem {
+  id: string;
+  name: string;
+  icon: string;
+  query: string;
 }
 
 @Component({
@@ -36,28 +46,55 @@ export class HomeComponent implements OnInit, OnDestroy {
   addedProducts: Set<number> = new Set();
   itemsPerPage = 20;
   totalPages = 0;
+
   @ViewChild('productsGrid', { static: false }) productsGrid!: ElementRef;
   @ViewChild('promoReel', { static: false }) promoReel!: ElementRef;
   @ViewChild('ordersSidebar', { static: false }) ordersSidebar!: OrdersSidebarComponent;
+  @ViewChild('cartSidebar', { static: false }) cartSidebar!: CartSidebarComponent;
   @ViewChild('productsAnchor', { static: false }) productsAnchor!: ElementRef;
+
   private autoScrollInterval: any;
   searchQuery: string = '';
   private searchSubject: Subject<string> = new Subject<string>();
   isSearching: boolean = false;
+  selectedCategory: string = '';
+
   showRegisterModal: boolean = false;
   showLoginModal: boolean = false;
   isLoggedIn: boolean = false;
   currentUser: any = null;
 
-  promos: Promo[] = [
-    { title: 'Envío Gratis', description: 'En compras mayores a S/. 150.00', icon: 'fas fa-truck', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-    { title: '20% DSCTO', description: 'En cuadernos y lapiceros', icon: 'fas fa-percentage', bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-    { title: '3x2', description: 'En productos de jugueteria', icon: 'fas fa-gift', bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-    { title: 'Delivery 24h', description: 'Entrega rápida en Baños y alrededores', icon: 'fas fa-clock', bgColor: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-    { title: 'Precio Especial', description: 'En productos seleccionados', icon: 'fas fa-tags', bgColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-    { title: 'Atención 24/7', description: 'Personal disponibles', icon: 'fas fa-user-md', bgColor: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
-    { title: 'Tarjeta de Descuento', description: 'Acumula puntos en cada compra', icon: 'fas fa-id-card', bgColor: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)' },
-    { title: 'Productos Ecoamigables', description: 'Variedad en productos ecológicos', icon: 'fas fa-leaf', bgColor: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' }
+  // Promociones y beneficios con paleta armoniosa de librería
+  promos: PromoItem[] = [
+    { title: 'Envío Gratis', description: 'En compras mayores a S/. 150', icon: 'fas fa-truck', iconColor: '#2563eb', iconBg: '#eff6ff', searchTerm: '' },
+    { title: 'Cuadernos y Lapiceros', description: 'Campaña escolar con descuento', icon: 'fas fa-pencil-alt', iconColor: '#ea580c', iconBg: '#fff7ed', searchTerm: 'cuaderno' },
+    { title: 'Juguetería y Regalos', description: 'Novedades para todas las edades', icon: 'fas fa-gamepad', iconColor: '#7c3aed', iconBg: '#f5f3ff', searchTerm: 'juguete' },
+    { title: 'Delivery Rápido', description: 'En Baños del Inca y Cajamarca', icon: 'fas fa-bolt', iconColor: '#059669', iconBg: '#ecfdf5', action: 'cotizar' },
+    { title: 'Marcas Reconocidas', description: 'Faber-Castell, Artesco, Layconsa', icon: 'fas fa-check-circle', iconColor: '#d97706', iconBg: '#fefce8', searchTerm: 'artesco' },
+    { title: 'Cotiza tu Lista', description: 'Envía tu foto por WhatsApp', icon: 'fas fa-file-invoice', iconColor: '#0284c7', iconBg: '#f0f9ff', action: 'cotizar' },
+    { title: 'Papelería y Oficina', description: 'Papel bond, archivadores y más', icon: 'fas fa-folder-open', iconColor: '#0891b2', iconBg: '#ecfeff', searchTerm: 'papel' }
+  ];
+
+  // 6 Tarjetas de acceso rápido por categoría
+  categories: CategoryItem[] = [
+    { id: 'cuadernos', name: 'Cuadernos y Libretas', icon: 'fas fa-book', query: 'cuaderno' },
+    { id: 'escritura', name: 'Escritura y Arte', icon: 'fas fa-pen-nib', query: 'bolígrafo' },
+    { id: 'mochilas', name: 'Mochilas y Cartucheras', icon: 'fas fa-briefcase', query: 'mochila' },
+    { id: 'oficina', name: 'Oficina y Papelería', icon: 'fas fa-paste', query: 'papel' },
+    { id: 'jugueteria', name: 'Juguetería y Regalos', icon: 'fas fa-puzzle-piece', query: 'juguete' },
+    { id: 'arte', name: 'Pintura y Manualidades', icon: 'fas fa-palette', query: 'témpera' }
+  ];
+
+  // Búsquedas populares / inteligentes
+  popularSearches: string[] = [
+    'Faber-Castell',
+    'Artesco',
+    'Cuadernos Stanford',
+    'Papel Bond A4',
+    'Témperas',
+    'Plumones',
+    'Acuarelas',
+    'Mochilas'
   ];
 
   constructor(
@@ -94,6 +131,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   searchProducts(query: string): void {
     if (!query.trim()) {
       this.isSearching = false;
+      this.selectedCategory = '';
       this.currentPage = 1;
       this.loadProducts();
       return;
@@ -127,8 +165,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.total = data.total || 0;
         this.totalPages = Math.ceil(this.total / this.itemsPerPage);
         this.loading = false;
-        // Scroll to top of products section
-        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: (error) => {
         console.error('Error loading products:', error);
@@ -143,6 +179,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.currentPage--;
       this.products = [];
       this.loadProducts();
+      this.scrollToProducts();
     }
   }
 
@@ -152,19 +189,20 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.currentPage++;
       this.products = [];
       this.loadProducts();
+      this.scrollToProducts();
     }
   }
 
   scrollReelLeft(): void {
     if (this.promoReel) {
-      this.promoReel.nativeElement.scrollBy({ left: -400, behavior: 'smooth' });
+      this.promoReel.nativeElement.scrollBy({ left: -320, behavior: 'smooth' });
       this.resetAutoScroll();
     }
   }
 
   scrollReelRight(): void {
     if (this.promoReel) {
-      this.promoReel.nativeElement.scrollBy({ left: 400, behavior: 'smooth' });
+      this.promoReel.nativeElement.scrollBy({ left: 320, behavior: 'smooth' });
       this.resetAutoScroll();
     }
   }
@@ -180,7 +218,41 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   clearSearch(): void {
     this.searchQuery = '';
-    this.searchSubject.next('');
+    this.selectedCategory = '';
+    this.isSearching = false;
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
+  onSearchTag(tag: string): void {
+    this.searchQuery = tag;
+    this.selectedCategory = '';
+    this.onSearch();
+    this.scrollToProducts();
+  }
+
+  selectCategory(category: CategoryItem): void {
+    if (this.selectedCategory === category.id) {
+      this.clearSearch();
+    } else {
+      this.selectedCategory = category.id;
+      this.searchQuery = category.query;
+      this.onSearch();
+      this.scrollToProducts();
+    }
+  }
+
+  onPromoClick(promo: PromoItem): void {
+    if (promo.action === 'cotizar') {
+      this.cotizarListaEscolar();
+    } else if (promo.searchTerm) {
+      this.onSearchTag(promo.searchTerm);
+    }
+  }
+
+  cotizarListaEscolar(): void {
+    const text = encodeURIComponent('¡Hola Botica New Farma! Deseo cotizar mi lista escolar por favor.');
+    window.open(`https://wa.me/51926424814?text=${text}`, '_blank');
   }
 
   openWhatsApp(): void {
@@ -199,13 +271,13 @@ export class HomeComponent implements OnInit, OnDestroy {
         const reel = this.promoReel.nativeElement;
         const maxScrollLeft = reel.scrollWidth - reel.clientWidth;
 
-        if (reel.scrollLeft >= maxScrollLeft) {
+        if (reel.scrollLeft >= maxScrollLeft - 10) {
           reel.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
-          reel.scrollBy({ left: 400, behavior: 'smooth' });
+          reel.scrollBy({ left: 320, behavior: 'smooth' });
         }
       }
-    }, 3000);
+    }, 4000);
   }
 
   stopAutoScroll(): void {
@@ -215,8 +287,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getProductImage(product: Product, index: number): string {
-    const nombre = product.imagen_path
-
+    const nombre = product.imagen_path;
     if (nombre && index >= 0) {
       return '/assets/img/imagenes/' + nombre;
     }
@@ -270,16 +341,18 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.cartService.addToCart(product);
     }
     this.toastr.success(`${quantity} ${product.nombre} agregado(s) al carrito`);
-    // Mark as added
     this.addedProducts.add(product.idproducto);
-    // Reset quantity after adding
     this.quantities[product.idproducto] = 1;
   }
 
-
-
   getCartItemCount(): number {
     return this.cartService.getCartItems().reduce((total, item) => total + item.quantity, 0);
+  }
+
+  openCart(): void {
+    if (this.cartSidebar) {
+      this.cartSidebar.openCart();
+    }
   }
 
   openLoginModal(): void {
@@ -288,11 +361,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   openRegisterModal(): void {
     this.showRegisterModal = true;
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.toastr.info('Has cerrado sesión correctamente');
   }
 
   openOrdersSidebar(): void {
