@@ -52,11 +52,23 @@ export class VentasService {
     return this.http.get<ventaList>(`${this.baseUrl}?page=${page}&xpage=${xpage}`);
   }
 
-  ListWithFilters(page: number, xpage: number, filters: { serie?: string, correlativo?: string, search?: string }) {
+  ListWithFilters(page: number, xpage: number, filters: { 
+    serie?: string; 
+    correlativo?: string; 
+    search?: string;
+    fechaInicio?: string;
+    fechaFin?: string;
+    idTipoComprobante?: number;
+    idEmpleado?: number;
+  }) {
     let query = `${this.baseUrl}?page=${page}&xpage=${xpage}`;
-    if (filters.serie) query += `&serie=${filters.serie}`;
-    if (filters.correlativo) query += `&correlativo=${filters.correlativo}`;
-    if (filters.search) query += `&search=${filters.search}`;
+    if (filters.serie) query += `&serie=${encodeURIComponent(filters.serie)}`;
+    if (filters.correlativo) query += `&correlativo=${encodeURIComponent(filters.correlativo)}`;
+    if (filters.search) query += `&search=${encodeURIComponent(filters.search)}`;
+    if (filters.fechaInicio) query += `&fechaInicio=${encodeURIComponent(filters.fechaInicio)}`;
+    if (filters.fechaFin) query += `&fechaFin=${encodeURIComponent(filters.fechaFin)}`;
+    if (filters.idTipoComprobante) query += `&idTipoComprobante=${filters.idTipoComprobante}`;
+    if (filters.idEmpleado) query += `&idEmpleado=${filters.idEmpleado}`;
     return this.http.get<ventaList>(query);
   }
 

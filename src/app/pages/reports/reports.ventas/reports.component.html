@@ -1,86 +1,235 @@
 <div class="container-fluid px-4 py-3">
+  <!-- Tarjeta Principal del Reporte -->
   <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+    <!-- Encabezado con Título y Botones de Exportación -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2 flex-wrap gap-2">
       <div class="d-flex align-items-center gap-2">
-        <h5 class="mb-0"><i class="fas fa-chart-line mr-2"></i> Reporte de Ventas Realizadas</h5>
-        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ totalVentas }}</span>
+        <h5 class="mb-0"><i class="fas fa-file-invoice-dollar mr-2"></i> Reporte Analítico de Ventas & Facturación</h5>
+        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ totalVentas }} transacciones</span>
       </div>
-      <div class="d-flex align-items-center gap-2">
-        <input type="search" placeholder="Buscar por serie..." class="form-control form-control-sm" style="width: 140px;" [(ngModel)]="filterSerie" (input)="applyFilters()">
-        <input type="search" placeholder="Correlativo..." class="form-control form-control-sm" style="width: 140px;" [(ngModel)]="filterCorrelativo" (input)="applyFilters()">
-        <input type="search" placeholder="Texto libre..." class="form-control form-control-sm" style="width: 140px;" [(ngModel)]="filterSearch" (input)="applyFilters()">
-        <button class="btn btn-success btn-sm font-weight-bold ml-2">
-          <i class="fas fa-file-excel mr-1"></i> Exportar
+      
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button 
+          type="button" 
+          class="btn btn-success btn-sm font-weight-bold shadow-xs" 
+          [disabled]="exportandoExcel"
+          (click)="exportarExcel()" 
+          title="Exportar reporte completo a Excel">
+          @if (exportandoExcel) {
+            <span class="spinner-border spinner-border-sm mr-1"></span> Exportando...
+          } @else {
+            <i class="fas fa-file-excel mr-1"></i> Excel
+          }
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-light btn-sm font-weight-bold shadow-xs text-dark" 
+          (click)="imprimirReporteConsolidado()" 
+          title="Imprimir informe ejecutivo para cuadre o archivo contable">
+          <i class="fas fa-print mr-1"></i> Imprimir Reporte
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-outline-light btn-sm font-weight-bold" 
+          (click)="applyFilters()" 
+          title="Refrescar datos">
+          <i class="fas fa-sync-alt" [class.fa-spin]="cargandoReporte"></i>
         </button>
       </div>
     </div>
     
-    <div class="card-body">
+    <!-- Barra de Filtros Rápidos de Período y Búsqueda -->
+    <div class="card-body bg-light border-bottom py-3">
+      <div class="row align-items-center g-2">
+        <!-- Selector Rápido de Período -->
+        <div class="col-12 col-lg-5 mb-2 mb-lg-0">
+          <label class="small text-muted font-weight-bold d-block mb-1">Período de Consulta:</label>
+          <div class="btn-group btn-group-sm w-100" role="group">
+            <button 
+              type="button" 
+              class="btn font-weight-bold" 
+              [ngClass]="periodoSeleccionado === 'HOY' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="seleccionarPeriodo('HOY')">
+              Hoy
+            </button>
+            <button 
+              type="button" 
+              class="btn font-weight-bold" 
+              [ngClass]="periodoSeleccionado === 'AYER' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="seleccionarPeriodo('AYER')">
+              Ayer
+            </button>
+            <button 
+              type="button" 
+              class="btn font-weight-bold" 
+              [ngClass]="periodoSeleccionado === 'ULTIMOS_7' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="seleccionarPeriodo('ULTIMOS_7')">
+              Últimos 7 Días
+            </button>
+            <button 
+              type="button" 
+              class="btn font-weight-bold" 
+              [ngClass]="periodoSeleccionado === 'ESTE_MES' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="seleccionarPeriodo('ESTE_MES')">
+              Este Mes
+            </button>
+            <button 
+              type="button" 
+              class="btn font-weight-bold" 
+              [ngClass]="periodoSeleccionado === 'PERSONALIZADO' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="seleccionarPeriodo('PERSONALIZADO')">
+              Personalizado
+            </button>
+          </div>
+        </div>
+
+        <!-- Inputs de Rango Desde / Hasta -->
+        <div class="col-12 col-sm-6 col-lg-4 mb-2 mb-lg-0">
+          <label class="small text-muted font-weight-bold d-block mb-1">Rango de Fechas:</label>
+          <div class="input-group input-group-sm">
+            <input 
+              type="date" 
+              class="form-control" 
+              [(ngModel)]="fechaInicio" 
+              (change)="periodoSeleccionado = 'PERSONALIZADO'; applyFilters()" 
+              title="Fecha Inicial">
+            <div class="input-group-prepend input-group-append">
+              <span class="input-group-text bg-white">al</span>
+            </div>
+            <input 
+              type="date" 
+              class="form-control" 
+              [(ngModel)]="fechaFin" 
+              (change)="periodoSeleccionado = 'PERSONALIZADO'; applyFilters()" 
+              title="Fecha Final">
+          </div>
+        </div>
+
+        <!-- Filtro de Tipo de Comprobante y Buscador Libre -->
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="small text-muted font-weight-bold d-block mb-1">Buscador / Comprobante:</label>
+          <div class="d-flex gap-1">
+            <select 
+              class="custom-select custom-select-sm" 
+              style="width: 120px;" 
+              [(ngModel)]="tipoComprobanteFiltro" 
+              (change)="applyFilters()">
+              <option value="TODOS">Todos</option>
+              <option value="BOLETA">Boletas</option>
+              <option value="FACTURA">Facturas</option>
+              <option value="TIKET">Tickets</option>
+            </select>
+            <input 
+              type="search" 
+              placeholder="Cliente o Serie..." 
+              class="form-control form-control-sm" 
+              [(ngModel)]="filterSearch" 
+              (input)="applyFilters()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARJETAS DE RESUMEN FINANCIERO DEL PERÍODO -->
+    <div class="card-body bg-white py-3 border-bottom">
+      <div class="row">
+        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+          <div class="card bg-light border-primary p-2 mb-0 shadow-xs h-100">
+            <small class="text-muted font-weight-bold text-uppercase">Total Facturado</small>
+            <h4 class="mb-0 font-weight-bold text-primary">S/ {{ resumenPeriodo.totalMonto | number:'1.2-2' }}</h4>
+            <small class="text-muted">{{ resumenPeriodo.totalComprobantes }} operaciones en vista</small>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+          <div class="card bg-light border-success p-2 mb-0 shadow-xs h-100">
+            <small class="text-muted font-weight-bold text-uppercase">Subtotal Base</small>
+            <h4 class="mb-0 font-weight-bold text-success">S/ {{ resumenPeriodo.totalSubtotal | number:'1.2-2' }}</h4>
+            <small class="text-muted">Sin impuestos</small>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+          <div class="card bg-light border-info p-2 mb-0 shadow-xs h-100">
+            <small class="text-muted font-weight-bold text-uppercase">IGV Total (18%)</small>
+            <h4 class="mb-0 font-weight-bold text-info">S/ {{ resumenPeriodo.totalIgv | number:'1.2-2' }}</h4>
+            <small class="text-muted">Impuesto fiscal</small>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="card bg-light border-warning p-2 mb-0 shadow-xs h-100">
+            <small class="text-muted font-weight-bold text-uppercase">Ticket Promedio</small>
+            <h4 class="mb-0 font-weight-bold text-warning text-dark">S/ {{ resumenPeriodo.ticketPromedio | number:'1.2-2' }}</h4>
+            <small class="text-muted">Por transacción</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- TABLA DE VENTAS -->
+    <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table table-sm table-hover table-bordered align-middle">
-          <thead class="thead-light text-center">
+        <table class="table table-sm table-hover table-bordered align-middle mb-0">
+          <thead class="thead-dark text-center">
             <tr>
-              <th (dblclick)="toggleFilter('id')" style="cursor: pointer;" title="Doble clic para filtrar">
-                ID Venta <i class="fas fa-search text-muted ml-1"></i>
-                @if (showFilterId) {
-                  <input [(ngModel)]="filterId" (input)="applyFilters()" placeholder="Filtrar ID..." class="form-control form-control-sm mt-1">
-                }
-              </th>
-              <th>
-                Serie
-                @if (showFilterSerie) {
-                  <input [(ngModel)]="filterSerie" (input)="applyFilters()" placeholder="Filtrar Serie..." class="form-control form-control-sm mt-1">
-                }
-              </th>
-              <th>
-                Correlativo
-                @if (showFilterCorrelativo) {
-                  <input [(ngModel)]="filterCorrelativo" (input)="applyFilters()" placeholder="Filtrar Número..." class="form-control form-control-sm mt-1">
-                }
-              </th>
-              <th (dblclick)="toggleFilter('fecha')" style="cursor: pointer;" title="Doble clic para filtrar">
-                Fecha <i class="fas fa-search text-muted ml-1"></i>
-                @if (showFilterFecha) {
-                  <input [(ngModel)]="filterFecha" (input)="applyFilters()" placeholder="Filtrar Fecha..." class="form-control form-control-sm mt-1">
-                }
-              </th>
+              <th style="width: 70px;">ID Venta</th>
+              <th style="width: 140px;">Fecha / Hora</th>
+              <th style="width: 120px;">Comprobante</th>
+              <th style="width: 110px;">Serie - N°</th>
               <th>Cliente</th>
-              <th class="text-right">Total</th>
+              <th style="width: 130px;">Vendedor</th>
+              <th class="text-right" style="width: 120px;">Total (S/)</th>
               <th style="width: 180px;">Acciones</th>
             </tr>
           </thead>
           <tbody>
             @for (venta of filteredVentas; track venta.idventa || $index) {
               <tr>
-                <td class="text-center font-weight-bold">{{ venta.idventa }}</td>
-                <td class="text-center">{{ venta.serie }}</td>
-                <td class="text-center">{{ venta.correlativo }}</td>
-                <td class="text-center">{{ venta.fechaventa }}</td>
-                <td class="font-weight-bold">{{ venta.cliente?.persona?.nombre || 'Público General' }} {{ venta.cliente?.persona?.paterno || '' }}</td>
-                <td class="text-right font-weight-bold text-success">{{ venta.costoventa | currency:'PEN':'S/ ' }}</td>
+                <td class="text-center font-weight-bold text-muted">{{ venta.idventa }}</td>
+                <td class="text-center">{{ venta.fechaventa | date:'dd/MM/yyyy HH:mm' }}</td>
                 <td class="text-center">
-                  <button (click)="toggleDetalles(venta.idventa)" class="btn btn-outline-primary btn-sm me-1">
+                  <span class="badge" [ngClass]="(venta.tipoComprobante?.nombrecomprobante || 'TICKET') === 'FACTURA' ? 'badge-primary' : ((venta.tipoComprobante?.nombrecomprobante || 'TICKET') === 'BOLETA' ? 'badge-success' : 'badge-warning text-dark')">
+                    {{ venta.tipoComprobante?.nombrecomprobante || 'TICKET' }}
+                  </span>
+                </td>
+                <td class="text-center font-weight-bold">{{ venta.serie }}-{{ venta.correlativo }}</td>
+                <td class="font-weight-bold">
+                  {{ venta.cliente?.persona?.nombre || 'Público General' }} {{ venta.cliente?.persona?.paterno || '' }}
+                </td>
+                <td>
+                  <small class="badge badge-light border">
+                    {{ venta.empleado?.persona?.nombre ? (venta.empleado.persona.nombre + ' ' + (venta.empleado.persona.paterno || '')) : 'Caja' }}
+                  </small>
+                </td>
+                <td class="text-right font-weight-bold text-success" style="font-size: 0.95rem;">
+                  {{ venta.costoventa | currency:'PEN':'S/ ' }}
+                </td>
+                <td class="text-center">
+                  <button (click)="toggleDetalles(venta.idventa)" class="btn btn-outline-primary btn-sm mr-1">
                     <i class="fas" [ngClass]="selectedVentaId === venta.idventa ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                    {{ selectedVentaId === venta.idventa ? ' Ocultar' : ' Ver' }}
+                    {{ selectedVentaId === venta.idventa ? ' Ocultar' : ' Ver Items' }}
                   </button>
-                  <button (click)="reimprimirTicket(venta)" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-print mr-1"></i> Ticket
+                  <button (click)="reimprimirTicket(venta)" class="btn btn-outline-secondary btn-sm" title="Reimprimir Ticket POS">
+                    <i class="fas fa-print"></i>
                   </button>
                 </td>
               </tr>
               @if (selectedVentaId === venta.idventa) {
                 <tr class="table-light">
-                  <td colspan="7" class="p-3">
+                  <td colspan="8" class="p-3">
                     @if (detallesVenta[venta.idventa!]) {
                       <div class="card shadow-sm border mb-0">
                         <div class="card-header bg-light py-2">
                           <h6 class="mb-0 font-weight-bold text-primary">
-                            <i class="fas fa-list-alt mr-2"></i> Detalle de Items Vendidos (Venta #{{ venta.idventa }})
+                            <i class="fas fa-list-alt mr-2"></i> Items Vendidos en Comprobante #{{ venta.idventa }} ({{ venta.tipoComprobante?.nombrecomprobante || 'TICKET' }} {{ venta.serie }}-{{ venta.correlativo }})
                           </h6>
                         </div>
                         <div class="card-body p-0">
                           <table class="table table-sm table-striped mb-0">
-                            <thead class="text-center">
+                            <thead class="text-center thead-light">
                               <tr>
                                 <th class="text-left">Producto</th>
                                 <th style="width: 100px;">Cantidad</th>
@@ -92,7 +241,7 @@
                               @for (detalle of detallesVenta[venta.idventa!]; track detalle.iddetalleventa || $index) {
                                 <tr>
                                   <td class="font-weight-bold">{{ detalle.producto.nombre }}</td>
-                                  <td class="text-center">{{ detalle.unidades }}</td>
+                                  <td class="text-center font-weight-bold">{{ detalle.unidades }} und.</td>
                                   <td class="text-right text-success">{{ detalle.costounidad | currency:'PEN':'S/ ' }}</td>
                                   <td class="text-right font-weight-bold">{{ detalle.total | currency:'PEN':'S/ ' }}</td>
                                 </tr>
@@ -107,8 +256,10 @@
               }
             } @empty {
               <tr>
-                <td colspan="7" class="text-center text-muted py-4">
-                  <i class="fas fa-inbox fa-2x mb-2 d-block"></i> No se encontraron ventas registradas.
+                <td colspan="8" class="text-center text-muted py-5">
+                  <i class="fas fa-inbox fa-3x mb-2 d-block text-secondary"></i>
+                  <p class="mb-0 font-weight-bold">No se encontraron ventas para el período o filtros seleccionados.</p>
+                  <small>Prueba ampliando el rango de fechas en la barra superior.</small>
                 </td>
               </tr>
             }
@@ -117,7 +268,9 @@
       </div>
     </div>
 
-    <div class="card-footer bg-light d-flex justify-content-center py-2">
+    <!-- Paginador -->
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2 flex-wrap">
+      <small class="text-muted">Página {{ currentPage }} de {{ totalPages }} ({{ totalVentas }} ventas totales registradas)</small>
       <app-paginate 
         [total]="totalVentas" 
         [currentPage]="currentPage" 
