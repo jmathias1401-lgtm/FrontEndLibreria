@@ -44,6 +44,17 @@ export interface ResumenValorizado {
   productosCriticos: number;
 }
 
+export interface VentaTrazabilidadDto {
+  idDetalleVenta: number;
+  fechaVenta: string;
+  comprobante: string;
+  unidades: number;
+  precioUnitario: number;
+  total: number;
+  vendedor: string;
+  cliente: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -174,5 +185,13 @@ export class InventarioService {
       margenPorcentaje,
       productosCriticos
     };
+  }
+
+  // ==========================================
+  // TRAZABILIDAD DE VENTAS POR PRODUCTO (QUIÉN, CUÁNDO, CUÁNTOS)
+  // ==========================================
+
+  obtenerTrazabilidadVentas(idProducto: number): Observable<VentaTrazabilidadDto[]> {
+    return this.http.get<VentaTrazabilidadDto[]>(`${this.baseUrl}/detalleventa/trazabilidad/producto/${idProducto}`);
   }
 }

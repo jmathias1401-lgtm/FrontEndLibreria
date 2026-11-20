@@ -10,7 +10,7 @@ import { ProductoService } from '../../../services/producto.service';
 import { FiltroPipe } from "../../../shared/pipes/filtro.pipe";
 import { CartService } from '../../../services/cart.service';
 import { ToastrService } from 'ngx-toastr';
-import { InventarioService, ResumenValorizado, MovimientoKardex } from '../../../services/inventario.service';
+import { InventarioService, ResumenValorizado, MovimientoKardex, VentaTrazabilidadDto } from '../../../services/inventario.service';
 import { StockNotificationService } from '../../../services/stock-notification.service';
 import * as XLSX from 'xlsx';
 
@@ -57,6 +57,13 @@ export class ProductosListComponent implements OnInit {
   productoKardex: any = null;
   movimientosKardex: MovimientoKardex[] = [];
   cargandoKardex: boolean = false;
+
+  // --- TRAZABILIDAD DE VENTAS ---
+  pestanaModalKardex: 'KARDEX' | 'VENTAS' = 'KARDEX';
+  ventasTrazabilidad: VentaTrazabilidadDto[] = [];
+  cargandoTrazabilidad: boolean = false;
+  totalUnidadesVendidas: number = 0;
+  totalMontoVendido: number = 0;
 
   constructor(
     private productoService: ProductoService,
@@ -247,13 +254,19 @@ export class ProductosListComponent implements OnInit {
     });
   }
 
-  // --- MODAL DE KARDEX ---
-  abrirModalKardex(producto: any): void {
+  // --- MODAL DE KARDEX & TRAZABILIDAD ---
+  abrirModalKardex(producto: any, pestana: 'KARDEX' | 'VENTAS' = 'KARDEX'): void {
     this.productoKardex = producto;
+    this.pestanaModalKardex = pestana;
     this.mostrarModalKardex = true;
     this.cargandoKardex = true;
+    this.cargandoTrazabilidad = true;
     this.movimientosKardex = [];
+    this.ventasTrazabilidad = [];
+    this.totalUnidadesVendidas = 0;
+    this.totalMontoVendido = 0;
 
+    // Cargar Kardex
     this.inventarioService.obtenerKardexProducto(producto).subscribe({
       next: (movs) => {
         this.movimientosKardex = movs;
@@ -264,12 +277,33 @@ export class ProductosListComponent implements OnInit {
         this.cargandoKardex = false;
       }
     });
+
+    // Cargar Trazabilidad de Ventas reales desde base de datos
+    this.inventarioService.obtenerTrazabilidadVentas(producto.idproducto).subscribe({
+      next: (ventas) => {
+        this.ventasTrazabilidad = ventas || [];
+        this.totalUnidadesVendidas = this.ventasTrazabilidad.reduce((acc, v) => acc + (v.unidades || 0), 0);
+        this.totalMontoVendido = this.ventasTrazabilidad.reduce((acc, v) => acc + (v.total || 0), 0);
+        this.cargandoTrazabilidad = false;
+      },
+      error: (err) => {
+        console.error('Error obteniendo trazabilidad de ventas:', err);
+        this.cargandoTrazabilidad = false;
+      }
+    });
+  }
+
+  cambiarPestanaModalKardex(pestana: 'KARDEX' | 'VENTAS'): void {
+    this.pestanaModalKardex = pestana;
   }
 
   cerrarModalKardex(): void {
     this.mostrarModalKardex = false;
     this.productoKardex = null;
     this.movimientosKardex = [];
+    this.ventasTrazabilidad = [];
+    this.totalUnidadesVendidas = 0;
+    this.totalMontoVendido = 0;
   }
 
   // --- ACCIONES GENERALES ---

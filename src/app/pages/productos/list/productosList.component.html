@@ -242,9 +242,17 @@
                     <!-- Kardex / Historial -->
                     <button 
                       class="btn btn-outline-info" 
-                      (click)="abrirModalKardex(producto)" 
+                      (click)="abrirModalKardex(producto, 'KARDEX')" 
                       title="Ver Kardex / Historial de Movimientos">
                       <i class="fas fa-history"></i>
+                    </button>
+
+                    <!-- Trazabilidad de Ventas (Quién vendió, cuándo, cuántos) -->
+                    <button 
+                      class="btn btn-outline-success" 
+                      (click)="abrirModalKardex(producto, 'VENTAS')" 
+                      title="Trazabilidad de Ventas: Quién vendió, fecha/hora, cuántos y comprobante">
+                      <i class="fas fa-receipt"></i>
                     </button>
 
                     <!-- Editar -->
@@ -416,15 +424,15 @@
 }
 
 <!-- ========================================================
-     MODAL DE KARDEX / HISTORIAL DE MOVIMIENTOS
+     MODAL DE KARDEX & TRAZABILIDAD DE VENTAS
      ======================================================== -->
 @if (mostrarModalKardex && productoKardex) {
   <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content shadow-lg border-0">
-        <div class="modal-header bg-info text-white py-2">
+        <div class="modal-header bg-dark text-white py-2">
           <h5 class="modal-title font-weight-bold">
-            <i class="fas fa-history mr-2"></i> Kardex / Historial de Movimientos
+            <i class="fas fa-search-dollar text-warning mr-2"></i> Seguimiento & Trazabilidad del Producto
           </h5>
           <button type="button" class="close text-white" (click)="cerrarModalKardex()">
             <span>&times;</span>
@@ -432,10 +440,14 @@
         </div>
         <div class="modal-body p-4">
           <!-- Cabecera del Producto -->
-          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2">
             <div>
               <h5 class="mb-0 text-primary font-weight-bold">{{ productoKardex.nombre }}</h5>
-              <small class="text-muted">Código: {{ productoKardex.codigoproducto || '-' }} | Marca: {{ productoKardex.laboratorio?.nombrelaboratorio }}</small>
+              <small class="text-muted">
+                Código: <strong class="text-dark">{{ productoKardex.codigoproducto || '-' }}</strong> | 
+                Marca: <strong class="text-dark">{{ productoKardex.laboratorio?.nombrelaboratorio || 'General' }}</strong> |
+                Precio Venta: <strong class="text-success">S/ {{ productoKardex.precioventa | number:'1.2-2' }}</strong>
+              </small>
             </div>
             <div class="text-right">
               <span class="badge badge-success px-3 py-2 font-weight-bold" style="font-size: 0.95rem;">
@@ -444,57 +456,171 @@
             </div>
           </div>
 
-          <!-- Tabla de Kardex -->
-          @if (cargandoKardex) {
-            <div class="text-center py-4">
-              <div class="spinner-border text-info" role="status"></div>
-              <p class="text-muted mt-2">Cargando movimientos del producto...</p>
-            </div>
-          } @else {
-            <div class="table-responsive" style="max-height: 360px; overflow-y: auto;">
-              <table class="table table-sm table-bordered table-striped mb-0">
-                <thead class="thead-dark text-center">
-                  <tr>
-                    <th>Fecha / Hora</th>
-                    <th>Operación</th>
-                    <th>Detalle / Motivo</th>
-                    <th>Usuario</th>
-                    <th class="table-success" style="width: 80px;">Entrada (+)</th>
-                    <th class="table-danger" style="width: 80px;">Salida (-)</th>
-                    <th class="table-info" style="width: 80px;">Saldo</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (mov of movimientosKardex; track $index) {
+          <!-- Pestañas de Navegación -->
+          <ul class="nav nav-pills mb-3">
+            <li class="nav-item mr-2">
+              <button 
+                type="button" 
+                class="btn font-weight-bold px-3" 
+                [ngClass]="pestanaModalKardex === 'KARDEX' ? 'btn-info text-white' : 'btn-outline-secondary'"
+                (click)="cambiarPestanaModalKardex('KARDEX')">
+                <i class="fas fa-boxes mr-1"></i> Movimientos & Kardex
+              </button>
+            </li>
+            <li class="nav-item">
+              <button 
+                type="button" 
+                class="btn font-weight-bold px-3 position-relative" 
+                [ngClass]="pestanaModalKardex === 'VENTAS' ? 'btn-success text-white' : 'btn-outline-secondary'"
+                (click)="cambiarPestanaModalKardex('VENTAS')">
+                <i class="fas fa-shopping-cart mr-1"></i> Trazabilidad de Ventas
+                @if (ventasTrazabilidad.length > 0) {
+                  <span class="badge badge-light text-dark font-weight-bold ml-1">
+                    {{ ventasTrazabilidad.length }}
+                  </span>
+                }
+              </button>
+            </li>
+          </ul>
+
+          <!-- PESTAÑA 1: KARDEX DE MOVIMIENTOS -->
+          @if (pestanaModalKardex === 'KARDEX') {
+            @if (cargandoKardex) {
+              <div class="text-center py-4">
+                <div class="spinner-border text-info" role="status"></div>
+                <p class="text-muted mt-2">Cargando movimientos del producto...</p>
+              </div>
+            } @else {
+              <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                <table class="table table-sm table-bordered table-striped mb-0">
+                  <thead class="thead-dark text-center">
                     <tr>
-                      <td class="text-center">{{ mov.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
-                      <td class="text-center">
-                        <span class="badge" [ngClass]="mov.tipo === 'ENTRADA' ? 'badge-success' : (mov.tipo === 'SALIDA' ? 'badge-danger' : 'badge-warning text-dark')">
-                          {{ mov.origen }}
-                        </span>
-                      </td>
-                      <td>{{ mov.detalle }}</td>
-                      <td class="text-center"><small class="badge badge-light border">{{ mov.usuario || 'Sistema' }}</small></td>
-                      <td class="text-center font-weight-bold text-success">
-                        {{ mov.cantidadEntrada > 0 ? '+' + mov.cantidadEntrada : '-' }}
-                      </td>
-                      <td class="text-center font-weight-bold text-danger">
-                        {{ mov.cantidadSalida > 0 ? '-' + mov.cantidadSalida : '-' }}
-                      </td>
-                      <td class="text-center font-weight-bold text-info">
-                        {{ mov.stockResultante !== undefined ? mov.stockResultante : '-' }}
-                      </td>
+                      <th>Fecha / Hora</th>
+                      <th>Operación</th>
+                      <th>Detalle / Motivo</th>
+                      <th>Usuario</th>
+                      <th class="table-success" style="width: 90px;">Entrada (+)</th>
+                      <th class="table-danger" style="width: 90px;">Salida (-)</th>
+                      <th class="table-info" style="width: 90px;">Saldo</th>
                     </tr>
-                  } @empty {
+                  </thead>
+                  <tbody>
+                    @for (mov of movimientosKardex; track $index) {
+                      <tr>
+                        <td class="text-center">{{ mov.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td class="text-center">
+                          <span class="badge" [ngClass]="mov.tipo === 'ENTRADA' ? 'badge-success' : (mov.tipo === 'SALIDA' ? 'badge-danger' : 'badge-warning text-dark')">
+                            {{ mov.origen }}
+                          </span>
+                        </td>
+                        <td>{{ mov.detalle }}</td>
+                        <td class="text-center"><small class="badge badge-light border">{{ mov.usuario || 'Sistema' }}</small></td>
+                        <td class="text-center font-weight-bold text-success">
+                          {{ mov.cantidadEntrada > 0 ? '+' + mov.cantidadEntrada : '-' }}
+                        </td>
+                        <td class="text-center font-weight-bold text-danger">
+                          {{ mov.cantidadSalida > 0 ? '-' + mov.cantidadSalida : '-' }}
+                        </td>
+                        <td class="text-center font-weight-bold text-info">
+                          {{ mov.stockResultante !== undefined ? mov.stockResultante : '-' }}
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="7" class="text-center py-3 text-muted">
+                          No hay movimientos registrados previos para este producto.
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+
+          <!-- PESTAÑA 2: TRAZABILIDAD DE VENTAS (QUIÉN, CUÁNDO, CUÁNTOS) -->
+          @if (pestanaModalKardex === 'VENTAS') {
+            @if (cargandoTrazabilidad) {
+              <div class="text-center py-4">
+                <div class="spinner-border text-success" role="status"></div>
+                <p class="text-muted mt-2">Consultando historial de ventas en tiempo real...</p>
+              </div>
+            } @else {
+              <!-- Resumen de Ventas de este Producto -->
+              <div class="row mb-3">
+                <div class="col-12 col-md-4 mb-2">
+                  <div class="card bg-light border-success p-2 mb-0 shadow-xs">
+                    <small class="text-muted font-weight-bold text-uppercase">Total Unidades Vendidas</small>
+                    <h4 class="mb-0 font-weight-bold text-success">{{ totalUnidadesVendidas }} und.</h4>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4 mb-2">
+                  <div class="card bg-light border-primary p-2 mb-0 shadow-xs">
+                    <small class="text-muted font-weight-bold text-uppercase">Total Recaudado por Ventas</small>
+                    <h4 class="mb-0 font-weight-bold text-primary">S/ {{ totalMontoVendido | number:'1.2-2' }}</h4>
+                  </div>
+                </div>
+                <div class="col-12 col-md-4 mb-2">
+                  <div class="card bg-light border-info p-2 mb-0 shadow-xs">
+                    <small class="text-muted font-weight-bold text-uppercase">N° Transacciones de Venta</small>
+                    <h4 class="mb-0 font-weight-bold text-info">{{ ventasTrazabilidad.length }} ventas</h4>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tabla Detallada de Trazabilidad -->
+              <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                <table class="table table-sm table-bordered table-hover mb-0">
+                  <thead class="thead-dark text-center">
                     <tr>
-                      <td colspan="7" class="text-center py-3 text-muted">
-                        No hay movimientos registrados previos para este producto.
-                      </td>
+                      <th>Fecha / Hora</th>
+                      <th><i class="fas fa-user-tag mr-1 text-warning"></i> Quién Vendió (Vendedor)</th>
+                      <th>Comprobante</th>
+                      <th>Cliente</th>
+                      <th class="table-warning text-dark" style="width: 100px;">Vendidos</th>
+                      <th style="width: 110px;">P. Unitario</th>
+                      <th class="table-success" style="width: 110px;">Total (S/)</th>
                     </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    @for (v of ventasTrazabilidad; track $index) {
+                      <tr>
+                        <td class="text-center font-weight-bold text-muted">
+                          {{ v.fechaVenta | date:'dd/MM/yyyy HH:mm' }}
+                        </td>
+                        <td>
+                          <span class="badge badge-light border text-dark font-weight-bold px-2 py-1">
+                            <i class="fas fa-user-check text-success mr-1"></i> {{ v.vendedor }}
+                          </span>
+                        </td>
+                        <td class="text-center font-weight-bold text-info">
+                          {{ v.comprobante }}
+                        </td>
+                        <td>
+                          <i class="fas fa-user mr-1 text-muted"></i> {{ v.cliente }}
+                        </td>
+                        <td class="text-center font-weight-bold text-danger" style="font-size: 0.95rem;">
+                          {{ v.unidades }} und.
+                        </td>
+                        <td class="text-right">
+                          S/ {{ v.precioUnitario | number:'1.2-2' }}
+                        </td>
+                        <td class="text-right font-weight-bold text-success">
+                          S/ {{ v.total | number:'1.2-2' }}
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                          <i class="fas fa-shopping-basket fa-2x mb-2 d-block text-secondary"></i>
+                          Este producto no registra ventas en el sistema aún.
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
           }
         </div>
         <div class="modal-footer bg-light py-2">
