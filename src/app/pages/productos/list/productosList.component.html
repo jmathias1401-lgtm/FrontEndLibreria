@@ -458,6 +458,7 @@
                     <th>Fecha / Hora</th>
                     <th>Operación</th>
                     <th>Detalle / Motivo</th>
+                    <th>Usuario</th>
                     <th class="table-success" style="width: 80px;">Entrada (+)</th>
                     <th class="table-danger" style="width: 80px;">Salida (-)</th>
                     <th class="table-info" style="width: 80px;">Saldo</th>
@@ -473,6 +474,7 @@
                         </span>
                       </td>
                       <td>{{ mov.detalle }}</td>
+                      <td class="text-center"><small class="badge badge-light border">{{ mov.usuario || 'Sistema' }}</small></td>
                       <td class="text-center font-weight-bold text-success">
                         {{ mov.cantidadEntrada > 0 ? '+' + mov.cantidadEntrada : '-' }}
                       </td>
@@ -485,7 +487,7 @@
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="6" class="text-center py-3 text-muted">
+                      <td colspan="7" class="text-center py-3 text-muted">
                         No hay movimientos registrados previos para este producto.
                       </td>
                     </tr>

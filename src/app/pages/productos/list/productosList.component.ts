@@ -65,7 +65,7 @@ export class ProductosListComponent implements OnInit {
     private toastr: ToastrService,
     private inventarioService: InventarioService,
     private stockNotificationService: StockNotificationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.vertodos(1);
@@ -120,7 +120,7 @@ export class ProductosListComponent implements OnInit {
       this.productoService.getAllProductos(1, 1000).subscribe(response => {
         const list = response?.list || [];
         this.prod = list.filter((p: any) => p.stock !== null && p.stock !== undefined && Number(p.stock) <= 5)
-                        .sort((a: any, b: any) => Number(a.stock) - Number(b.stock));
+          .sort((a: any, b: any) => Number(a.stock) - Number(b.stock));
         this.total = this.prod.length;
         this.toastr.info(`Mostrando ${this.prod.length} producto(s) con stock crítico (≤ 5)`);
       });
@@ -205,16 +205,21 @@ export class ProductosListComponent implements OnInit {
 
     this.productoService.saveProducto(formData).subscribe({
       next: () => {
-        // Registrar en el historial de auditoría de inventario
-        this.inventarioService.registrarAjuste({
-          idproducto: this.productoAjuste.idproducto,
-          nombreProducto: this.productoAjuste.nombre,
-          codigoProducto: this.productoAjuste.codigoproducto,
-          tipo: this.tipoAjuste,
+        // Registrar en la tabla kardex en MySQL en tiempo real
+        this.inventarioService.registrarAjusteEnBD({
+          idProducto: this.productoAjuste.idproducto,
+          tipoOperacion: this.tipoAjuste,
           motivo: this.motivoAjuste,
+          cantidad: Math.abs(nuevoStock - stockActual),
           stockAnterior: stockActual,
-          cantidadAjustada: Math.abs(nuevoStock - stockActual),
-          nuevoStock: nuevoStock
+          stockNuevo: nuevoStock
+        }).subscribe({
+          next: () => {
+            console.log('Movimiento de Kardex guardado en MySQL con éxito');
+          },
+          error: (errK) => {
+            console.error('Error registrando Kardex en MySQL:', errK);
+          }
         });
 
         // Actualizar en memoria local
@@ -389,7 +394,7 @@ export class ProductosListComponent implements OnInit {
         <body>
           <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 8px;">
             <div>
-              <h2>BOTICA & LIBRERÍA NEW FARMA</h2>
+              <h2>LIBRERÍA MATHIAS</h2>
               <p><strong>HOJA DE TOMA DE INVENTARIO FÍSICO</strong></p>
               <p>Fecha de Conteo: ${fecha} | Responsable: _______________________</p>
             </div>
