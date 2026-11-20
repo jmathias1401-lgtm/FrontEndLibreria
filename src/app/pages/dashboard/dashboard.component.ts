@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { VentasService } from '../../services/ventas.service';
+import { VentasService, DashboardKpiResponse } from '../../services/ventas.service';
 import { Venta } from '../../models/venta.model';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -36,14 +36,41 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   bottomProducts: { name: string, quantity: number }[] = [];
   productChart: any;
 
+  // Real-Time KPIs (Fase 1)
+  kpis: DashboardKpiResponse | null = null;
+  cargandoKpis: boolean = false;
+  ultimaActualizacion: string = '';
+
   constructor(
     private ventasService: VentasService,
     private detalleVentaService: DetalleVentaService
   ) {}
 
   ngOnInit(): void {
+    this.cargarKpisTiempoReal();
     this.loadSalesData();
     this.loadProductPerformance();
+  }
+
+  cargarKpisTiempoReal(): void {
+    this.cargandoKpis = true;
+    this.ventasService.getKpisTiempoReal().subscribe({
+      next: (data) => {
+        this.kpis = data;
+        if (data.ventasHoyMonto !== undefined) {
+          this.todaySales = data.ventasHoyMonto;
+        }
+        if (data.ventasMesMonto !== undefined) {
+          this.currentMonthSales = data.ventasMesMonto;
+        }
+        this.ultimaActualizacion = new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        this.cargandoKpis = false;
+      },
+      error: (err) => {
+        console.error('Error cargando KPIs en tiempo real:', err);
+        this.cargandoKpis = false;
+      }
+    });
   }
 
   ngAfterViewInit(): void {

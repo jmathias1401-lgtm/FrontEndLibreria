@@ -1,8 +1,42 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Venta, ventaList } from '../models/venta.model';
 import { RespuestaVenta } from '../models/RespuestaVenta';
 import { environment } from '../../environments/environment';
+
+export interface VentasHoraDto {
+  hora: number;
+  cantidad: number;
+  total: number;
+}
+
+export interface VentasComprobanteDto {
+  tipoComprobante: string;
+  cantidad: number;
+  total: number;
+}
+
+export interface VendedorRendimientoDto {
+  idEmpleado: number;
+  vendedor: string;
+  cantidadVentas: number;
+  totalMonto: number;
+}
+
+export interface DashboardKpiResponse {
+  ventasHoyMonto: number;
+  ventasHoyCantidad: number;
+  ticketPromedioHoy: number;
+  ventasMesMonto: number;
+  ventasMesCantidad: number;
+  productosStockCritico: number;
+  productosAgotados: number;
+  totalProductos: number;
+  ventasPorHoraHoy: VentasHoraDto[];
+  ventasPorComprobanteMes: VentasComprobanteDto[];
+  topVendedoresMes: VendedorRendimientoDto[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +65,9 @@ export class VentasService {
     return this.http.post<RespuestaVenta>(this.baseUrl, venta, {
       observe: 'response',
     });
+  }
+
+  getKpisTiempoReal(): Observable<DashboardKpiResponse> {
+    return this.http.get<DashboardKpiResponse>(`${this.baseUrl}/kpis-tiempo-real`);
   }
 }
