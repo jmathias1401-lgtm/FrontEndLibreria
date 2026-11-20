@@ -40,6 +40,7 @@ export interface Product {
   tipoPrecioSeleccionado: 'PU' | 'PB' | 'PC';
   imagen_path: string;
   imagenPath?: string;
+  costoCompra?: number;
 }
 
 export interface ProductList {

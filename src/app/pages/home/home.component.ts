@@ -69,7 +69,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     { title: 'Envío Gratis', description: 'En compras mayores a S/. 150', icon: 'fas fa-truck', iconColor: '#2563eb', iconBg: '#eff6ff', searchTerm: '' },
     { title: 'Cuadernos y Lapiceros', description: 'Campaña escolar con descuento', icon: 'fas fa-pencil-alt', iconColor: '#ea580c', iconBg: '#fff7ed', searchTerm: 'cuaderno' },
     { title: 'Juguetería y Regalos', description: 'Novedades para todas las edades', icon: 'fas fa-gamepad', iconColor: '#7c3aed', iconBg: '#f5f3ff', searchTerm: 'juguete' },
-    { title: 'Delivery Rápido', description: 'En Baños del Inca y Cajamarca', icon: 'fas fa-bolt', iconColor: '#059669', iconBg: '#ecfdf5', action: 'cotizar' },
+    { title: 'Delivery Rápido', description: 'En Baños y Huanuco', icon: 'fas fa-bolt', iconColor: '#059669', iconBg: '#ecfdf5', action: 'cotizar' },
     { title: 'Marcas Reconocidas', description: 'Faber-Castell, Artesco, Layconsa', icon: 'fas fa-check-circle', iconColor: '#d97706', iconBg: '#fefce8', searchTerm: 'artesco' },
     { title: 'Cotiza tu Lista', description: 'Envía tu foto por WhatsApp', icon: 'fas fa-file-invoice', iconColor: '#0284c7', iconBg: '#f0f9ff', action: 'cotizar' },
     { title: 'Papelería y Oficina', description: 'Papel bond, archivadores y más', icon: 'fas fa-folder-open', iconColor: '#0891b2', iconBg: '#ecfeff', searchTerm: 'papel' }
@@ -251,7 +251,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   cotizarListaEscolar(): void {
-    const text = encodeURIComponent('¡Hola Botica New Farma! Deseo cotizar mi lista escolar por favor.');
+    const text = encodeURIComponent('¡Hola Libreria Mathias! Deseo cotizar mi lista escolar por favor.');
     window.open(`https://wa.me/51926424814?text=${text}`, '_blank');
   }
 

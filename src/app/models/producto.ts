@@ -19,6 +19,7 @@ export class Producto {
   codBarra?: string;
   imagen_path?: string;
   imagenPath?: string;
+  costoCompra?: number;
   laboratorio?: {
     idlaboratorio?: number;
     idLaboratorio?: number;

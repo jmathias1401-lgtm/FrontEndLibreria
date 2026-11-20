@@ -16,6 +16,10 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
+  getCurrentUser(): any {
+    return this.currentUserSubject.value;
+  }
+
   constructor(private http: HttpClient, private router: Router) {
     const token = localStorage.getItem(this.tokenKey);
     const userData = localStorage.getItem(this.userKey);

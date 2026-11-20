@@ -1,32 +1,115 @@
 <div class="container-fluid px-4 py-3">
   <div class="card shadow-sm mb-4">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2">
+    <!-- Encabezado con Modos y Acciones -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2 flex-wrap gap-2">
       <div class="d-flex align-items-center gap-2">
-        <h5 class="mb-0"><i class="fas fa-boxes mr-2"></i> Gestión de Productos</h5>
+        <h5 class="mb-0"><i class="fas fa-boxes mr-2"></i> Control de Productos e Inventario</h5>
         <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ total }}</span>
       </div>
-      <div class="d-flex gap-2">
+
+      <!-- Barra de Modos y Botones de Acción -->
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        <!-- Switch de Modo -->
+        <div class="btn-group btn-group-sm" role="group">
+          <button 
+            type="button" 
+            class="btn font-weight-bold" 
+            [ngClass]="modoVista === 'CATALOGO' ? 'btn-light text-primary' : 'btn-outline-light'"
+            (click)="activarModoCatalogo()">
+            <i class="fas fa-th-list mr-1"></i> Catálogo
+          </button>
+          <button 
+            type="button" 
+            class="btn font-weight-bold" 
+            [ngClass]="modoVista === 'VALORIZADO' ? 'btn-warning text-dark' : 'btn-outline-light'"
+            (click)="activarModoValorizado()">
+            <i class="fas fa-chart-line mr-1"></i> Inventario Valorizado
+          </button>
+        </div>
+
         <button 
           type="button" 
           class="btn btn-sm font-weight-bold" 
           [ngClass]="soloStockBajo ? 'btn-danger' : 'btn-outline-light'"
-          (click)="filtrarStockBajo()">
+          (click)="filtrarStockBajo()"
+          title="Ver solo productos con stock de 5 unidades o menos">
           <i class="fas fa-exclamation-triangle mr-1"></i> 
           {{ soloStockBajo ? 'Ver Todos' : 'Stock Crítico (≤ 5)' }}
         </button>
-        <button type="button" class="btn btn-success btn-sm font-weight-bold" (click)="exportToExcel()">
-          <i class="fas fa-file-excel mr-1"></i> Exportar Excel
+
+        <button type="button" class="btn btn-info btn-sm font-weight-bold text-white" (click)="imprimirTomaFisica()" title="Imprimir hoja para conteo físico en estantes">
+          <i class="fas fa-print mr-1"></i> Hoja Conteo
         </button>
-        <button type="button" class="btn btn-light btn-sm font-weight-bold" (click)="vertodos(1)">
-          <i class="fas fa-sync-alt mr-1"></i> Actualizar
+
+        <button type="button" class="btn btn-success btn-sm font-weight-bold" (click)="exportToExcel()" title="Descargar reporte completo en Excel">
+          <i class="fas fa-file-excel mr-1"></i> Excel
         </button>
+
+        <button type="button" class="btn btn-light btn-sm font-weight-bold" (click)="vertodos(1)" title="Refrescar datos">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+
         <button class="btn btn-warning btn-sm font-weight-bold text-dark" routerLink="/add">
-          <i class="fas fa-plus mr-1"></i> Nuevo Producto
+          <i class="fas fa-plus mr-1"></i> Nuevo
         </button>
       </div>
     </div>
     
     <div class="card-body">
+      <!-- TARJETAS DE INVENTARIO VALORIZADO (Se muestran en modo VALORIZADO) -->
+      @if (modoVista === 'VALORIZADO' && resumenValorizado) {
+        <div class="row mb-3">
+          <div class="col-12 col-sm-6 col-md-3 mb-2">
+            <div class="card border-primary shadow-xs h-100 p-2 mb-0">
+              <div class="d-flex align-items-center">
+                <span class="btn btn-primary btn-circle mr-3"><i class="fas fa-boxes fa-lg"></i></span>
+                <div>
+                  <small class="text-muted font-weight-bold d-block text-uppercase">Total Unidades</small>
+                  <h4 class="mb-0 font-weight-bold text-primary">{{ resumenValorizado.totalUnidades | number }}</h4>
+                  <small class="text-muted">{{ resumenValorizado.totalProductos }} productos únicos</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 mb-2">
+            <div class="card border-info shadow-xs h-100 p-2 mb-0">
+              <div class="d-flex align-items-center">
+                <span class="btn btn-info btn-circle mr-3 text-white"><i class="fas fa-coins fa-lg"></i></span>
+                <div>
+                  <small class="text-muted font-weight-bold d-block text-uppercase">Capital Invertido</small>
+                  <h4 class="mb-0 font-weight-bold text-info">S/ {{ resumenValorizado.capitalInvertido | number:'1.2-2' }}</h4>
+                  <small class="text-muted">Costo total almacén</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 mb-2">
+            <div class="card border-success shadow-xs h-100 p-2 mb-0">
+              <div class="d-flex align-items-center">
+                <span class="btn btn-success btn-circle mr-3 text-white"><i class="fas fa-hand-holding-usd fa-lg"></i></span>
+                <div>
+                  <small class="text-muted font-weight-bold d-block text-uppercase">Venta Estimada</small>
+                  <h4 class="mb-0 font-weight-bold text-success">S/ {{ resumenValorizado.valorVentaEstimado | number:'1.2-2' }}</h4>
+                  <small class="text-muted">Valor de realización</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3 mb-2">
+            <div class="card border-warning shadow-xs h-100 p-2 mb-0">
+              <div class="d-flex align-items-center">
+                <span class="btn btn-warning btn-circle mr-3 text-dark"><i class="fas fa-chart-pie fa-lg"></i></span>
+                <div>
+                  <small class="text-muted font-weight-bold d-block text-uppercase">Ganancia Estimada</small>
+                  <h4 class="mb-0 font-weight-bold text-dark">S/ {{ resumenValorizado.gananciaEstimada | number:'1.2-2' }}</h4>
+                  <small class="text-success font-weight-bold"><i class="fas fa-arrow-up"></i> Margen {{ resumenValorizado.margenPorcentaje | number:'1.1-1' }}%</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
       <!-- Buscador -->
       <div class="row mb-3 align-items-end">
         <div class="col-md-4 mb-2">
@@ -69,30 +152,38 @@
         </div>
       </div>
 
-      <!-- Tabla de Productos -->
+      <!-- Tabla de Productos con Ajuste de Inventario y Kardex -->
       <div class="table-responsive">
         <table class="table table-sm table-hover table-bordered align-middle">
           <thead class="thead-light text-center">
             <tr>
-              <th style="width: 50px;">ID</th>
-              <th style="width: 60px;">IMG</th>
-              <th>NOMBRE</th>
-              <th>VCTO.</th>
+              <th style="width: 45px;">ID</th>
+              <th style="width: 50px;">IMG</th>
+              <th>NOMBRE / PRODUCTO</th>
+              <th>MARCA</th>
               <th>UBIC.</th>
               <th>PRESENTACIÓN</th>
-              <th>U. MEDIDA</th>
-              <th>LABORATORIO</th>
-              <th>P. VENTA</th>
-              <th>P. BLISTER</th>
-              <th>P. CAJA</th>
-              <th class="table-info font-weight-bold">STOCK</th>
-              <th style="width: 100px;">ACCIONES</th>
+              <th class="table-info font-weight-bold" style="width: 80px;">STOCK</th>
+              <th class="text-right">P. VENTA</th>
+
+              <!-- Columnas adicionales en Modo Valorizado -->
+              @if (modoVista === 'VALORIZADO') {
+                <th class="text-right table-secondary">COSTO EST.</th>
+                <th class="text-right table-info">TOTAL INVERTIDO</th>
+                <th class="text-right table-success">TOTAL VENTA</th>
+              } @else {
+                <th class="text-right">P. BLISTER</th>
+                <th class="text-right">P. CAJA</th>
+                <th>VCTO.</th>
+              }
+
+              <th style="width: 140px;">ACCIONES</th>
             </tr>
           </thead>
           <tbody>
             @for (producto of prod | filtro:index; track producto.idproducto) {
               <tr>
-                <td class="text-center font-weight-bold">{{ producto.idproducto }}</td>
+                <td class="text-center font-weight-bold text-muted">{{ producto.idproducto }}</td>
                 <td class="text-center p-1">
                   <img 
                     [src]="producto.imagen_path ? '/assets/img/imagenes/' + producto.imagen_path : '/assets/img/imagenes/default.png'" 
@@ -100,25 +191,78 @@
                     style="width: 38px; height: 38px; object-fit: contain; border-radius: 4px; border: 1px solid #eee;"
                   />
                 </td>
-                <td><span class="text-primary font-weight-bold">{{ producto.nombre }}</span></td>
-                <td class="text-center">{{ producto.vencimiento || '-' }}</td>
-                <td class="text-center">{{ producto.ubicacion || '-' }}</td>
-                <td>{{ producto.presentacion.nombrepresentacion }}</td>
-                <td>{{ producto.unidadmedida.nombreunidad }}</td>
-                <td>{{ producto.laboratorio.nombrelaboratorio }}</td>
-                <td class="text-right font-weight-bold text-success">{{ producto.precioventa | currency:'PEN':'S/ ' }}</td>
-                <td class="text-right">{{ producto.precioblister ? (producto.precioblister | currency:'PEN':'S/ ') : '-' }}</td>
-                <td class="text-right">{{ producto.preciocaja ? (producto.preciocaja | currency:'PEN':'S/ ') : '-' }}</td>
-                <td class="text-center font-weight-bold" [ngClass]="{'text-danger': producto.stock <= 5, 'text-success': producto.stock > 5}">
-                  {{ producto.stock }}
+                <td>
+                  <span class="text-primary font-weight-bold d-block">{{ producto.nombre }}</span>
+                  <small class="text-muted">{{ producto.codigoproducto }}</small>
                 </td>
+                <td>{{ producto.laboratorio.nombrelaboratorio || '-' }}</td>
+                <td class="text-center">{{ producto.ubicacion || '-' }}</td>
+                <td>{{ producto.presentacion.nombrepresentacion || '-' }}</td>
+                
+                <!-- Stock con indicador visual -->
+                <td class="text-center font-weight-bold" [ngClass]="{'bg-danger text-white': producto.stock === 0, 'bg-warning text-dark': producto.stock > 0 && producto.stock <= 5, 'text-success': producto.stock > 5}">
+                  <span style="font-size: 1rem;">{{ producto.stock }}</span>
+                  @if (producto.stock === 0) {
+                    <small class="d-block font-weight-bold text-uppercase" style="font-size: 0.65rem;">Agotado</small>
+                  } @else if (producto.stock <= 5) {
+                    <small class="d-block font-weight-bold" style="font-size: 0.65rem;">Bajo</small>
+                  }
+                </td>
+
+                <td class="text-right font-weight-bold text-success">{{ producto.precioventa | currency:'PEN':'S/ ' }}</td>
+
+                <!-- Datos Valorizados -->
+                @if (modoVista === 'VALORIZADO') {
+                  <td class="text-right text-muted">
+                    {{ (producto.costoCompra || producto.precioventa * 0.7) | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-right font-weight-bold text-info">
+                    {{ ((producto.stock || 0) * (producto.costoCompra || producto.precioventa * 0.7)) | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-right font-weight-bold text-success">
+                    {{ ((producto.stock || 0) * (producto.precioventa || 0)) | currency:'PEN':'S/ ' }}
+                  </td>
+                } @else {
+                  <td class="text-right">{{ producto.precioblister ? (producto.precioblister | currency:'PEN':'S/ ') : '-' }}</td>
+                  <td class="text-right">{{ producto.preciocaja ? (producto.preciocaja | currency:'PEN':'S/ ') : '-' }}</td>
+                  <td class="text-center">{{ producto.vencimiento || '-' }}</td>
+                }
+
+                <!-- Botones de Acción: Ajuste de Inventario, Kardex, Editar y Eliminar -->
                 <td class="text-center">
-                  <button class="btn btn-outline-primary btn-sm me-1" routerLink="/edit/{{ producto.idproducto }}" title="Editar producto">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button class="btn btn-outline-danger btn-sm" (click)="eliminarProducto(producto.idproducto)" title="Eliminar producto">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
+                  <div class="btn-group btn-group-sm" role="group">
+                    <!-- Ajuste Rápido de Stock -->
+                    <button 
+                      class="btn btn-outline-warning" 
+                      (click)="abrirModalAjuste(producto)" 
+                      title="Ajustar Stock / Cuadre Físico (Merma, conteo o corrección)">
+                      <i class="fas fa-sliders-h"></i>
+                    </button>
+
+                    <!-- Kardex / Historial -->
+                    <button 
+                      class="btn btn-outline-info" 
+                      (click)="abrirModalKardex(producto)" 
+                      title="Ver Kardex / Historial de Movimientos">
+                      <i class="fas fa-history"></i>
+                    </button>
+
+                    <!-- Editar -->
+                    <button 
+                      class="btn btn-outline-primary" 
+                      routerLink="/edit/{{ producto.idproducto }}" 
+                      title="Editar ficha del producto">
+                      <i class="fas fa-edit"></i>
+                    </button>
+
+                    <!-- Eliminar -->
+                    <button 
+                      class="btn btn-outline-danger" 
+                      (click)="eliminarProducto(producto.idproducto)" 
+                      title="Eliminar producto">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             } @empty {
@@ -132,16 +276,231 @@
         </table>
       </div>
 
-      <!-- Paginación -->
-      <div class="d-flex justify-content-center mt-3">
-        <app-paginate 
-          (SendIndex)="onindexClic($event)"
-          [total]="total"
-          [npage]="pages"
-          [currentPage]="pagesNumber"
-          [pageSize]="xpage > 0 ? xpage : 10">
-        </app-paginate>
-      </div>
+      <!-- Paginación (solo en modo catálogo) -->
+      @if (modoVista === 'CATALOGO') {
+        <div class="d-flex justify-content-center mt-3">
+          <app-paginate 
+            (SendIndex)="onindexClic($event)"
+            [total]="total"
+            [npage]="pages"
+            [currentPage]="pagesNumber"
+            [pageSize]="xpage > 0 ? xpage : 10">
+          </app-paginate>
+        </div>
+      }
     </div>
   </div>
 </div>
+
+<!-- ========================================================
+     MODAL DE AJUSTE RÁPIDO DE INVENTARIO / CUADRE FÍSICO
+     ======================================================== -->
+@if (mostrarModalAjuste && productoAjuste) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-warning text-dark py-2">
+          <h5 class="modal-title font-weight-bold">
+            <i class="fas fa-sliders-h mr-2"></i> Ajuste de Inventario / Cuadre Físico
+          </h5>
+          <button type="button" class="close" (click)="cerrarModalAjuste()">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Detalle del Producto -->
+          <div class="d-flex align-items-center mb-3 p-2 bg-light rounded border">
+            <img 
+              [src]="productoAjuste.imagen_path ? '/assets/img/imagenes/' + productoAjuste.imagen_path : '/assets/img/imagenes/default.png'" 
+              alt="prod" 
+              style="width: 50px; height: 50px; object-fit: contain; margin-right: 12px;"
+            />
+            <div class="flex-grow-1">
+              <h6 class="mb-0 font-weight-bold text-primary">{{ productoAjuste.nombre }}</h6>
+              <small class="text-muted">{{ productoAjuste.laboratorio?.nombrelaboratorio || 'Librería' }} | Ubic: {{ productoAjuste.ubicacion || 'Sin asignar' }}</small>
+            </div>
+            <div class="text-right pl-2">
+              <small class="text-muted d-block">Stock Actual</small>
+              <span class="badge badge-secondary px-2 py-1 font-weight-bold" style="font-size: 1rem;">
+                {{ productoAjuste.stock }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Selector de Tipo de Ajuste -->
+          <label class="font-weight-bold mb-1">Tipo de Ajuste:</label>
+          <div class="btn-group btn-group-toggle w-100 mb-3" data-toggle="buttons">
+            <button 
+              type="button" 
+              class="btn btn-outline-primary font-weight-bold" 
+              [class.active]="tipoAjuste === 'CONTEO'"
+              (click)="onCambioTipoAjuste('CONTEO')">
+              <i class="fas fa-clipboard-check mr-1"></i> Conteo Físico
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-outline-success font-weight-bold" 
+              [class.active]="tipoAjuste === 'ENTRADA'"
+              (click)="onCambioTipoAjuste('ENTRADA')">
+              <i class="fas fa-plus-circle mr-1"></i> Entrada (+)
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-outline-danger font-weight-bold" 
+              [class.active]="tipoAjuste === 'SALIDA'"
+              (click)="onCambioTipoAjuste('SALIDA')">
+              <i class="fas fa-minus-circle mr-1"></i> Salida / Merma (-)
+            </button>
+          </div>
+
+          <!-- Campos del Ajuste -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="font-weight-bold">
+                {{ tipoAjuste === 'CONTEO' ? 'Stock Real Contado:' : 'Cantidad a Ajustar:' }}
+              </label>
+              <input 
+                type="number" 
+                class="form-control form-control-lg text-center font-weight-bold" 
+                [(ngModel)]="cantidadAjuste"
+                (input)="recalcularNuevoStock()"
+                min="0"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="font-weight-bold">Nuevo Stock Resultante:</label>
+              <div class="form-control form-control-lg bg-light text-center font-weight-bold border-primary text-primary" style="font-size: 1.3rem;">
+                {{ nuevoStockAjuste }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Motivo del Ajuste -->
+          <div class="form-group mb-2">
+            <label class="font-weight-bold">Motivo del Ajuste:</label>
+            <select class="form-control mb-2" [(ngModel)]="motivoAjuste">
+              <option value="Conteo físico de estante">Conteo físico de estante (Cuadre periódico)</option>
+              <option value="Merma por producto dañado o deteriorado">Merma por producto dañado / deteriorado</option>
+              <option value="Devolución de cliente">Devolución de cliente</option>
+              <option value="Muestra o uso interno de librería">Uso interno / Muestra comercial</option>
+              <option value="Ingreso no registrado en compras">Ingreso previo no registrado</option>
+              <option value="Ajuste de inventario inicial">Ajuste de inventario inicial</option>
+            </select>
+            <input 
+              type="text" 
+              class="form-control form-control-sm" 
+              placeholder="Detalle u observación adicional..."
+              [(ngModel)]="motivoAjuste"
+            />
+          </div>
+        </div>
+        <div class="modal-footer bg-light py-2">
+          <button type="button" class="btn btn-secondary font-weight-bold" (click)="cerrarModalAjuste()">
+            Cancelar
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-warning font-weight-bold text-dark" 
+            [disabled]="guardandoAjuste"
+            (click)="guardarAjusteStock()">
+            @if (guardandoAjuste) {
+              <span class="spinner-border spinner-border-sm mr-1"></span> Guardando...
+            } @else {
+              <i class="fas fa-check mr-1"></i> Confirmar y Aplicar Ajuste
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================================
+     MODAL DE KARDEX / HISTORIAL DE MOVIMIENTOS
+     ======================================================== -->
+@if (mostrarModalKardex && productoKardex) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-info text-white py-2">
+          <h5 class="modal-title font-weight-bold">
+            <i class="fas fa-history mr-2"></i> Kardex / Historial de Movimientos
+          </h5>
+          <button type="button" class="close text-white" (click)="cerrarModalKardex()">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body p-4">
+          <!-- Cabecera del Producto -->
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+            <div>
+              <h5 class="mb-0 text-primary font-weight-bold">{{ productoKardex.nombre }}</h5>
+              <small class="text-muted">Código: {{ productoKardex.codigoproducto || '-' }} | Marca: {{ productoKardex.laboratorio?.nombrelaboratorio }}</small>
+            </div>
+            <div class="text-right">
+              <span class="badge badge-success px-3 py-2 font-weight-bold" style="font-size: 0.95rem;">
+                Stock Actual: {{ productoKardex.stock }} und.
+              </span>
+            </div>
+          </div>
+
+          <!-- Tabla de Kardex -->
+          @if (cargandoKardex) {
+            <div class="text-center py-4">
+              <div class="spinner-border text-info" role="status"></div>
+              <p class="text-muted mt-2">Cargando movimientos del producto...</p>
+            </div>
+          } @else {
+            <div class="table-responsive" style="max-height: 360px; overflow-y: auto;">
+              <table class="table table-sm table-bordered table-striped mb-0">
+                <thead class="thead-dark text-center">
+                  <tr>
+                    <th>Fecha / Hora</th>
+                    <th>Operación</th>
+                    <th>Detalle / Motivo</th>
+                    <th class="table-success" style="width: 80px;">Entrada (+)</th>
+                    <th class="table-danger" style="width: 80px;">Salida (-)</th>
+                    <th class="table-info" style="width: 80px;">Saldo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (mov of movimientosKardex; track $index) {
+                    <tr>
+                      <td class="text-center">{{ mov.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+                      <td class="text-center">
+                        <span class="badge" [ngClass]="mov.tipo === 'ENTRADA' ? 'badge-success' : (mov.tipo === 'SALIDA' ? 'badge-danger' : 'badge-warning text-dark')">
+                          {{ mov.origen }}
+                        </span>
+                      </td>
+                      <td>{{ mov.detalle }}</td>
+                      <td class="text-center font-weight-bold text-success">
+                        {{ mov.cantidadEntrada > 0 ? '+' + mov.cantidadEntrada : '-' }}
+                      </td>
+                      <td class="text-center font-weight-bold text-danger">
+                        {{ mov.cantidadSalida > 0 ? '-' + mov.cantidadSalida : '-' }}
+                      </td>
+                      <td class="text-center font-weight-bold text-info">
+                        {{ mov.stockResultante !== undefined ? mov.stockResultante : '-' }}
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="text-center py-3 text-muted">
+                        No hay movimientos registrados previos para este producto.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+        <div class="modal-footer bg-light py-2">
+          <button type="button" class="btn btn-secondary font-weight-bold" (click)="cerrarModalKardex()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
