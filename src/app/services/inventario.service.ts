@@ -194,4 +194,35 @@ export class InventarioService {
   obtenerTrazabilidadVentas(idProducto: number): Observable<VentaTrazabilidadDto[]> {
     return this.http.get<VentaTrazabilidadDto[]>(`${this.baseUrl}/detalleventa/trazabilidad/producto/${idProducto}`);
   }
+
+  // ==========================================
+  // AUDITORÍA GLOBAL DE MOVIMIENTOS Y MERMAS (FASE 3)
+  // ==========================================
+
+  obtenerAuditoriaGlobal(filtros?: {
+    tipoOperacion?: string;
+    usuario?: string;
+    search?: string;
+  }): Observable<KardexBackendItem[]> {
+    let url = `${this.baseUrl}/kardex`;
+    const params: string[] = [];
+
+    if (filtros?.tipoOperacion && filtros.tipoOperacion !== 'TODOS') {
+      params.push(`tipoOperacion=${encodeURIComponent(filtros.tipoOperacion)}`);
+    }
+    if (filtros?.usuario) {
+      params.push(`usuario=${encodeURIComponent(filtros.usuario)}`);
+    }
+    if (filtros?.search) {
+      params.push(`search=${encodeURIComponent(filtros.search)}`);
+    }
+
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
+    }
+
+    return this.http.get<KardexBackendResponse>(url).pipe(
+      map(res => res?.list || [])
+    );
+  }
 }

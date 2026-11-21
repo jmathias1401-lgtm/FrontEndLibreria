@@ -18,6 +18,7 @@ import { ModalVentasComponent } from './pages/modal/modal-ventas/modal-ventas.co
 import { ClientFormComponent } from './pages/client-form/client-form.component';
 import { ReportsComponent } from './pages/reports/reports.ventas/reports.component';
 import { ReportsComprasComponent } from './pages/reports/reports.compras/reports-compras.component';
+import { ReportsKardexComponent } from './pages/reports/reports.kardex/reports-kardex.component';
 import { ClienteListComponent } from './pages/clientes/list/list.component';
 import { ClienteFormComponent } from './pages/clientes/form/form.component';
 import { ProveedorListComponent } from './pages/proveedores/list/list.component';
@@ -52,7 +53,8 @@ export const routes: Routes = [
         children: 
         [
             { path: "ventas", component: ReportsComponent },
-            { path: "compras", component: ReportsComprasComponent }
+            { path: "compras", component: ReportsComprasComponent },
+            { path: 'kardex', component: ReportsKardexComponent }
         ]
     },
     {path:"ventas", component: VentaComponent, canActivate: [RoleGuard]},

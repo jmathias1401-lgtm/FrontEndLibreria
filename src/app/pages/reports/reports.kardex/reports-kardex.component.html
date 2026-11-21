@@ -1,0 +1,213 @@
+<div class="container-fluid px-4 py-3">
+  <div class="card shadow-sm mb-4">
+    <!-- Encabezado con Título y Acciones -->
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-2 flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <h5 class="mb-0">
+          <i class="fas fa-clipboard-check text-warning mr-2"></i> Auditoría Global de Kardex, Mermas y Ajustes
+        </h5>
+        <span class="badge badge-warning text-dark font-weight-bold ml-2">
+          {{ movimientos.length }} registros
+        </span>
+      </div>
+
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <button 
+          type="button" 
+          class="btn btn-success btn-sm font-weight-bold shadow-xs" 
+          [disabled]="exportando"
+          (click)="exportarExcel()" 
+          title="Exportar hoja de auditoría a Excel">
+          @if (exportando) {
+            <span class="spinner-border spinner-border-sm mr-1"></span> Exportando...
+          } @else {
+            <i class="fas fa-file-excel mr-1"></i> Excel
+          }
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-light btn-sm font-weight-bold shadow-xs text-dark" 
+          (click)="imprimirActa()" 
+          title="Imprimir acta física de auditoría para archivo">
+          <i class="fas fa-print mr-1"></i> Imprimir Acta
+        </button>
+
+        <button 
+          type="button" 
+          class="btn btn-outline-light btn-sm font-weight-bold" 
+          (click)="cargarMovimientos()" 
+          title="Refrescar auditoría">
+          <i class="fas fa-sync-alt" [class.fa-spin]="cargando"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Barra de Filtros -->
+    <div class="card-body bg-light border-bottom py-3">
+      <div class="row g-2 align-items-center">
+        <!-- Filtro Tipo de Operación -->
+        <div class="col-12 col-md-3 mb-2 mb-md-0">
+          <label class="small text-muted font-weight-bold d-block mb-1">Tipo de Operación:</label>
+          <select 
+            class="custom-select custom-select-sm" 
+            [(ngModel)]="filtroTipo" 
+            (change)="cargarMovimientos()">
+            <option value="TODOS">Todos los tipos</option>
+            <option value="CONTEO">Conteo Físico</option>
+            <option value="AJUSTE">Ajuste Manual</option>
+            <option value="SALIDA">Salida / Merma / Baja</option>
+            <option value="ENTRADA">Entrada / Ingreso</option>
+            <option value="COMPRA">Compra / Recepción</option>
+          </select>
+        </div>
+
+        <!-- Filtro Buscador Producto o Motivo -->
+        <div class="col-12 col-md-4 mb-2 mb-md-0">
+          <label class="small text-muted font-weight-bold d-block mb-1">Buscar Producto o Motivo:</label>
+          <input 
+            type="search" 
+            class="form-control form-control-sm" 
+            placeholder="Ej. Cuaderno, Merma, Deterioro..." 
+            [(ngModel)]="filtroSearch" 
+            (input)="cargarMovimientos()">
+        </div>
+
+        <!-- Filtro Usuario / Responsable -->
+        <div class="col-12 col-md-3 mb-2 mb-md-0">
+          <label class="small text-muted font-weight-bold d-block mb-1">Usuario Responsable:</label>
+          <input 
+            type="search" 
+            class="form-control form-control-sm" 
+            placeholder="Nombre o usuario..." 
+            [(ngModel)]="filtroUsuario" 
+            (input)="cargarMovimientos()">
+        </div>
+
+        <!-- Botón Limpiar -->
+        <div class="col-12 col-md-2 text-md-right mt-md-4">
+          <button 
+            type="button" 
+            class="btn btn-outline-secondary btn-sm font-weight-bold w-100" 
+            (click)="limpiarFiltros()">
+            <i class="fas fa-undo mr-1"></i> Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARJETAS DE RESUMEN DE AUDITORÍA -->
+    <div class="card-body bg-white py-3 border-bottom">
+      <div class="row">
+        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+          <div class="card bg-light border-primary p-2 mb-0 shadow-xs h-100">
+            <small class="text-muted font-weight-bold text-uppercase">Movimientos Auditados</small>
+            <h4 class="mb-0 font-weight-bold text-primary">{{ resumen.totalMovimientos }}</h4>
+            <small class="text-muted">Total de registros en vista</small>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+          <div class="card bg-light border-danger p-2 mb-0 shadow-xs h-100">
+            <small class="text-muted font-weight-bold text-uppercase">Salidas / Mermas</small>
+            <h4 class="mb-0 font-weight-bold text-danger">-{{ resumen.totalSalidasMermas }} und.</h4>
+            <small class="text-muted">Retiro de estantes o bajas</small>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+          <div class="card bg-light border-success p-2 mb-0 shadow-xs h-100">
+            <small class="text-muted font-weight-bold text-uppercase">Entradas / Ingresos</small>
+            <h4 class="mb-0 font-weight-bold text-success">+{{ resumen.totalEntradas }} und.</h4>
+            <small class="text-muted">Ingresos o sobrantes</small>
+          </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+          <div class="card bg-light border-warning p-2 mb-0 shadow-xs h-100">
+            <small class="text-muted font-weight-bold text-uppercase">Ajustes de Conteo</small>
+            <h4 class="mb-0 font-weight-bold text-warning text-dark">{{ resumen.totalAjustesConteo }}</h4>
+            <small class="text-muted">Cuadres físicos de estante</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA DE MOVIMIENTOS -->
+    <div class="card-body p-0">
+      @if (cargando) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="text-muted mt-2">Consultando registros de auditoría de kardex en tiempo real...</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-sm table-hover table-bordered align-middle mb-0">
+            <thead class="thead-dark text-center">
+              <tr>
+                <th style="width: 50px;">#</th>
+                <th style="width: 140px;">Fecha y Hora</th>
+                <th>Producto / Artículo</th>
+                <th style="width: 130px;">Operación</th>
+                <th>Motivo / Justificación</th>
+                <th style="width: 90px;">St. Anterior</th>
+                <th style="width: 90px;">Variación</th>
+                <th style="width: 90px;" class="table-info">St. Nuevo</th>
+                <th style="width: 130px;">Responsable</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of movimientos; track m.idkardex || $index) {
+                <tr>
+                  <td class="text-center font-weight-bold text-muted">{{ $index + 1 }}</td>
+                  <td class="text-center">{{ m.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td>
+                    <strong class="text-primary d-block">{{ m.producto?.nombre || 'Producto' }}</strong>
+                    <small class="text-muted">
+                      Cód: {{ m.producto?.codigoproducto || m.producto?.idproducto }} | 
+                      Marca: {{ m.producto?.laboratorio?.nombrelaboratorio || '-' }}
+                    </small>
+                  </td>
+                  <td class="text-center">
+                    <span class="badge" [ngClass]="m.tipoOperacion === 'SALIDA' || m.tipoOperacion === 'MERMA' ? 'badge-danger' : (m.tipoOperacion === 'ENTRADA' || m.tipoOperacion === 'COMPRA' ? 'badge-success' : 'badge-warning text-dark')">
+                      {{ m.tipoOperacion }}
+                    </span>
+                  </td>
+                  <td>{{ m.motivo }}</td>
+                  <td class="text-center text-muted font-weight-bold">{{ m.stockAnterior }}</td>
+                  <td class="text-center font-weight-bold" [ngClass]="m.stockNuevo > m.stockAnterior ? 'text-success' : (m.stockNuevo < m.stockAnterior ? 'text-danger' : 'text-muted')">
+                    {{ (m.stockNuevo - m.stockAnterior) > 0 ? '+' + (m.stockNuevo - m.stockAnterior) : (m.stockNuevo - m.stockAnterior) }}
+                  </td>
+                  <td class="text-center font-weight-bold table-info" style="font-size: 0.95rem;">
+                    {{ m.stockNuevo }}
+                  </td>
+                  <td class="text-center">
+                    <span class="badge badge-light border text-dark">
+                      <i class="fas fa-user-shield text-secondary mr-1"></i> {{ m.usuario || 'Sistema' }}
+                    </span>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="9" class="text-center text-muted py-5">
+                    <i class="fas fa-box-open fa-3x mb-2 d-block text-secondary"></i>
+                    <p class="mb-0 font-weight-bold">No se encontraron registros de kardex con los filtros seleccionados.</p>
+                    <small>Realiza un ajuste de stock o conteo en el módulo de Inventario para ver el movimiento aquí.</small>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <!-- Pie de Tarjeta con Enlace Rápido al Inventario -->
+    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2 flex-wrap">
+      <small class="text-muted">Mostrando {{ movimientos.length }} movimientos auditados</small>
+      <a routerLink="/productos" class="btn btn-sm btn-outline-primary font-weight-bold">
+        <i class="fas fa-boxes mr-1"></i> Ir al Control de Productos & Inventario
+      </a>
+    </div>
+  </div>
+</div>
