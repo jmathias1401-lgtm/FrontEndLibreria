@@ -7,7 +7,7 @@
         <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ total }}</span>
       </div>
 
-      <!-- Barra de Modos y Botones de Acción -->
+      <!-- Barra de Modos y Botones de AcciÃ³n -->
       <div class="d-flex gap-2 flex-wrap align-items-center">
         <!-- Switch de Modo -->
         <div class="btn-group btn-group-sm" role="group">
@@ -16,7 +16,7 @@
             class="btn font-weight-bold" 
             [ngClass]="modoVista === 'CATALOGO' ? 'btn-light text-primary' : 'btn-outline-light'"
             (click)="activarModoCatalogo()">
-            <i class="fas fa-th-list mr-1"></i> Catálogo
+            <i class="fas fa-th-list mr-1"></i> CatÃ¡logo
           </button>
           <button 
             type="button" 
@@ -34,10 +34,10 @@
           (click)="filtrarStockBajo()"
           title="Ver solo productos con stock de 5 unidades o menos">
           <i class="fas fa-exclamation-triangle mr-1"></i> 
-          {{ soloStockBajo ? 'Ver Todos' : 'Stock Crítico (= 5)' }}
+          {{ soloStockBajo ? 'Ver Todos' : 'Stock CrÃ­tico (â‰¤ 5)' }}
         </button>
 
-        <button type="button" class="btn btn-info btn-sm font-weight-bold text-white" (click)="imprimirTomaFisica()" title="Imprimir hoja para conteo físico en estantes">
+        <button type="button" class="btn btn-info btn-sm font-weight-bold text-white" (click)="imprimirTomaFisica()" title="Imprimir hoja para conteo fÃ­sico en estantes">
           <i class="fas fa-print mr-1"></i> Hoja Conteo
         </button>
 
@@ -66,7 +66,7 @@
                 <div>
                   <small class="text-muted font-weight-bold d-block text-uppercase">Total Unidades</small>
                   <h4 class="mb-0 font-weight-bold text-primary">{{ resumenValorizado.totalUnidades | number }}</h4>
-                  <small class="text-muted">{{ resumenValorizado.totalProductos }} productos únicos</small>
+                  <small class="text-muted">{{ resumenValorizado.totalProductos }} productos Ãºnicos</small>
                 </div>
               </div>
             </div>
@@ -78,7 +78,7 @@
                 <div>
                   <small class="text-muted font-weight-bold d-block text-uppercase">Capital Invertido</small>
                   <h4 class="mb-0 font-weight-bold text-info">S/ {{ resumenValorizado.capitalInvertido | number:'1.2-2' }}</h4>
-                  <small class="text-muted">Costo total almacén</small>
+                  <small class="text-muted">Costo total almacÃ©n</small>
                 </div>
               </div>
             </div>
@@ -90,7 +90,7 @@
                 <div>
                   <small class="text-muted font-weight-bold d-block text-uppercase">Venta Estimada</small>
                   <h4 class="mb-0 font-weight-bold text-success">S/ {{ resumenValorizado.valorVentaEstimado | number:'1.2-2' }}</h4>
-                  <small class="text-muted">Valor de realización</small>
+                  <small class="text-muted">Valor de realizaciÃ³n</small>
                 </div>
               </div>
             </div>
@@ -113,7 +113,7 @@
       <!-- Buscador -->
       <div class="row mb-3 align-items-end">
         <div class="col-md-4 mb-2">
-          <label class="form-label font-weight-bold">Código de Barra</label>
+          <label class="form-label font-weight-bold">CÃ³digo de Barra</label>
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text"><i class="fas fa-barcode"></i></span>
@@ -121,7 +121,7 @@
             <input 
               class="form-control" 
               type="text" 
-              placeholder="Buscar por código..." 
+              placeholder="Buscar por cÃ³digo..." 
               [(ngModel)]="codBarra" 
               (keyup.enter)="buscar()"
             />
@@ -162,7 +162,7 @@
               <th>NOMBRE / PRODUCTO</th>
               <th>MARCA</th>
               <th>UBIC.</th>
-              <th>PRESENTACIÓN</th>
+              <th>PRESENTACIÃ“N</th>
               <th class="table-info font-weight-bold" style="width: 80px;">STOCK</th>
               <th class="text-right">P. VENTA</th>
 
@@ -228,14 +228,14 @@
                   <td class="text-center">{{ producto.vencimiento || '-' }}</td>
                 }
 
-                <!-- Botones de Acción: Ajuste de Inventario, Kardex, Editar y Eliminar -->
+                <!-- Botones de AcciÃ³n: Ajuste de Inventario, Kardex, Editar y Eliminar -->
                 <td class="text-center">
                   <div class="btn-group btn-group-sm" role="group">
-                    <!-- Ajuste Rápido de Stock -->
+                    <!-- Ajuste RÃ¡pido de Stock -->
                     <button 
                       class="btn btn-outline-warning" 
                       (click)="abrirModalAjuste(producto)" 
-                      title="Ajustar Stock / Cuadre Físico (Merma, conteo o corrección)">
+                      title="Ajustar Stock / Cuadre FÃ­sico (Merma, conteo o correcciÃ³n)">
                       <i class="fas fa-sliders-h"></i>
                     </button>
 
@@ -247,11 +247,11 @@
                       <i class="fas fa-history"></i>
                     </button>
 
-                    <!-- Trazabilidad de Ventas (Quién vendió, cuándo, cuántos) -->
+                    <!-- Trazabilidad de Ventas (QuiÃ©n vendiÃ³, cuÃ¡ndo, cuÃ¡ntos) -->
                     <button 
                       class="btn btn-outline-success" 
                       (click)="abrirModalKardex(producto, 'VENTAS')" 
-                      title="Trazabilidad de Ventas: Quién vendió, fecha/hora, cuántos y comprobante">
+                      title="Trazabilidad de Ventas: QuiÃ©n vendiÃ³, fecha/hora, cuÃ¡ntos y comprobante">
                       <i class="fas fa-receipt"></i>
                     </button>
 
@@ -284,7 +284,7 @@
         </table>
       </div>
 
-      <!-- Paginación (solo en modo catálogo) -->
+      <!-- PaginaciÃ³n (solo en modo catÃ¡logo) -->
       @if (modoVista === 'CATALOGO') {
         <div class="d-flex justify-content-center mt-3">
           <app-paginate 
@@ -301,7 +301,7 @@
 </div>
 
 <!-- ========================================================
-     MODAL DE AJUSTE RÁPIDO DE INVENTARIO / CUADRE FÍSICO
+     MODAL DE AJUSTE RÃPIDO DE INVENTARIO / CUADRE FÃSICO
      ======================================================== -->
 @if (mostrarModalAjuste && productoAjuste) {
   <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
@@ -309,7 +309,7 @@
       <div class="modal-content shadow-lg border-0">
         <div class="modal-header bg-warning text-dark py-2">
           <h5 class="modal-title font-weight-bold">
-            <i class="fas fa-sliders-h mr-2"></i> Ajuste de Inventario / Cuadre Físico
+            <i class="fas fa-sliders-h mr-2"></i> Ajuste de Inventario / Cuadre FÃ­sico
           </h5>
           <button type="button" class="close" (click)="cerrarModalAjuste()">
             <span>&times;</span>
@@ -325,7 +325,7 @@
             />
             <div class="flex-grow-1">
               <h6 class="mb-0 font-weight-bold text-primary">{{ productoAjuste.nombre }}</h6>
-              <small class="text-muted">{{ productoAjuste.laboratorio?.nombrelaboratorio || 'Librería' }} | Ubic: {{ productoAjuste.ubicacion || 'Sin asignar' }}</small>
+              <small class="text-muted">{{ productoAjuste.laboratorio?.nombrelaboratorio || 'LibrerÃ­a' }} | Ubic: {{ productoAjuste.ubicacion || 'Sin asignar' }}</small>
             </div>
             <div class="text-right pl-2">
               <small class="text-muted d-block">Stock Actual</small>
@@ -343,7 +343,7 @@
               class="btn btn-outline-primary font-weight-bold" 
               [class.active]="tipoAjuste === 'CONTEO'"
               (click)="onCambioTipoAjuste('CONTEO')">
-              <i class="fas fa-clipboard-check mr-1"></i> Conteo Físico
+              <i class="fas fa-clipboard-check mr-1"></i> Conteo FÃ­sico
             </button>
             <button 
               type="button" 
@@ -387,17 +387,17 @@
           <div class="form-group mb-2">
             <label class="font-weight-bold">Motivo del Ajuste:</label>
             <select class="form-control mb-2" [(ngModel)]="motivoAjuste">
-              <option value="Conteo físico de estante">Conteo físico de estante (Cuadre periódico)</option>
-              <option value="Merma por producto dañado o deteriorado">Merma por producto dañado / deteriorado</option>
-              <option value="Devolución de cliente">Devolución de cliente</option>
-              <option value="Muestra o uso interno de librería">Uso interno / Muestra comercial</option>
+              <option value="Conteo fÃ­sico de estante">Conteo fÃ­sico de estante (Cuadre periÃ³dico)</option>
+              <option value="Merma por producto daÃ±ado o deteriorado">Merma por producto daÃ±ado / deteriorado</option>
+              <option value="DevoluciÃ³n de cliente">DevoluciÃ³n de cliente</option>
+              <option value="Muestra o uso interno de librerÃ­a">Uso interno / Muestra comercial</option>
               <option value="Ingreso no registrado en compras">Ingreso previo no registrado</option>
               <option value="Ajuste de inventario inicial">Ajuste de inventario inicial</option>
             </select>
             <input 
               type="text" 
               class="form-control form-control-sm" 
-              placeholder="Detalle u observación adicional..."
+              placeholder="Detalle u observaciÃ³n adicional..."
               [(ngModel)]="motivoAjuste"
             />
           </div>
@@ -444,7 +444,7 @@
             <div>
               <h5 class="mb-0 text-primary font-weight-bold">{{ productoKardex.nombre }}</h5>
               <small class="text-muted">
-                Código: <strong class="text-dark">{{ productoKardex.codigoproducto || '-' }}</strong> | 
+                CÃ³digo: <strong class="text-dark">{{ productoKardex.codigoproducto || '-' }}</strong> | 
                 Marca: <strong class="text-dark">{{ productoKardex.laboratorio?.nombrelaboratorio || 'General' }}</strong> |
                 Precio Venta: <strong class="text-success">S/ {{ productoKardex.precioventa | number:'1.2-2' }}</strong>
               </small>
@@ -456,7 +456,7 @@
             </div>
           </div>
 
-          <!-- Pestañas de Navegación -->
+          <!-- PestaÃ±as de NavegaciÃ³n -->
           <ul class="nav nav-pills mb-3">
             <li class="nav-item mr-2">
               <button 
@@ -483,7 +483,7 @@
             </li>
           </ul>
 
-          <!-- PESTAÑA 1: KARDEX DE MOVIMIENTOS -->
+          <!-- PESTAÃ‘A 1: KARDEX DE MOVIMIENTOS -->
           @if (pestanaModalKardex === 'KARDEX') {
             @if (cargandoKardex) {
               <div class="text-center py-4">
@@ -496,7 +496,7 @@
                   <thead class="thead-dark text-center">
                     <tr>
                       <th>Fecha / Hora</th>
-                      <th>Operación</th>
+                      <th>OperaciÃ³n</th>
                       <th>Detalle / Motivo</th>
                       <th>Usuario</th>
                       <th class="table-success" style="width: 90px;">Entrada (+)</th>
@@ -538,7 +538,7 @@
             }
           }
 
-          <!-- PESTAÑA 2: TRAZABILIDAD DE VENTAS (QUIÉN, CUÁNDO, CUÁNTOS) -->
+          <!-- PESTAÃ‘A 2: TRAZABILIDAD DE VENTAS (QUIÃ‰N, CUÃNDO, CUÃNTOS) -->
           @if (pestanaModalKardex === 'VENTAS') {
             @if (cargandoTrazabilidad) {
               <div class="text-center py-4">
@@ -562,7 +562,7 @@
                 </div>
                 <div class="col-12 col-md-4 mb-2">
                   <div class="card bg-light border-info p-2 mb-0 shadow-xs">
-                    <small class="text-muted font-weight-bold text-uppercase">N° Transacciones de Venta</small>
+                    <small class="text-muted font-weight-bold text-uppercase">NÂ° Transacciones de Venta</small>
                     <h4 class="mb-0 font-weight-bold text-info">{{ ventasTrazabilidad.length }} ventas</h4>
                   </div>
                 </div>
@@ -574,7 +574,7 @@
                   <thead class="thead-dark text-center">
                     <tr>
                       <th>Fecha / Hora</th>
-                      <th><i class="fas fa-user-tag mr-1 text-warning"></i> Quién Vendió (Vendedor)</th>
+                      <th><i class="fas fa-user-tag mr-1 text-warning"></i> QuiÃ©n VendiÃ³ (Vendedor)</th>
                       <th>Comprobante</th>
                       <th>Cliente</th>
                       <th class="table-warning text-dark" style="width: 100px;">Vendidos</th>
@@ -613,7 +613,7 @@
                       <tr>
                         <td colspan="7" class="text-center py-4 text-muted">
                           <i class="fas fa-shopping-basket fa-2x mb-2 d-block text-secondary"></i>
-                          Este producto no registra ventas en el sistema aún.
+                          Este producto no registra ventas en el sistema aÃºn.
                         </td>
                       </tr>
                     }
