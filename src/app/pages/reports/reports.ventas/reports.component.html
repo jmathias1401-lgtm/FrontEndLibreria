@@ -1,283 +1,468 @@
 <div class="container-fluid px-4 py-3">
   <!-- Tarjeta Principal del Reporte -->
   <div class="card shadow-sm mb-4">
-    <!-- Encabezado con Título y Botones de Exportación -->
+    <!-- Encabezado con Título, Selector de Vista y Botones de Exportación -->
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-2 flex-wrap gap-2">
-      <div class="d-flex align-items-center gap-2">
-        <h5 class="mb-0"><i class="fas fa-file-invoice-dollar mr-2"></i> Reporte Analítico de Ventas & Facturación</h5>
-        <span class="badge badge-light text-primary font-weight-bold ml-2">Total: {{ totalVentas }} transacciones</span>
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <h5 class="mb-0"><i class="fas fa-file-invoice-dollar mr-2"></i> Reporte Analítico de Ventas</h5>
+        
+        <!-- Pestañas de Vista -->
+        <div class="btn-group btn-group-sm" role="group">
+          <button 
+            type="button" 
+            class="btn font-weight-bold" 
+            [ngClass]="vistaReporte === 'TRANSACCIONES' ? 'btn-light text-primary' : 'btn-outline-light'"
+            (click)="vistaReporte = 'TRANSACCIONES'">
+            <i class="fas fa-file-invoice mr-1"></i> Detalle de Ventas
+          </button>
+          <button 
+            type="button" 
+            class="btn font-weight-bold" 
+            [ngClass]="vistaReporte === 'INCENTIVOS' ? 'btn-warning text-dark' : 'btn-outline-light'"
+            (click)="vistaReporte = 'INCENTIVOS'; cargarRendimientoEmpleados()">
+            <i class="fas fa-user-check mr-1"></i> Rendimiento & Incentivos
+          </button>
+        </div>
+
+        @if (vistaReporte === 'TRANSACCIONES') {
+          <span class="badge badge-light text-primary font-weight-bold">Total: {{ totalVentas }} transacciones</span>
+        }
       </div>
       
       <div class="d-flex align-items-center gap-2 flex-wrap">
-        <button 
-          type="button" 
-          class="btn btn-success btn-sm font-weight-bold shadow-xs" 
-          [disabled]="exportandoExcel"
-          (click)="exportarExcel()" 
-          title="Exportar reporte completo a Excel">
-          @if (exportandoExcel) {
-            <span class="spinner-border spinner-border-sm mr-1"></span> Exportando...
-          } @else {
-            <i class="fas fa-file-excel mr-1"></i> Excel
-          }
-        </button>
+        @if (vistaReporte === 'TRANSACCIONES') {
+          <button 
+            type="button" 
+            class="btn btn-success btn-sm font-weight-bold shadow-xs" 
+            [disabled]="exportandoExcel"
+            (click)="exportarExcel()" 
+            title="Exportar reporte completo a Excel">
+            @if (exportandoExcel) {
+              <span class="spinner-border spinner-border-sm mr-1"></span> Exportando...
+            } @else {
+              <i class="fas fa-file-excel mr-1"></i> Excel
+            }
+          </button>
 
-        <button 
-          type="button" 
-          class="btn btn-light btn-sm font-weight-bold shadow-xs text-dark" 
-          (click)="imprimirReporteConsolidado()" 
-          title="Imprimir informe ejecutivo para cuadre o archivo contable">
-          <i class="fas fa-print mr-1"></i> Imprimir Reporte
-        </button>
+          <button 
+            type="button" 
+            class="btn btn-light btn-sm font-weight-bold shadow-xs text-dark" 
+            (click)="imprimirReporteConsolidado()" 
+            title="Imprimir informe ejecutivo para cuadre o archivo contable">
+            <i class="fas fa-print mr-1"></i> Imprimir Reporte
+          </button>
 
-        <button 
-          type="button" 
-          class="btn btn-outline-light btn-sm font-weight-bold" 
-          (click)="applyFilters()" 
-          title="Refrescar datos">
-          <i class="fas fa-sync-alt" [class.fa-spin]="cargandoReporte"></i>
-        </button>
+          <button 
+            type="button" 
+            class="btn btn-outline-light btn-sm font-weight-bold" 
+            (click)="applyFilters()" 
+            title="Refrescar datos">
+            <i class="fas fa-sync-alt" [class.fa-spin]="cargandoReporte"></i>
+          </button>
+        } @else {
+          <button 
+            type="button" 
+            class="btn btn-success btn-sm font-weight-bold shadow-xs" 
+            (click)="exportarIncentivosExcel()" 
+            title="Exportar liquidación de comisiones a Excel">
+            <i class="fas fa-file-excel mr-1"></i> Exportar Liquidación Excel
+          </button>
+
+          <button 
+            type="button" 
+            class="btn btn-outline-light btn-sm font-weight-bold" 
+            (click)="cargarRendimientoEmpleados()" 
+            title="Recalcular métricas de rendimiento">
+            <i class="fas fa-sync-alt" [class.fa-spin]="cargandoRendimiento"></i>
+          </button>
+        }
       </div>
     </div>
     
-    <!-- Barra de Filtros Rápidos de Período y Búsqueda -->
-    <div class="card-body bg-light border-bottom py-3">
-      <div class="row align-items-center g-2">
-        <!-- Selector Rápido de Período -->
-        <div class="col-12 col-lg-5 mb-2 mb-lg-0">
-          <label class="small text-muted font-weight-bold d-block mb-1">Período de Consulta:</label>
-          <div class="btn-group btn-group-sm w-100" role="group">
-            <button 
-              type="button" 
-              class="btn font-weight-bold" 
-              [ngClass]="periodoSeleccionado === 'HOY' ? 'btn-primary' : 'btn-outline-secondary'"
-              (click)="seleccionarPeriodo('HOY')">
-              Hoy
-            </button>
-            <button 
-              type="button" 
-              class="btn font-weight-bold" 
-              [ngClass]="periodoSeleccionado === 'AYER' ? 'btn-primary' : 'btn-outline-secondary'"
-              (click)="seleccionarPeriodo('AYER')">
-              Ayer
-            </button>
-            <button 
-              type="button" 
-              class="btn font-weight-bold" 
-              [ngClass]="periodoSeleccionado === 'ULTIMOS_7' ? 'btn-primary' : 'btn-outline-secondary'"
-              (click)="seleccionarPeriodo('ULTIMOS_7')">
-              Últimos 7 Días
-            </button>
-            <button 
-              type="button" 
-              class="btn font-weight-bold" 
-              [ngClass]="periodoSeleccionado === 'ESTE_MES' ? 'btn-primary' : 'btn-outline-secondary'"
-              (click)="seleccionarPeriodo('ESTE_MES')">
-              Este Mes
-            </button>
-            <button 
-              type="button" 
-              class="btn font-weight-bold" 
-              [ngClass]="periodoSeleccionado === 'PERSONALIZADO' ? 'btn-primary' : 'btn-outline-secondary'"
-              (click)="seleccionarPeriodo('PERSONALIZADO')">
-              Personalizado
-            </button>
-          </div>
-        </div>
-
-        <!-- Inputs de Rango Desde / Hasta -->
-        <div class="col-12 col-sm-6 col-lg-4 mb-2 mb-lg-0">
-          <label class="small text-muted font-weight-bold d-block mb-1">Rango de Fechas:</label>
-          <div class="input-group input-group-sm">
-            <input 
-              type="date" 
-              class="form-control" 
-              [(ngModel)]="fechaInicio" 
-              (change)="periodoSeleccionado = 'PERSONALIZADO'; applyFilters()" 
-              title="Fecha Inicial">
-            <div class="input-group-prepend input-group-append">
-              <span class="input-group-text bg-white">al</span>
+    <!-- Barra de Filtros Rápidos de Período y Búsqueda (Visible en modo Transacciones) -->
+    @if (vistaReporte === 'TRANSACCIONES') {
+      <div class="card-body bg-light border-bottom py-3">
+        <div class="row align-items-center g-2">
+          <!-- Selector Rápido de Período -->
+          <div class="col-12 col-xl-5 col-lg-6 mb-2 mb-lg-0">
+            <label class="small text-muted font-weight-bold d-block mb-1">Período de Consulta:</label>
+            <div class="btn-group btn-group-sm w-100" role="group">
+              <button 
+                type="button" 
+                class="btn font-weight-bold" 
+                [ngClass]="periodoSeleccionado === 'HOY' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="seleccionarPeriodo('HOY')">
+                Hoy
+              </button>
+              <button 
+                type="button" 
+                class="btn font-weight-bold" 
+                [ngClass]="periodoSeleccionado === 'AYER' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="seleccionarPeriodo('AYER')">
+                Ayer
+              </button>
+              <button 
+                type="button" 
+                class="btn font-weight-bold" 
+                [ngClass]="periodoSeleccionado === 'ULTIMOS_7' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="seleccionarPeriodo('ULTIMOS_7')">
+                Esta semana
+              </button>
+              <button 
+                type="button" 
+                class="btn font-weight-bold" 
+                [ngClass]="periodoSeleccionado === 'ESTE_MES' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="seleccionarPeriodo('ESTE_MES')">
+                Este Mes
+              </button>
+              <button 
+                type="button" 
+                class="btn font-weight-bold" 
+                [ngClass]="periodoSeleccionado === 'ESTE_ANIO' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="seleccionarPeriodo('ESTE_ANIO')">
+                Este Año
+              </button>
+              <button 
+                type="button" 
+                class="btn font-weight-bold" 
+                [ngClass]="periodoSeleccionado === 'PERSONALIZADO' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="seleccionarPeriodo('PERSONALIZADO')">
+                Personalizado
+              </button>
             </div>
-            <input 
-              type="date" 
-              class="form-control" 
-              [(ngModel)]="fechaFin" 
-              (change)="periodoSeleccionado = 'PERSONALIZADO'; applyFilters()" 
-              title="Fecha Final">
           </div>
-        </div>
 
-        <!-- Filtro de Tipo de Comprobante y Buscador Libre -->
-        <div class="col-12 col-sm-6 col-lg-3">
-          <label class="small text-muted font-weight-bold d-block mb-1">Buscador / Comprobante:</label>
-          <div class="d-flex gap-1">
+          <!-- Inputs de Rango Desde / Hasta -->
+          <div class="col-12 col-sm-6 col-xl-3 col-lg-3 mb-2 mb-lg-0">
+            <label class="small text-muted font-weight-bold d-block mb-1">Rango de Fechas:</label>
+            <div class="input-group input-group-sm">
+              <input 
+                type="date" 
+                class="form-control" 
+                [(ngModel)]="fechaInicio" 
+                (change)="periodoSeleccionado = 'PERSONALIZADO'; applyFilters()" 
+                title="Fecha Inicial">
+              
+              <input 
+                type="date" 
+                class="form-control" 
+                [(ngModel)]="fechaFin" 
+                (change)="periodoSeleccionado = 'PERSONALIZADO'; applyFilters()" 
+                title="Fecha Final">
+            </div>
+          </div>
+
+          <!-- Filtro de Vendedor / Empleado -->
+          <div class="col-12 col-sm-6 col-xl-2 col-lg-3 mb-2 mb-lg-0">
+            <label class="small text-muted font-weight-bold d-block mb-1">Vendedor:</label>
             <select 
               class="custom-select custom-select-sm" 
-              style="width: 120px;" 
-              [(ngModel)]="tipoComprobanteFiltro" 
+              [(ngModel)]="selectedEmpleadoId" 
               (change)="applyFilters()">
-              <option value="TODOS">Todos</option>
-              <option value="BOLETA">Boletas</option>
-              <option value="FACTURA">Facturas</option>
-              <option value="TIKET">Tickets</option>
+              <option [ngValue]="0">Todos los Vendedores</option>
+              @for (emp of empleados; track emp.idempleado) {
+                <option [ngValue]="emp.idempleado">
+                  {{ emp.persona?.nombre }} {{ emp.persona?.paterno || '' }}
+                </option>
+              }
             </select>
-            <input 
-              type="search" 
-              placeholder="Cliente o Serie..." 
-              class="form-control form-control-sm" 
-              [(ngModel)]="filterSearch" 
-              (input)="applyFilters()">
+          </div>
+
+          <!-- Filtro de Comprobante y Buscador -->
+          <div class="col-12 col-sm-6 col-xl-2 col-lg-12">
+            <label class="small text-muted font-weight-bold d-block mb-1">Comprobante / Búsqueda:</label>
+            <div class="d-flex gap-1">
+              <select 
+                class="custom-select custom-select-sm" 
+                style="width: 100px;" 
+                [(ngModel)]="tipoComprobanteFiltro" 
+                (change)="applyFilters()">
+                <option value="TODOS">Todos</option>
+                <option value="BOLETA">Boletas</option>
+                <option value="FACTURA">Facturas</option>
+                <option value="TIKET">Tickets</option>
+              </select>
+              <input 
+                type="search" 
+                placeholder="Buscar..." 
+                class="form-control form-control-sm" 
+                [(ngModel)]="filterSearch" 
+                (input)="applyFilters()">
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- TARJETAS DE RESUMEN FINANCIERO DEL PERÍODO -->
-    <div class="card-body bg-white py-3 border-bottom">
-      <div class="row">
-        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
-          <div class="card bg-light border-primary p-2 mb-0 shadow-xs h-100">
-            <small class="text-muted font-weight-bold text-uppercase">Total Facturado</small>
-            <h4 class="mb-0 font-weight-bold text-primary">S/ {{ resumenPeriodo.totalMonto | number:'1.2-2' }}</h4>
-            <small class="text-muted">{{ resumenPeriodo.totalComprobantes }} operaciones en vista</small>
+      <!-- TARJETAS DE RESUMEN FINANCIERO DEL PERÍODO -->
+      <div class="card-body bg-white py-3 border-bottom">
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+            <div class="card bg-light border-primary p-2 mb-0 shadow-xs h-100">
+              <small class="text-muted font-weight-bold text-uppercase">Total Facturado</small>
+              <h4 class="mb-0 font-weight-bold text-primary">S/ {{ resumenPeriodo.totalMonto | number:'1.2-2' }}</h4>
+              <small class="text-muted">{{ resumenPeriodo.totalComprobantes }} operaciones en vista</small>
+            </div>
           </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
-          <div class="card bg-light border-success p-2 mb-0 shadow-xs h-100">
-            <small class="text-muted font-weight-bold text-uppercase">Subtotal Base</small>
-            <h4 class="mb-0 font-weight-bold text-success">S/ {{ resumenPeriodo.totalSubtotal | number:'1.2-2' }}</h4>
-            <small class="text-muted">Sin impuestos</small>
+          <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+            <div class="card bg-light border-success p-2 mb-0 shadow-xs h-100">
+              <small class="text-muted font-weight-bold text-uppercase">Subtotal Base</small>
+              <h4 class="mb-0 font-weight-bold text-success">S/ {{ resumenPeriodo.totalSubtotal | number:'1.2-2' }}</h4>
+              <small class="text-muted">Sin impuestos</small>
+            </div>
           </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
-          <div class="card bg-light border-info p-2 mb-0 shadow-xs h-100">
-            <small class="text-muted font-weight-bold text-uppercase">IGV Total (18%)</small>
-            <h4 class="mb-0 font-weight-bold text-info">S/ {{ resumenPeriodo.totalIgv | number:'1.2-2' }}</h4>
-            <small class="text-muted">Impuesto fiscal</small>
+          <div class="col-12 col-sm-6 col-md-3 mb-2 mb-md-0">
+            <div class="card bg-light border-info p-2 mb-0 shadow-xs h-100">
+              <small class="text-muted font-weight-bold text-uppercase">IGV Total (18%)</small>
+              <h4 class="mb-0 font-weight-bold text-info">S/ {{ resumenPeriodo.totalIgv | number:'1.2-2' }}</h4>
+              <small class="text-muted">Impuesto fiscal</small>
+            </div>
           </div>
-        </div>
 
-        <div class="col-12 col-sm-6 col-md-3">
-          <div class="card bg-light border-warning p-2 mb-0 shadow-xs h-100">
-            <small class="text-muted font-weight-bold text-uppercase">Ticket Promedio</small>
-            <h4 class="mb-0 font-weight-bold text-warning text-dark">S/ {{ resumenPeriodo.ticketPromedio | number:'1.2-2' }}</h4>
-            <small class="text-muted">Por transacción</small>
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="card bg-light border-warning p-2 mb-0 shadow-xs h-100">
+              <small class="text-muted font-weight-bold text-uppercase">Ticket Promedio</small>
+              <h4 class="mb-0 font-weight-bold text-warning text-dark">S/ {{ resumenPeriodo.ticketPromedio | number:'1.2-2' }}</h4>
+              <small class="text-muted">Por transacción</small>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    <!-- TABLA DE VENTAS -->
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-sm table-hover table-bordered align-middle mb-0">
-          <thead class="thead-dark text-center">
-            <tr>
-              <th style="width: 70px;">ID Venta</th>
-              <th style="width: 140px;">Fecha / Hora</th>
-              <th style="width: 120px;">Comprobante</th>
-              <th style="width: 110px;">Serie - N°</th>
-              <th>Cliente</th>
-              <th style="width: 130px;">Vendedor</th>
-              <th class="text-right" style="width: 120px;">Total (S/)</th>
-              <th style="width: 180px;">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (venta of filteredVentas; track venta.idventa || $index) {
+      
+      <!-- TABLA DE VENTAS -->
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover table-bordered align-middle mb-0">
+            <thead class="thead-dark text-center">
               <tr>
-                <td class="text-center font-weight-bold text-muted">{{ venta.idventa }}</td>
-                <td class="text-center">{{ venta.fechaventa | date:'dd/MM/yyyy HH:mm' }}</td>
-                <td class="text-center">
-                  <span class="badge" [ngClass]="(venta.tipoComprobante?.nombrecomprobante || 'TICKET') === 'FACTURA' ? 'badge-primary' : ((venta.tipoComprobante?.nombrecomprobante || 'TICKET') === 'BOLETA' ? 'badge-success' : 'badge-warning text-dark')">
-                    {{ venta.tipoComprobante?.nombrecomprobante || 'TICKET' }}
-                  </span>
-                </td>
-                <td class="text-center font-weight-bold">{{ venta.serie }}-{{ venta.correlativo }}</td>
-                <td class="font-weight-bold">
-                  {{ venta.cliente?.persona?.nombre || 'Público General' }} {{ venta.cliente?.persona?.paterno || '' }}
-                </td>
-                <td>
-                  <small class="badge badge-light border">
-                    {{ venta.empleado?.persona?.nombre ? (venta.empleado.persona.nombre + ' ' + (venta.empleado.persona.paterno || '')) : 'Caja' }}
-                  </small>
-                </td>
-                <td class="text-right font-weight-bold text-success" style="font-size: 0.95rem;">
-                  {{ venta.costoventa | currency:'PEN':'S/ ' }}
-                </td>
-                <td class="text-center">
-                  <button (click)="toggleDetalles(venta.idventa)" class="btn btn-outline-primary btn-sm mr-1">
-                    <i class="fas" [ngClass]="selectedVentaId === venta.idventa ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                    {{ selectedVentaId === venta.idventa ? ' Ocultar' : ' Ver Items' }}
-                  </button>
-                  <button (click)="reimprimirTicket(venta)" class="btn btn-outline-secondary btn-sm" title="Reimprimir Ticket POS">
-                    <i class="fas fa-print"></i>
-                  </button>
-                </td>
+                <th style="width: 70px;">ID Venta</th>
+                <th style="width: 140px;">Fecha / Hora</th>
+                <th style="width: 120px;">Comprobante</th>
+                <th style="width: 110px;">Serie - N°</th>
+                <th>Cliente</th>
+                <th style="width: 130px;">Vendedor</th>
+                <th class="text-right" style="width: 120px;">Total (S/)</th>
+                <th style="width: 180px;">Acciones</th>
               </tr>
-              @if (selectedVentaId === venta.idventa) {
-                <tr class="table-light">
-                  <td colspan="8" class="p-3">
-                    @if (detallesVenta[venta.idventa!]) {
-                      <div class="card shadow-sm border mb-0">
-                        <div class="card-header bg-light py-2">
-                          <h6 class="mb-0 font-weight-bold text-primary">
-                            <i class="fas fa-list-alt mr-2"></i> Items Vendidos en Comprobante #{{ venta.idventa }} ({{ venta.tipoComprobante?.nombrecomprobante || 'TICKET' }} {{ venta.serie }}-{{ venta.correlativo }})
-                          </h6>
-                        </div>
-                        <div class="card-body p-0">
-                          <table class="table table-sm table-striped mb-0">
-                            <thead class="text-center thead-light">
-                              <tr>
-                                <th class="text-left">Producto</th>
-                                <th style="width: 100px;">Cantidad</th>
-                                <th class="text-right" style="width: 140px;">Precio Unit.</th>
-                                <th class="text-right" style="width: 140px;">Subtotal</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              @for (detalle of detallesVenta[venta.idventa!]; track detalle.iddetalleventa || $index) {
+            </thead>
+            <tbody>
+              @for (venta of filteredVentas; track venta.idventa || $index) {
+                <tr>
+                  <td class="text-center font-weight-bold text-muted">{{ venta.idventa }}</td>
+                  <td class="text-center">{{ venta.fechaventa | date:'dd/MM/yyyy HH:mm' }}</td>
+                  <td class="text-center">
+                    <span class="badge" [ngClass]="(venta.tipoComprobante?.nombrecomprobante || 'TICKET') === 'FACTURA' ? 'badge-primary' : ((venta.tipoComprobante?.nombrecomprobante || 'TICKET') === 'BOLETA' ? 'badge-success' : 'badge-warning text-dark')">
+                      {{ venta.tipoComprobante?.nombrecomprobante || 'TICKET' }}
+                    </span>
+                  </td>
+                  <td class="text-center font-weight-bold">{{ venta.serie }}-{{ venta.correlativo }}</td>
+                  <td class="font-weight-bold">
+                    {{ venta.cliente?.persona?.nombre || 'Público General' }} {{ venta.cliente?.persona?.paterno || '' }}
+                  </td>
+                  <td>
+                    <small class="badge badge-light border">
+                      {{ venta.empleado?.persona?.nombre ? (venta.empleado.persona.nombre + ' ' + (venta.empleado.persona.paterno || '')) : 'Caja' }}
+                    </small>
+                  </td>
+                  <td class="text-right font-weight-bold text-success" style="font-size: 0.95rem;">
+                    {{ venta.costoventa | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-center">
+                    <button (click)="toggleDetalles(venta.idventa)" class="btn btn-outline-primary btn-sm mr-1">
+                      <i class="fas" [ngClass]="selectedVentaId === venta.idventa ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                      {{ selectedVentaId === venta.idventa ? ' Ocultar' : ' Ver Items' }}
+                    </button>
+                    <button (click)="reimprimirTicket(venta)" class="btn btn-outline-secondary btn-sm" title="Reimprimir Ticket POS">
+                      <i class="fas fa-print"></i>
+                    </button>
+                  </td>
+                </tr>
+                @if (selectedVentaId === venta.idventa) {
+                  <tr class="table-light">
+                    <td colspan="8" class="p-3">
+                      @if (detallesVenta[venta.idventa!]) {
+                        <div class="card shadow-sm border mb-0">
+                          <div class="card-header bg-light py-2">
+                            <h6 class="mb-0 font-weight-bold text-primary">
+                              <i class="fas fa-list-alt mr-2"></i> Items Vendidos en Comprobante #{{ venta.idventa }} ({{ venta.tipoComprobante?.nombrecomprobante || 'TICKET' }} {{ venta.serie }}-{{ venta.correlativo }})
+                            </h6>
+                          </div>
+                          <div class="card-body p-0">
+                            <table class="table table-sm table-striped mb-0">
+                              <thead class="text-center thead-light">
                                 <tr>
-                                  <td class="font-weight-bold">{{ detalle.producto.nombre }}</td>
-                                  <td class="text-center font-weight-bold">{{ detalle.unidades }} und.</td>
-                                  <td class="text-right text-success">{{ detalle.costounidad | currency:'PEN':'S/ ' }}</td>
-                                  <td class="text-right font-weight-bold">{{ detalle.total | currency:'PEN':'S/ ' }}</td>
+                                  <th class="text-left">Producto</th>
+                                  <th style="width: 100px;">Cantidad</th>
+                                  <th class="text-right" style="width: 140px;">Precio Unit.</th>
+                                  <th class="text-right" style="width: 140px;">Subtotal</th>
                                 </tr>
-                              }
-                            </tbody>
-                          </table>
+                              </thead>
+                              <tbody>
+                                @for (detalle of detallesVenta[venta.idventa!]; track detalle.iddetalleventa || $index) {
+                                  <tr>
+                                    <td class="font-weight-bold">{{ detalle.producto.nombre }}</td>
+                                    <td class="text-center font-weight-bold">{{ detalle.unidades }} und.</td>
+                                    <td class="text-right text-success">{{ detalle.costounidad | currency:'PEN':'S/ ' }}</td>
+                                    <td class="text-right font-weight-bold">{{ detalle.total | currency:'PEN':'S/ ' }}</td>
+                                  </tr>
+                                }
+                              </tbody>
+                            </table>
+                          </div>
                         </div>
+                      }
+                    </td>
+                  </tr>
+                }
+              } @empty {
+                <tr>
+                  <td colspan="8" class="text-center text-muted py-5">
+                    <i class="fas fa-inbox fa-3x mb-2 d-block text-secondary"></i>
+                    <p class="mb-0 font-weight-bold">No se encontraron ventas para el período o filtros seleccionados.</p>
+                    <small>Prueba ampliando el rango de fechas en la barra superior.</small>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Paginador -->
+      <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2 flex-wrap">
+        <small class="text-muted">Página {{ currentPage }} de {{ totalPages }} ({{ totalVentas }} ventas totales registradas)</small>
+        <app-paginate 
+          [total]="totalVentas" 
+          [currentPage]="currentPage" 
+          [pageSize]="itemsPerPage" 
+          [npage]="pages" 
+          (SendIndex)="onPageChange($event)">
+        </app-paginate>
+      </div>
+    }
+
+    <!-- VISTA 2: RENDIMIENTO E INCENTIVOS DE VENDEDORES -->
+    @if (vistaReporte === 'INCENTIVOS') {
+      <!-- Panel de Control y Configuración de Incentivos -->
+      <div class="card-body bg-light border-bottom py-3">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <h6 class="mb-0 font-weight-bold text-dark">
+              <i class="fas fa-medal text-warning mr-1"></i> Rendimiento & Liquidación de Incentivos por Vendedor
+            </h6>
+            <small class="text-muted">
+              Cálculo en vivo de ventas acumuladas por día, semana, mes y año para liquidación de comisiones e incentivos del equipo.
+            </small>
+          </div>
+
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="small font-weight-bold text-muted">Tasa de Comisión / Incentivo:</span>
+            <div class="input-group input-group-sm" style="width: 120px;">
+              <input 
+                type="number" 
+                min="0" 
+                max="100" 
+                step="0.5" 
+                class="form-control text-center font-weight-bold text-primary" 
+                [(ngModel)]="tasaIncentivo" 
+                title="Porcentaje de incentivo sobre ventas">
+              <div class="input-group-append">
+                <span class="input-group-text font-weight-bold">%</span>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              class="btn btn-success btn-sm font-weight-bold ml-1 shadow-xs" 
+              (click)="exportarIncentivosExcel()" 
+              title="Descargar liquidación en Excel">
+              <i class="fas fa-file-excel mr-1"></i> Exportar Liquidación
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla Comparativa de Empleados e Incentivos -->
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover table-bordered align-middle mb-0">
+            <thead class="thead-dark text-center">
+              <tr>
+                <th style="width: 60px;">ID</th>
+                <th style="width: 220px;" class="text-left">Vendedor / Empleado</th>
+                <th style="width: 120px;" class="text-right">Ventas Hoy</th>
+                <th style="width: 130px;" class="text-right">Esta Semana</th>
+                <th style="width: 140px;" class="text-right bg-primary text-white">Ventas Este Mes</th>
+                <th style="width: 140px;" class="text-right bg-dark text-white">Ventas Este Año</th>
+                <th style="width: 100px;">Transacc.</th>
+                <th style="width: 160px;" class="text-right bg-success text-white">Incentivo Mes ({{ tasaIncentivo }}%)</th>
+                <th style="width: 160px;" class="text-right bg-info text-white">Incentivo Año ({{ tasaIncentivo }}%)</th>
+                <th style="width: 130px;">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (emp of rendimientoEmpleados; track emp.idEmpleado || $index) {
+                <tr>
+                  <td class="text-center font-weight-bold text-muted">{{ emp.idEmpleado }}</td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mr-2" style="width: 32px; height: 32px; font-size: 0.85rem; font-weight: bold;">
+                        {{ emp.empleado ? emp.empleado.substring(0, 1) : 'V' }}
                       </div>
+                      <div>
+                        <span class="font-weight-bold d-block">{{ emp.empleado }}</span>
+                        <small class="text-muted">ID Empleado #{{ emp.idEmpleado }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-right font-weight-bold text-secondary">
+                    {{ emp.ventasHoy | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-right font-weight-bold text-secondary">
+                    {{ emp.ventasSemana | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-right font-weight-bold text-primary" style="font-size: 0.95rem;">
+                    {{ emp.ventasMes | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-right font-weight-bold text-dark" style="font-size: 0.95rem;">
+                    {{ emp.ventasAnio | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-center font-weight-bold">
+                    <span class="badge badge-light border">{{ emp.totalTransacciones }}</span>
+                  </td>
+                  <td class="text-right font-weight-bold text-success" style="font-size: 1rem;">
+                    {{ (emp.ventasMes * tasaIncentivo / 100) | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-right font-weight-bold text-info" style="font-size: 1rem;">
+                    {{ (emp.ventasAnio * tasaIncentivo / 100) | currency:'PEN':'S/ ' }}
+                  </td>
+                  <td class="text-center">
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-primary btn-sm font-weight-bold" 
+                      (click)="filtrarPorEmpleado(emp.idEmpleado)" 
+                      title="Ver el detalle de ventas y comprobantes de este vendedor">
+                      <i class="fas fa-search mr-1"></i> Ver Ventas
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="10" class="text-center text-muted py-5">
+                    @if (cargandoRendimiento) {
+                      <div class="spinner-border text-primary my-2" role="status"></div>
+                      <p class="mb-0 font-weight-bold">Calculando rendimiento de vendedores...</p>
+                    } @else {
+                      <i class="fas fa-users-slash fa-3x mb-2 d-block text-secondary"></i>
+                      <p class="mb-0 font-weight-bold">No hay datos de vendedores registrados.</p>
                     }
                   </td>
                 </tr>
               }
-            } @empty {
-              <tr>
-                <td colspan="8" class="text-center text-muted py-5">
-                  <i class="fas fa-inbox fa-3x mb-2 d-block text-secondary"></i>
-                  <p class="mb-0 font-weight-bold">No se encontraron ventas para el período o filtros seleccionados.</p>
-                  <small>Prueba ampliando el rango de fechas en la barra superior.</small>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
-
-    <!-- Paginador -->
-    <div class="card-footer bg-light d-flex justify-content-between align-items-center py-2 flex-wrap">
-      <small class="text-muted">Página {{ currentPage }} de {{ totalPages }} ({{ totalVentas }} ventas totales registradas)</small>
-      <app-paginate 
-        [total]="totalVentas" 
-        [currentPage]="currentPage" 
-        [pageSize]="itemsPerPage" 
-        [npage]="pages" 
-        (SendIndex)="onPageChange($event)">
-      </app-paginate>
-    </div>
+    }
   </div>
 </div>

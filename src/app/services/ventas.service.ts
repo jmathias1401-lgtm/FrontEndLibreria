@@ -24,6 +24,16 @@ export interface VendedorRendimientoDto {
   totalMonto: number;
 }
 
+export interface EmpleadoRendimientoDto {
+  idEmpleado: number;
+  empleado: string;
+  ventasHoy: number;
+  ventasSemana: number;
+  ventasMes: number;
+  ventasAnio: number;
+  totalTransacciones: number;
+}
+
 export interface DashboardKpiResponse {
   ventasHoyMonto: number;
   ventasHoyCantidad: number;
@@ -81,5 +91,9 @@ export class VentasService {
 
   getKpisTiempoReal(): Observable<DashboardKpiResponse> {
     return this.http.get<DashboardKpiResponse>(`${this.baseUrl}/kpis-tiempo-real`);
+  }
+
+  getRendimientoEmpleados(): Observable<EmpleadoRendimientoDto[]> {
+    return this.http.get<EmpleadoRendimientoDto[]>(`${this.baseUrl}/rendimiento-empleados`);
   }
 }

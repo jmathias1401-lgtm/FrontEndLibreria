@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { VentasService } from '../../../services/ventas.service';
+import { EmpleadoRendimientoDto, VentasService } from '../../../services/ventas.service';
 import { EmpleadoService } from '../../../services/empleado.service';
 import { Empleado } from '../../../models/empleado';
 import { DetalleVentaService } from '../../../services/detalleventa.service';
@@ -19,8 +19,16 @@ import * as XLSX from 'xlsx';
   imports: [CommonModule, FormsModule, PaginateComponent]
 })
 export class ReportsComponent implements OnInit {
+  // Modo de vista: Transacciones detalladas o Rendimiento e Incentivos
+  vistaReporte: 'TRANSACCIONES' | 'INCENTIVOS' = 'TRANSACCIONES';
+
   empleados: Empleado[] = [];
-  selectedEmpleadoId: number | null = null;
+  selectedEmpleadoId: number = 0;
+
+  // Rendimiento e Incentivos de Empleados
+  rendimientoEmpleados: EmpleadoRendimientoDto[] = [];
+  tasaIncentivo: number = 5; // Comisión / Incentivo por defecto 5%
+  cargandoRendimiento: boolean = false;
 
   ventas: Venta[] = [];
   filteredVentas: any[] = [];
@@ -77,8 +85,22 @@ export class ReportsComponent implements OnInit {
     });
   }
 
+  cargarRendimientoEmpleados(): void {
+    this.cargandoRendimiento = true;
+    this.ventasService.getRendimientoEmpleados().subscribe({
+      next: (data) => {
+        this.rendimientoEmpleados = data || [];
+        this.cargandoRendimiento = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar rendimiento de empleados:', err);
+        this.cargandoRendimiento = false;
+      }
+    });
+  }
+
   // Filtros de Período y Fechas (Fase 2)
-  periodoSeleccionado: 'HOY' | 'AYER' | 'ULTIMOS_7' | 'ESTE_MES' | 'PERSONALIZADO' = 'ESTE_MES';
+  periodoSeleccionado: 'HOY' | 'AYER' | 'ULTIMOS_7' | 'ESTE_MES' | 'ESTE_ANIO' | 'PERSONALIZADO' = 'ESTE_MES';
   fechaInicio: string = '';
   fechaFin: string = '';
   tipoComprobanteFiltro: string = 'TODOS';
@@ -119,9 +141,10 @@ export class ReportsComponent implements OnInit {
   ngOnInit(): void {
     this.seleccionarPeriodo('ESTE_MES');
     this.cargarEmpleados();
+    this.cargarRendimientoEmpleados();
   }
 
-  seleccionarPeriodo(periodo: 'HOY' | 'AYER' | 'ULTIMOS_7' | 'ESTE_MES' | 'PERSONALIZADO'): void {
+  seleccionarPeriodo(periodo: 'HOY' | 'AYER' | 'ULTIMOS_7' | 'ESTE_MES' | 'ESTE_ANIO' | 'PERSONALIZADO'): void {
     this.periodoSeleccionado = periodo;
     const hoy = new Date();
 
@@ -157,11 +180,24 @@ export class ReportsComponent implements OnInit {
         this.fechaFin = formatDate(hoy);
         break;
       }
+      case 'ESTE_ANIO': {
+        const primerDiaAnio = new Date(hoy.getFullYear(), 0, 1);
+        this.fechaInicio = formatDate(primerDiaAnio);
+        this.fechaFin = formatDate(hoy);
+        break;
+      }
       case 'PERSONALIZADO':
         // Mantiene las fechas que el usuario elija en los inputs
         break;
     }
 
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  filtrarPorEmpleado(idEmpleado: number): void {
+    this.selectedEmpleadoId = idEmpleado;
+    this.vistaReporte = 'TRANSACCIONES';
     this.currentPage = 1;
     this.applyFilters();
   }
@@ -240,7 +276,8 @@ export class ReportsComponent implements OnInit {
       correlativo: this.filterCorrelativo || undefined,
       search: this.filterSearch || undefined,
       fechaInicio: this.fechaInicio || undefined,
-      fechaFin: this.fechaFin || undefined
+      fechaFin: this.fechaFin || undefined,
+      idEmpleado: (this.selectedEmpleadoId && this.selectedEmpleadoId > 0) ? this.selectedEmpleadoId : undefined
     };
 
     this.ventasService.ListWithFilters(this.currentPage, this.itemsPerPage, filters).subscribe({
@@ -309,7 +346,8 @@ export class ReportsComponent implements OnInit {
       correlativo: this.filterCorrelativo || undefined,
       search: this.filterSearch || undefined,
       fechaInicio: this.fechaInicio || undefined,
-      fechaFin: this.fechaFin || undefined
+      fechaFin: this.fechaFin || undefined,
+      idEmpleado: (this.selectedEmpleadoId && this.selectedEmpleadoId > 0) ? this.selectedEmpleadoId : undefined
     };
 
     // Traer todos los registros del rango (hasta 2000) para exportación completa
@@ -378,6 +416,37 @@ export class ReportsComponent implements OnInit {
         this.exportandoExcel = false;
       }
     });
+  }
+
+  exportarIncentivosExcel(): void {
+    if (!this.rendimientoEmpleados || this.rendimientoEmpleados.length === 0) return;
+    const tasa = (this.tasaIncentivo || 0) / 100;
+
+    const dataExcel = this.rendimientoEmpleados.map(e => {
+      const vMes = Number(e.ventasMes) || 0;
+      const vAnio = Number(e.ventasAnio) || 0;
+      const incMes = Number((vMes * tasa).toFixed(2));
+      const incAnio = Number((vAnio * tasa).toFixed(2));
+
+      return {
+        'ID Vendedor': e.idEmpleado,
+        'Vendedor': e.empleado,
+        'Ventas Hoy (S/)': Number(Number(e.ventasHoy || 0).toFixed(2)),
+        'Ventas Esta Semana (S/)': Number(Number(e.ventasSemana || 0).toFixed(2)),
+        'Ventas Este Mes (S/)': Number(vMes.toFixed(2)),
+        'Ventas Este Año (S/)': Number(vAnio.toFixed(2)),
+        'Total Transacciones': e.totalTransacciones || 0,
+        '% Incentivo': `${this.tasaIncentivo}%`,
+        'Incentivo Mes (S/)': incMes,
+        'Incentivo Año (S/)': incAnio
+      };
+    });
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataExcel);
+    const workbook: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Incentivos_Vendedores');
+    const hoyStr = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(workbook, `liquidacion_incentivos_vendedores_${hoyStr}.xlsx`);
   }
 
   // --- IMPRESIÓN CONSOLIDADA DE REPORTE ---
