@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { VentasService } from '../../../services/ventas.service';
+import { EmpleadoService } from '../../../services/empleado.service';
+import { Empleado } from '../../../models/empleado';
 import { DetalleVentaService } from '../../../services/detalleventa.service';
 import { Venta, ventaList } from '../../../models/venta.model';
 import { DetalleVenta, DetalleVentaList } from '../../../models/detalleventa';
@@ -17,8 +19,11 @@ import * as XLSX from 'xlsx';
   imports: [CommonModule, FormsModule, PaginateComponent]
 })
 export class ReportsComponent implements OnInit {
+  empleados: Empleado[] = [];
+  selectedEmpleadoId: number | null = null;
 
   ventas: Venta[] = [];
+  filteredVentas: any[] = [];
   detallesVenta: { [key: number]: DetalleVenta[] } = {};
   selectedVentaId: number | null = null;
 
@@ -28,8 +33,49 @@ export class ReportsComponent implements OnInit {
   totalPages: number = 0;
   pages: any[] = [];
   nextCount: number = 1;
-  agrupados: any={};
-  filteredVentas: any[] = [];
+  agrupados: any = {};
+
+  // Agregados por empleado y por período (incluye incentivo)
+  employeeAggregates: { [id: number]: { daily: number; weekly: number; monthly: number; yearly: number; totalVentas: number; incentive: number } } = {};
+  // Porcentaje de incentivo (ejemplo: 5%)
+  readonly incentiveRate = 0.05;
+
+  /** Calcula totales por empleado y por período (día, semana, mes, año) */
+  computeAggregates(): void {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(startOfDay);
+    startOfWeek.setDate(startOfDay.getDate() - startOfDay.getDay()); // domingo como inicio de semana
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+    this.employeeAggregates = {};
+    for (const v of this.ventas) {
+      const empId = v.empleado?.idempleado || (v as any).empleado?.id || (v as any).vendedor?.id || 0;
+      const monto = v.costoventa || (v as any).total || 0;
+      if (!this.employeeAggregates[empId]) {
+        this.employeeAggregates[empId] = { daily: 0, weekly: 0, monthly: 0, yearly: 0, totalVentas: 0, incentive: 0 };
+      }
+      const agg = this.employeeAggregates[empId];
+      const rawDate = v.fechaventa || v.fechaVenta;
+      const ventaDate = rawDate ? new Date(rawDate) : new Date();
+      agg.totalVentas++;
+      if (ventaDate >= startOfDay) agg.daily += monto;
+      if (ventaDate >= startOfWeek) agg.weekly += monto;
+      if (ventaDate >= startOfMonth) agg.monthly += monto;
+      if (ventaDate >= startOfYear) agg.yearly += monto;
+      agg.incentive = Number((agg.monthly * this.incentiveRate).toFixed(2));
+    }
+  }
+
+  cargarEmpleados(): void {
+    this.empleadoService.listar(1, 100).subscribe({
+      next: (res) => {
+        this.empleados = res.list || [];
+      },
+      error: (err) => console.error('Error al cargar empleados:', err)
+    });
+  }
 
   // Filtros de Período y Fechas (Fase 2)
   periodoSeleccionado: 'HOY' | 'AYER' | 'ULTIMOS_7' | 'ESTE_MES' | 'PERSONALIZADO' = 'ESTE_MES';
@@ -66,11 +112,13 @@ export class ReportsComponent implements OnInit {
   constructor(
     private ventasService: VentasService,
     private detalleVentaService: DetalleVentaService,
-    private ticketService: TicketService
+    private ticketService: TicketService,
+    private empleadoService: EmpleadoService
   ) { }
 
   ngOnInit(): void {
     this.seleccionarPeriodo('ESTE_MES');
+    this.cargarEmpleados();
   }
 
   seleccionarPeriodo(periodo: 'HOY' | 'AYER' | 'ULTIMOS_7' | 'ESTE_MES' | 'PERSONALIZADO'): void {
@@ -218,6 +266,7 @@ export class ReportsComponent implements OnInit {
         this.totalPages = Math.ceil(this.totalVentas / this.itemsPerPage) || 1;
         this.pages = this.generatePageRange(1, this.totalPages > 30 ? 30 : this.totalPages);
         this.calcularResumen();
+        this.computeAggregates();
         this.cargandoReporte = false;
       },
       error: (err) => {
