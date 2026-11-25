@@ -52,7 +52,19 @@ export class RoleGuard implements CanActivate {
     }
     // If user is VENDEDOR (idcargo = 2)
     if (cargoId === 2) {
-      const allowedRoutes = ['home', 'cart', 'client-form', 'ventas', 'clientes', 'reports/ventas', 'dashboard', 'dashboard-productos'];
+      const allowedRoutes = [
+        'home', 
+        'cart', 
+        'client-form', 
+        'pos', 
+        'ventas', 
+        'productos', 
+        'clientes', 
+        'reports', 
+        'reports/ventas', 
+        'dashboard', 
+        'dashboard-productos'
+      ];
       const currentRoute = route.routeConfig?.path;
       console.log('RoleGuard - Ruta actual:', currentRoute);
       console.log('RoleGuard - Rutas permitidas:', allowedRoutes);
