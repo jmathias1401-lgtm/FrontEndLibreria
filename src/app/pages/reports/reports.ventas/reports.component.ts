@@ -8,6 +8,7 @@ import { DetalleVenta, DetalleVentaList } from '../../../models/detalleventa';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TicketService } from '../../../services/ticket.service';
+import { AuthService } from '../../../services/auth.service';
 import { PaginateComponent } from '../../../shared/paginate/paginate.component';
 import * as XLSX from 'xlsx';
 
@@ -21,6 +22,7 @@ import * as XLSX from 'xlsx';
 export class ReportsComponent implements OnInit {
   // Modo de vista: Transacciones detalladas o Rendimiento e Incentivos
   vistaReporte: 'TRANSACCIONES' | 'INCENTIVOS' = 'TRANSACCIONES';
+  puedeVerIncentivos: boolean = false;
 
   empleados: Empleado[] = [];
   selectedEmpleadoId: number = 0;
@@ -86,6 +88,10 @@ export class ReportsComponent implements OnInit {
   }
 
   cargarRendimientoEmpleados(): void {
+    if (!this.puedeVerIncentivos) {
+      this.rendimientoEmpleados = [];
+      return;
+    }
     this.cargandoRendimiento = true;
     this.ventasService.getRendimientoEmpleados().subscribe({
       next: (data) => {
@@ -135,13 +141,37 @@ export class ReportsComponent implements OnInit {
     private ventasService: VentasService,
     private detalleVentaService: DetalleVentaService,
     private ticketService: TicketService,
-    private empleadoService: EmpleadoService
+    private empleadoService: EmpleadoService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
+    this.verificarPermisos();
     this.seleccionarPeriodo('ESTE_MES');
     this.cargarEmpleados();
-    this.cargarRendimientoEmpleados();
+    if (this.puedeVerIncentivos) {
+      this.cargarRendimientoEmpleados();
+    }
+  }
+
+  private verificarPermisos(): void {
+    const token = this.authService.getToken();
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const cargoId = payload?.idcargo || payload?.cargo?.idcargo;
+        // El rol VENDEDOR (idcargo = 2) no tiene acceso al reporte de rendimiento e incentivos
+        this.puedeVerIncentivos = (cargoId !== 2);
+        if (!this.puedeVerIncentivos) {
+          this.vistaReporte = 'TRANSACCIONES';
+        }
+      } catch (e) {
+        console.error('Error al decodificar token en ReportsComponent:', e);
+        this.puedeVerIncentivos = false;
+      }
+    } else {
+      this.puedeVerIncentivos = false;
+    }
   }
 
   seleccionarPeriodo(periodo: 'HOY' | 'AYER' | 'ULTIMOS_7' | 'ESTE_MES' | 'ESTE_ANIO' | 'PERSONALIZADO'): void {
@@ -419,6 +449,7 @@ export class ReportsComponent implements OnInit {
   }
 
   exportarIncentivosExcel(): void {
+    if (!this.puedeVerIncentivos) return;
     if (!this.rendimientoEmpleados || this.rendimientoEmpleados.length === 0) return;
     const tasa = (this.tasaIncentivo || 0) / 100;
 
