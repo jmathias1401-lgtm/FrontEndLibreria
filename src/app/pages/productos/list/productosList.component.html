@@ -231,13 +231,15 @@
                 <!-- Botones de Acción: Ajuste de Inventario, Kardex, Editar y Eliminar -->
                 <td class="text-center">
                   <div class="btn-group btn-group-sm" role="group">
-                    <!-- Ajuste Rápido de Stock -->
-                    <button 
-                      class="btn btn-outline-warning" 
-                      (click)="abrirModalAjuste(producto)" 
-                      title="Ajustar Stock / Cuadre Físico (Merma, conteo o corrección)">
-                      <i class="fas fa-sliders-h"></i>
-                    </button>
+                    <!-- Ajuste Rápido de Stock (Sólo para Administrador u otros roles autorizados, no Vendedor) -->
+                    @if (puedeAjustarStock) {
+                      <button 
+                        class="btn btn-outline-warning" 
+                        (click)="abrirModalAjuste(producto)" 
+                        title="Ajustar Stock / Cuadre Físico (Merma, conteo o corrección)">
+                        <i class="fas fa-sliders-h"></i>
+                      </button>
+                    }
 
                     <!-- Kardex / Historial -->
                     <button 
@@ -303,7 +305,7 @@
 <!-- ========================================================
      MODAL DE AJUSTE RÁPIDO DE INVENTARIO / CUADRE FÍSICO
      ======================================================== -->
-@if (mostrarModalAjuste && productoAjuste) {
+@if (puedeAjustarStock && mostrarModalAjuste && productoAjuste) {
   <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content shadow-lg border-0">

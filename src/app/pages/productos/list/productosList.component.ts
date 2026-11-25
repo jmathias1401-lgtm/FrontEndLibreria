@@ -12,6 +12,7 @@ import { CartService } from '../../../services/cart.service';
 import { ToastrService } from 'ngx-toastr';
 import { InventarioService, ResumenValorizado, MovimientoKardex, VentaTrazabilidadDto } from '../../../services/inventario.service';
 import { StockNotificationService } from '../../../services/stock-notification.service';
+import { AuthService } from '../../../services/auth.service';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -43,6 +44,9 @@ export class ProductosListComponent implements OnInit {
   cargandoValorizado: boolean = false;
   todosLosProductos: any[] = [];
 
+  // --- PERMISOS ---
+  puedeAjustarStock: boolean = false;
+
   // --- MODAL DE AJUSTE RÁPIDO DE INVENTARIO ---
   mostrarModalAjuste: boolean = false;
   productoAjuste: any = null;
@@ -71,12 +75,31 @@ export class ProductosListComponent implements OnInit {
     private cartService: CartService,
     private toastr: ToastrService,
     private inventarioService: InventarioService,
-    private stockNotificationService: StockNotificationService
+    private stockNotificationService: StockNotificationService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
+    this.verificarPermisos();
     this.vertodos(1);
     this.pages = this.generatePageRange(1, 30);
+  }
+
+  private verificarPermisos(): void {
+    const token = this.authService.getToken();
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const cargoId = payload?.idcargo || payload?.cargo?.idcargo;
+        // El rol VENDEDOR (idcargo = 2) no tiene permisos para ajustar stock ni realizar cuadre físico
+        this.puedeAjustarStock = (cargoId !== 2);
+      } catch (e) {
+        console.error('Error al decodificar token en productosList:', e);
+        this.puedeAjustarStock = false;
+      }
+    } else {
+      this.puedeAjustarStock = false;
+    }
   }
 
   onindexClic(index: number) {
@@ -138,6 +161,10 @@ export class ProductosListComponent implements OnInit {
 
   // --- MODAL DE AJUSTE DE INVENTARIO ---
   abrirModalAjuste(producto: any): void {
+    if (!this.puedeAjustarStock) {
+      this.toastr.warning('No tienes permisos para ajustar el stock o realizar cuadre físico.');
+      return;
+    }
     this.productoAjuste = { ...producto };
     this.tipoAjuste = 'CONTEO';
     this.cantidadAjuste = Number(producto.stock) || 0;
@@ -181,6 +208,11 @@ export class ProductosListComponent implements OnInit {
   }
 
   guardarAjusteStock(): void {
+    if (!this.puedeAjustarStock) {
+      this.toastr.error('Acceso denegado: El rol vendedor no tiene autorización para ajustar stock.');
+      this.guardandoAjuste = false;
+      return;
+    }
     if (!this.productoAjuste) return;
     this.guardandoAjuste = true;
 
